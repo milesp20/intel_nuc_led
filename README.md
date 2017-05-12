@@ -1,4 +1,6 @@
-This is a simple kernel module to control the power and ring LEDs on Intel NUC7i[x]BN and NUC6CAY kits.
+# Intel NUC7i[x]BN and NUC6CAY LED Control
+
+his is a simple kernel module to control the power and ring LEDs on Intel NUC7i[x]BN and NUC6CAY kits.
 
 This module is intended as a demonstration/proof-of-concept and may not be maintained further.  Perhaps
 it can act as a jumping off point for a more polished and complete implementation.  For testing and basic
