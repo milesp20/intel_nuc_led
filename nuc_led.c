@@ -345,7 +345,6 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                  retval.color_return == NUCLED_WMI_RETURN_BADPARAM)
                         {
                                 pr_warn("Unable to set NUC LED state: invalid parameter\n");
-                                pr_info("0x%02x , 0x%02x , 0x%02x\n", retval.brightness_return, retval.blink_fade_return, retval.color_return);
                         }
                         else if (retval.brightness_return != NUCLED_WMI_RETURN_SUCCESS)
                         {
