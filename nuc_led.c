@@ -36,7 +36,7 @@
 #include <linux/proc_fs.h>
 #include <linux/acpi.h>
 #include <linux/vmalloc.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 MODULE_AUTHOR("Miles Peterson");
 MODULE_DESCRIPTION("Intel NUC LED Control WMI Driver");
