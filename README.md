@@ -63,3 +63,9 @@ Example execution to cause the ring LED blink green at a medium rate at partial 
     echo 'ring,80,blink_medium,green' | sudo tee /proc/acpi/nuc_led > /dev/null
     
 Errors in passing parameters will appear as warnings in dmesg.
+
+You can change the owner, group and permissions of `/proc/acpi/nuc_led` by passing parameters to the nuc_led kernel module. Use:
+
+* `nuc_led_uid` to set the owner (default is 0, root)
+* `nuc_led_gid` to set the owning group (default is 0, root)
+* `nuc_led_perms` to set the file permissions (default is r+w for group and user and r for others)

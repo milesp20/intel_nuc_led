@@ -42,6 +42,18 @@ MODULE_AUTHOR("Miles Peterson");
 MODULE_DESCRIPTION("Intel NUC LED Control WMI Driver");
 MODULE_LICENSE("GPL");
 
+static unsigned int nuc_led_perms __read_mostly = S_IRUGO | S_IWUSR | S_IWGRP;
+static unsigned int nuc_led_uid __read_mostly;
+static unsigned int nuc_led_gid __read_mostly;
+
+module_param(nuc_led_perms, uint, S_IRUGO | S_IWUSR | S_IWGRP);
+module_param(nuc_led_uid, uint, 0);
+module_param(nuc_led_gid, uint, 0);
+
+MODULE_PARM_DESC(nuc_led_perms, "permissions on /proc/acpi/nuc_led");
+MODULE_PARM_DESC(nuc_led_uid, "default owner of /proc/acpi/nuc_led");
+MODULE_PARM_DESC(nuc_led_gid, "default owning group of /proc/acpi/nuc_led");
+
 /* Intel NUC WMI GUID */
 #define NUCLED_WMI_MGMT_GUID            "8C5DA44C-CDC3-46b3-8619-4E26D34390B7"
 MODULE_ALIAS("wmi:" NUCLED_WMI_MGMT_GUID);
@@ -431,6 +443,8 @@ static struct file_operations proc_acpi_operations = {
 static int __init init_nuc_led(void)
 {
         struct proc_dir_entry *acpi_entry;
+	kuid_t uid;
+	kgid_t gid;
 
         // Make sure LED control WMI GUID exists
         if (!wmi_has_guid(NUCLED_WMI_MGMT_GUID)) {
@@ -438,13 +452,24 @@ static int __init init_nuc_led(void)
                 return -ENODEV;
         }
 
+        // Verify the user parameters
+	uid = make_kuid(&init_user_ns, nuc_led_uid);
+	gid = make_kgid(&init_user_ns, nuc_led_gid);
+
+	if (!uid_valid(uid) || !gid_valid(gid)) {
+                pr_warn("Intel NUC LED control driver got an invalid UID or GID\n");
+		return -EINVAL;
+	}
+
         // Create nuc_led ACPI proc entry
-        acpi_entry = proc_create("nuc_led", 0664, acpi_root_dir, &proc_acpi_operations);
+        acpi_entry = proc_create("nuc_led", nuc_led_perms, acpi_root_dir, &proc_acpi_operations);
 
         if (acpi_entry == NULL) {
                 pr_warn("Intel NUC LED control driver could not create proc entry\n");
                 return -ENOMEM;
         }
+
+        proc_set_user(acpi_entry, uid, gid);
 
         pr_info("Intel NUC LED control driver loaded\n");
 
