@@ -41,6 +41,7 @@
 MODULE_AUTHOR("Miles Peterson");
 MODULE_DESCRIPTION("Intel NUC LED Control WMI Driver");
 MODULE_LICENSE("GPL");
+ACPI_MODULE_NAME("NUC_LED");
 
 static unsigned int nuc_led_perms __read_mostly = S_IRUGO | S_IWUSR | S_IWGRP;
 static unsigned int nuc_led_uid __read_mostly;
@@ -155,7 +156,10 @@ static int nuc_led_get_state(u32 led, struct led_get_state_return *state)
                                      &input, &output);
 
         if (ACPI_FAILURE(status))
+	{
+		ACPI_EXCEPTION((AE_INFO, status, "wmi_evaluate_method"));
                 return -EIO;
+	}
 
         // Always returns a buffer
         obj = (union acpi_object *)output.pointer;
@@ -195,7 +199,10 @@ static int nuc_led_set_state(u32 led, u32 brightness, u32 blink_fade, u32 color_
                                      &input, &output);
 
         if (ACPI_FAILURE(status))
+	{
+		ACPI_EXCEPTION((AE_INFO, status, "wmi_evaluate_method"));
                 return -EIO;
+	}
 
         // Always returns a buffer
         obj = (union acpi_object *)output.pointer;
