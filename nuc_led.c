@@ -152,7 +152,8 @@ static int nuc_led_get_state(u32 led, struct led_get_state_return *state)
         input.length = (acpi_size) sizeof(args);
         input.pointer = &args;
 
-        status = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 1, NUCLED_WMI_METHODID_GETSTATE,
+	// Per Intel docs, first instance is used (instance is indexed from 0)
+        status = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 0, NUCLED_WMI_METHODID_GETSTATE,
                                      &input, &output);
 
         if (ACPI_FAILURE(status))
@@ -195,7 +196,8 @@ static int nuc_led_set_state(u32 led, u32 brightness, u32 blink_fade, u32 color_
         input.length = (acpi_size) sizeof(args);
         input.pointer = &args;
         
-        status = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 1, NUCLED_WMI_METHODID_SETSTATE,
+	// Per Intel docs, first instance is used (instance is indexed from 0)
+        status = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 0, NUCLED_WMI_METHODID_SETSTATE,
                                      &input, &output);
 
         if (ACPI_FAILURE(status))
