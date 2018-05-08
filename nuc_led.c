@@ -225,7 +225,7 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 {
         int i = 0;
         int ret = 0;
-        char *input, *arg;
+        char *input, *arg, *sep;
         static int status  = 0;
         struct led_set_state_return retval;
         u32 led, brightness, blink_fade, color_state;
@@ -244,7 +244,8 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                 input[len - 1] = '\0';
 
         // Parse input string
-        while ((arg = strsep(&input, ",")) && *arg)
+	sep = input;
+        while ((arg = strsep(&sep, ",")) && *arg)
         {
                 if (i == 0)             // First arg: LED ("power" or "ring")
                 {
