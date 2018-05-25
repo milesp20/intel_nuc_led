@@ -74,7 +74,7 @@ make dkms-deb
 # RHEL
 make dkms-rpm
 
-# Install generated RPM from the folder specified in the output using system package manager
+# Install generated DEB/RPM from the folder specified in the output using system package manager
 ```
 
 ## Usage
