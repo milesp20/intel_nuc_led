@@ -7,56 +7,120 @@ it can act as a jumping off point for a more polished and complete implementatio
 manipulation of the power LED and ring LED, it ought to work fine, but use with caution none the less. This
 has only been tested on 4.4.x kernels.
 
+
+## Requirements
+
 Requirements:
 
 * Intel NUC7i[x]BN and NUC6CAY
 * BIOS AY0038 or BN0043 or later
 * ACPI/WMI support in kernel
-* LED(s) set to SW Control in BIOS
+* LED(s) set to `SW Control` in BIOS
+
+## Building
+
+THe `nuc_led` kernel module supports building and installing "from source" directly or using `dkms`.
+
+### Installing Build Dependencies
+
+Ubuntu:
+
+```
+apt-get install build-essential linux-headers-$(uname -r)
+
+# DKMS dependencies
+apt-get install debhelper dkms
+```
+
+Redhat:
+
+```
+yum groupinstall "Development Tools"
+yum install kernel-devel-$(uname -r)
+
+# Install appropriate EPEL for DKMS if needed by your RHEL variant
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+yum install dkms
+```
+
+### Building and Installing "from source"
+
+```
+make clean
+make install
+```
+
+### Building and Installing Using DKMS
+
+Build and install without system packaging:
+
+```
+make dkms-install
+```
+
+Uninstall without system packaging:
+
+```
+make dkms-uninstall
+```
+
+Build and install using system packaging:
+
+```
+# Ubuntu
+make dkms-deb
+
+# RHEL
+make dkms-rpm
+
+# Install generated DEB/RPM from the folder specified in the output using system package manager
+```
+
+## Usage
     
 This driver works via '/proc/acpi/nuc_led'.  To get current LED state:
 
-    cat /proc/acpi/nuc_led
+```
+cat /proc/acpi/nuc_led
+```
     
 To change the LED state:
 
-    echo '<led>,<brightness>,<blink/fade>,<color>' | sudo tee /proc/acpi/nuc_led > /dev/null
-    
-LEDs:
+```
+ echo '<led>,<brightness>,<blink/fade>,<color>' | sudo tee /proc/acpi/nuc_led > /dev/null
+```
 
-* power - the power button LED
-* ring  - the ring LED surrounding the front panel
-    
+|LED  |Description                              |
+|-----|-----------------------------------------|
+|power|The power button LED.                    |
+|ring |The ring LED surrounding the front panel.|
+
 Brightness:
 
-* any integer between 0 and 100
+* any integer between `0` and `100`.
 
-Blink/fade:
+|Blink/Fade Option|Description    |
+|-----------------|---------------|
+|blink\_fast      |1Hz blink      |
+|blink\_medium    |0.5Hz blink    |
+|blink\_slow      |0.25Hz blink   |
+|fade\_fast       |1Hz blink      |
+|fade\_medium     |0.5Hz blink    |
+|fade\_slow       |0.25Hz blink   |
+|none             |solid/always on|
 
-* none          solid/always on
-* blink_slow    0.25Hz blink
-* blink_medium  0.5Hz blink
-* blink_fast    1Hz blink
-* fade_slow     0.25Hz blink
-* fade_medium   0.5Hz blink
-* fade_fast     1Hz blink
-    
-Color (power LED):
-
-* off
-* blue
-* amber
-    
-Color (ring LED):
-
-* off
-* cyan
-* pink
-* yellow
-* blue
-* red
-* green
-* white
+|LED Color|power|ring|
+|---------|:---:|:--:|
+|amber    |X    |    |
+|cyan     |     |X   |
+|blue     |X    |X   |
+|green    |     |X   |
+|off      |X    |X   |
+|pink     |     |X   |
+|red      |     |X   |
+|white    |     |X   |
+|yellow   |     |X   |
     
 Example execution to cause the ring LED blink green at a medium rate at partial intensity:
 
@@ -69,3 +133,5 @@ You can change the owner, group and permissions of `/proc/acpi/nuc_led` by passi
 * `nuc_led_uid` to set the owner (default is 0, root)
 * `nuc_led_gid` to set the owning group (default is 0, root)
 * `nuc_led_perms` to set the file permissions (default is r+w for group and user and r for others)
+
+Note: Once an LED has been set to `SW Control` in the BIOS, it will remain off initially until a color is explicitly set, after which the set color is retained across reboots.
