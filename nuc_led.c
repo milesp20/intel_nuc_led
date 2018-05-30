@@ -133,6 +133,7 @@ static char *get_buffer_end(void) {
 
 /* Convert blink/fade value to text */
 static const char* const blink_fade_text[] = { "Off", "1Hz Blink", "0.25Hz Blink", "1Hz Fade", "Always On", "0.5Hz Blink", "0.25Hz Fade", "0.5Hz Fade" };
+static const char* const blink_fade_cmd[] = { "off","blink_fast","blink_slow", "fade_fast","none","blink_medium","fade_slow","fade_medium" };
 
 /* Convert color value to text */
 static const char* const pwrcolor_text[] =   { "Off", "Blue", "Amber" };
@@ -408,10 +409,13 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
         else
         {
                 if (power_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\n\n",
+                        sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\nCMD=power,%d,%s,%s\n\n",
                                 power_led.brightness,
                                 blink_fade_text[power_led.blink_fade], power_led.blink_fade,
-                                pwrcolor_text[power_led.color_state], power_led.color_state);
+                                pwrcolor_text[power_led.color_state], power_led.color_state,
+                                power_led.brightness,
+				blink_fade_cmd[power_led.blink_fade],
+				pwrcolor_text[power_led.color_state]);
                 else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
                         sprintf(get_buffer_end(), "Power LED not set for software control\n\n");
                 else
@@ -426,10 +430,13 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
         else
         {
                 if (ring_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\n\n",
+                        sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\nCMD=ring,%d,%s,%s\n\n",
                                 ring_led.brightness,
                                 blink_fade_text[ring_led.blink_fade], ring_led.blink_fade,
-                                ringcolor_text[ring_led.color_state], ring_led.color_state);
+                                ringcolor_text[ring_led.color_state], ring_led.color_state,
+				ring_led.brightness,
+				blink_fade_cmd[ring_led.blink_fade],
+				ringcolor_text[ring_led.color_state]);
                 else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
                         sprintf(get_buffer_end(), "Ring LED not set for software control\n\n");
                 else
