@@ -37,6 +37,8 @@
 #include <linux/acpi.h>
 #include <linux/vmalloc.h>
 #include <linux/uaccess.h>
+#include <linux/notifier.h>
+#include <linux/reboot.h>
 
 MODULE_AUTHOR("Miles Peterson");
 MODULE_DESCRIPTION("Intel NUC LED Control WMI Driver");
@@ -137,6 +139,12 @@ static const char* const blink_fade_text[] = { "Off", "1Hz Blink", "0.25Hz Blink
 /* Convert color value to text */
 static const char* const pwrcolor_text[] =   { "Off", "Blue", "Amber" };
 static const char* const ringcolor_text[] =  { "Off", "Cyan", "Pink", "Yellow", "Blue", "Red", "Green", "White" };
+
+static int turn_off_led(struct notifier_block *, unsigned long, void *);
+
+static struct notifier_block nb = {
+	.notifier_call = turn_off_led
+};
 
 /* Get LED state */
 static int nuc_led_get_state(u32 led, struct led_get_state_return *state)
@@ -449,6 +457,16 @@ static struct file_operations proc_acpi_operations = {
         .write    = acpi_proc_write,
 };
 
+/* Turn off all LEDs */
+static int turn_off_led(struct notifier_block *nb, unsigned long action, void *data){
+    struct led_set_state_return retval;
+    nuc_led_set_state(NUCLED_WMI_POWER_LED_ID, 0, NUCLED_WMI_ALWAYS_ON, NUCLED_WMI_POWER_COLOR_DISABLE,
+            &retval);
+    nuc_led_set_state(NUCLED_WMI_RING_LED_ID, 0, NUCLED_WMI_ALWAYS_ON, NUCLED_WMI_RING_COLOR_DISABLE,
+            &retval);
+    return NOTIFY_OK;
+}
+
 /* Init & unload */
 static int __init init_nuc_led(void)
 {
@@ -481,6 +499,8 @@ static int __init init_nuc_led(void)
 
         proc_set_user(acpi_entry, uid, gid);
 
+        register_reboot_notifier(&nb);
+
         pr_info("Intel NUC LED control driver loaded\n");
 
         return 0;
@@ -488,6 +508,7 @@ static int __init init_nuc_led(void)
 
 static void __exit unload_nuc_led(void)
 {
+        unregister_reboot_notifier(&nb);
         remove_proc_entry("nuc_led", acpi_root_dir);
         pr_info("Intel NUC LED control driver unloaded\n");
 }
