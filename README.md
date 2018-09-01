@@ -134,4 +134,4 @@ You can change the owner, group and permissions of `/proc/acpi/nuc_led` by passi
 * `nuc_led_gid` to set the owning group (default is 0, root)
 * `nuc_led_perms` to set the file permissions (default is r+w for group and user and r for others)
 
-Note: Once an LED has been set to `SW Control` in the BIOS, it will remain off initially until a color is explicitly set, after which the set color is retained across reboots.
+Note: Once an LED has been set to `SW Control` in the BIOS, it will remain off initially until a color is explicitly set
