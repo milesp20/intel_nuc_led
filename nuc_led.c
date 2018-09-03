@@ -293,6 +293,44 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
         return len;
 }
 
+static void print_power_state_to_buffer(int status_pwr, struct led_get_state_return power_led){
+  if (status_pwr)
+  {
+          sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call failed\n\n");
+  }
+  else
+  {
+          if (power_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
+                  sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\n\n",
+                          power_led.brightness,
+                          blink_fade_text[power_led.blink_fade], power_led.blink_fade,
+                          pwrcolor_text[power_led.color_state], power_led.color_state);
+          else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
+                  sprintf(get_buffer_end(), "Power LED not set for software control\n\n");
+          else
+                  sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call returned error\n\n");
+  }
+}
+
+static void print_ring_state_to_buffer(int status_ring, struct led_get_state_return ring_led){
+  if (status_ring)
+  {
+          sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call failed\n\n");
+  }
+  else
+  {
+          if (ring_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
+                  sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\n\n",
+                          ring_led.brightness,
+                          blink_fade_text[ring_led.blink_fade], ring_led.blink_fade,
+                          ringcolor_text[ring_led.color_state], ring_led.color_state);
+          else if (ring_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
+                  sprintf(get_buffer_end(), "Ring LED not set for software control\n\n");
+          else
+                  sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call returned error\n\n");
+  }
+}
+
 static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
                 size_t count, loff_t *off)
 {
@@ -316,40 +354,10 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
         memset(result_buffer, 0, BUFFER_SIZE);
 
         // Process state for power LED
-        if (status_pwr)
-        {
-                sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call failed\n\n");
-        }
-        else
-        {
-                if (power_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\n\n",
-                                power_led.brightness,
-                                blink_fade_text[power_led.blink_fade], power_led.blink_fade,
-                                pwrcolor_text[power_led.color_state], power_led.color_state);
-                else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
-                        sprintf(get_buffer_end(), "Power LED not set for software control\n\n");
-                else
-                        sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call returned error\n\n");
-        }
+        print_power_state_to_buffer(status_pwr, power_led);
 
         // Process state for ring LED
-        if (status_ring)
-        {
-                sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call failed\n\n");
-        }
-        else
-        {
-                if (ring_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\n\n",
-                                ring_led.brightness,
-                                blink_fade_text[ring_led.blink_fade], ring_led.blink_fade,
-                                ringcolor_text[ring_led.color_state], ring_led.color_state);
-                else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
-                        sprintf(get_buffer_end(), "Ring LED not set for software control\n\n");
-                else
-                        sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call returned error\n\n");
-        }
+        print_ring_state_to_buffer(status_ring, ring_led);
 
         // Return buffer via proc
         len = strlen(result_buffer);
