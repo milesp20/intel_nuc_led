@@ -147,16 +147,19 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 
         // Move buffer from user space to kernel space
         input = vmalloc(len);
-        if (!input)
+        if (!input){
                 return -ENOMEM;
+        }
 
-        if (copy_from_user(input, buff, len))
+        if (copy_from_user(input, buff, len)){
                 return -EFAULT;
+        }
 
         // Strip new line
         input[len] = '\0';
-        if (input[len - 1] == '\n')
+        if (input[len - 1] == '\n'){
                 input[len - 1] = '\0';
+        }
 
         // Parse input string
 	sep = input;
