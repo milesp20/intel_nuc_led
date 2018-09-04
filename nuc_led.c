@@ -40,105 +40,12 @@
 #include <linux/notifier.h>
 #include <linux/reboot.h>
 
+#include "nuc_led.h"
+
 MODULE_AUTHOR("Miles Peterson");
 MODULE_DESCRIPTION("Intel NUC LED Control WMI Driver");
 MODULE_LICENSE("GPL");
 ACPI_MODULE_NAME("NUC_LED");
-
-static unsigned int nuc_led_perms __read_mostly = S_IRUGO | S_IWUSR | S_IWGRP;
-static unsigned int nuc_led_uid __read_mostly;
-static unsigned int nuc_led_gid __read_mostly;
-
-module_param(nuc_led_perms, uint, S_IRUGO | S_IWUSR | S_IWGRP);
-module_param(nuc_led_uid, uint, 0);
-module_param(nuc_led_gid, uint, 0);
-
-MODULE_PARM_DESC(nuc_led_perms, "permissions on /proc/acpi/nuc_led");
-MODULE_PARM_DESC(nuc_led_uid, "default owner of /proc/acpi/nuc_led");
-MODULE_PARM_DESC(nuc_led_gid, "default owning group of /proc/acpi/nuc_led");
-
-/* Intel NUC WMI GUID */
-#define NUCLED_WMI_MGMT_GUID            "8C5DA44C-CDC3-46b3-8619-4E26D34390B7"
-MODULE_ALIAS("wmi:" NUCLED_WMI_MGMT_GUID);
-
-/* LED Control Method ID */
-#define NUCLED_WMI_METHODID_GETSTATE    0x01
-#define NUCLED_WMI_METHODID_SETSTATE    0x02
-
-/* LED Identifiers */
-#define NUCLED_WMI_POWER_LED_ID         0x01
-#define NUCLED_WMI_RING_LED_ID          0x02
-
-/* Return codes */
-#define NUCLED_WMI_RETURN_SUCCESS       0x00
-#define NUCLED_WMI_RETURN_NOSUPPORT     0xE1
-#define NUCLED_WMI_RETURN_UNDEFINED     0xE2
-#define NUCLED_WMI_RETURN_NORESPONSE    0xE3
-#define NUCLED_WMI_RETURN_BADPARAM      0xE4
-#define NUCLED_WMI_RETURN_UNEXPECTED    0xEF
-
-/* Blink and fade */
-#define NUCLED_WMI_BLINK_1HZ            0x01
-#define NUCLED_WMI_BLINK_0_25HZ         0x02
-#define NUCLED_WMI_FADE_1HZ             0x03
-#define NUCLED_WMI_ALWAYS_ON            0x04
-#define NUCLED_WMI_BLINK_0_5HZ          0x05
-#define NUCLED_WMI_FADE_0_25HZ          0x06
-#define NUCLED_WMI_FADE_0_5HZ           0x07
-
-/* Power button colors */
-#define NUCLED_WMI_POWER_COLOR_DISABLE  0x00
-#define NUCLED_WMI_POWER_COLOR_BLUE     0x01
-#define NUCLED_WMI_POWER_COLOR_AMBER    0x02
-
-/* Ring colors */
-#define NUCLED_WMI_RING_COLOR_DISABLE   0x00
-#define NUCLED_WMI_RING_COLOR_CYAN      0x01
-#define NUCLED_WMI_RING_COLOR_PINK      0x02
-#define NUCLED_WMI_RING_COLOR_YELLOW    0x03
-#define NUCLED_WMI_RING_COLOR_BLUE      0x04
-#define NUCLED_WMI_RING_COLOR_RED       0x05
-#define NUCLED_WMI_RING_COLOR_GREEN     0x06
-#define NUCLED_WMI_RING_COLOR_WHITE     0x07
-
-extern struct proc_dir_entry *acpi_root_dir;
-
-struct led_get_state_args {
-        u32 led;
-} __packed;
-
-struct led_get_state_return {
-        u32 return_code;
-        u32 brightness;
-        u32 blink_fade;
-        u32 color_state;
-} __packed;
-
-struct led_set_state_args {
-        u8 led;
-        u8 brightness;
-        u8 blink_fade;
-        u8 color_state;
-}__packed;
-
-struct led_set_state_return {
-        u32 brightness_return;
-        u32 blink_fade_return;
-        u32 color_return;
-} __packed;
-
-#define BUFFER_SIZE 512
-static char result_buffer[BUFFER_SIZE];
-static char *get_buffer_end(void) {
-    return result_buffer + strlen(result_buffer);
-}
-
-/* Convert blink/fade value to text */
-static const char* const blink_fade_text[] = { "Off", "1Hz Blink", "0.25Hz Blink", "1Hz Fade", "Always On", "0.5Hz Blink", "0.25Hz Fade", "0.5Hz Fade" };
-
-/* Convert color value to text */
-static const char* const pwrcolor_text[] =   { "Off", "Blue", "Amber" };
-static const char* const ringcolor_text[] =  { "Off", "Cyan", "Pink", "Yellow", "Blue", "Red", "Green", "White" };
 
 static int turn_off_led(struct notifier_block *, unsigned long, void *);
 
@@ -203,7 +110,7 @@ static int nuc_led_set_state(u32 led, u32 brightness, u32 blink_fade, u32 color_
 
         input.length = (acpi_size) sizeof(args);
         input.pointer = &args;
-        
+
 	// Per Intel docs, first instance is used (instance is indexed from 0)
         status = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 0, NUCLED_WMI_METHODID_SETSTATE,
                                      &input, &output);
@@ -240,32 +147,36 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 
         // Move buffer from user space to kernel space
         input = vmalloc(len);
-        if (!input)
+        if (!input){
                 return -ENOMEM;
+        }
 
-        if (copy_from_user(input, buff, len))
+        if (copy_from_user(input, buff, len)){
                 return -EFAULT;
+        }
 
         // Strip new line
         input[len] = '\0';
-        if (input[len - 1] == '\n')
+        if (input[len - 1] == '\n'){
                 input[len - 1] = '\0';
+        }
 
         // Parse input string
 	sep = input;
         while ((arg = strsep(&sep, ",")) && *arg)
         {
-                if (i == 0)             // First arg: LED ("power" or "ring")
-                {
+                switch (i) {
+                case 0: // First arg: LED ("power" or "ring")
                         if (!strcmp(arg, "power"))
                                 led = NUCLED_WMI_POWER_LED_ID;
                         else if (!strcmp(arg, "ring"))
                                 led = NUCLED_WMI_RING_LED_ID;
                         else
                                 ret = -EINVAL;
-                }
-                else if (i == 1)        // Second arg: brightness (0 - 100)
-                {
+                        break;
+
+                case 1: // Second arg: brightness (0 - 100)
+                        {
                         long val;
 
                         if (kstrtol(arg, 0, &val))
@@ -279,9 +190,10 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 else
                                         brightness = val;
                         }
-                }
-                else if (i == 2)        // Third arg: fade/brightness (text values)
-                {
+                        break;
+                        }
+
+                case 2: // Third arg: fade/brightness (text values)
                         if (!strcmp(arg, "none"))
                                 blink_fade = NUCLED_WMI_ALWAYS_ON;
                         else if (!strcmp(arg, "blink_fast"))
@@ -298,9 +210,9 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 blink_fade = NUCLED_WMI_FADE_0_25HZ;
                         else
                                 ret = -EINVAL;
-                }
-                else if (i == 3)        // Fourth arg: color (text values)
-                {
+                        break;
+
+                case 3: // Fourth arg: color (text values)
                         if (led == NUCLED_WMI_POWER_LED_ID)
                         {
                                 if (!strcmp(arg, "off"))
@@ -333,12 +245,12 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 else
                                         ret = -EINVAL;
                         }
-                }
-                else                    // Too many args!
+                        break;
+                default: // Too many args!
                         ret = -EOVERFLOW;
-
-                // Track iterations
-                i++;
+                }
+        // Track iterations
+        i++;
         }
 
         vfree(input);
@@ -386,6 +298,44 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
         return len;
 }
 
+static void print_power_state_to_buffer(int status_pwr, struct led_get_state_return power_led){
+  if (status_pwr)
+  {
+          sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call failed\n\n");
+  }
+  else
+  {
+          if (power_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
+                  sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\n\n",
+                          power_led.brightness,
+                          blink_fade_text[power_led.blink_fade], power_led.blink_fade,
+                          pwrcolor_text[power_led.color_state], power_led.color_state);
+          else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
+                  sprintf(get_buffer_end(), "Power LED not set for software control\n\n");
+          else
+                  sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call returned error\n\n");
+  }
+}
+
+static void print_ring_state_to_buffer(int status_ring, struct led_get_state_return ring_led){
+  if (status_ring)
+  {
+          sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call failed\n\n");
+  }
+  else
+  {
+          if (ring_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
+                  sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\n\n",
+                          ring_led.brightness,
+                          blink_fade_text[ring_led.blink_fade], ring_led.blink_fade,
+                          ringcolor_text[ring_led.color_state], ring_led.color_state);
+          else if (ring_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
+                  sprintf(get_buffer_end(), "Ring LED not set for software control\n\n");
+          else
+                  sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call returned error\n\n");
+  }
+}
+
 static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
                 size_t count, loff_t *off)
 {
@@ -409,40 +359,10 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
         memset(result_buffer, 0, BUFFER_SIZE);
 
         // Process state for power LED
-        if (status_pwr)
-        {
-                sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call failed\n\n");
-        }
-        else
-        {
-                if (power_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Power LED Brightness: %d%%\nPower LED Blink/Fade: %s (0x%02x)\nPower LED Color: %s (0x%02x)\n\n",
-                                power_led.brightness,
-                                blink_fade_text[power_led.blink_fade], power_led.blink_fade,
-                                pwrcolor_text[power_led.color_state], power_led.color_state);
-                else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
-                        sprintf(get_buffer_end(), "Power LED not set for software control\n\n");
-                else
-                        sprintf(get_buffer_end(), "Power LED state could not be determined: WMI call returned error\n\n");
-        }
+        print_power_state_to_buffer(status_pwr, power_led);
 
         // Process state for ring LED
-        if (status_ring)
-        {
-                sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call failed\n\n");
-        }
-        else
-        {
-                if (ring_led.return_code == NUCLED_WMI_RETURN_SUCCESS)
-                        sprintf(get_buffer_end(), "Ring LED Brightness: %d%%\nRing LED Blink/Fade: %s (0x%02x)\nRing LED Color: %s (0x%02x)\n\n",
-                                ring_led.brightness,
-                                blink_fade_text[ring_led.blink_fade], ring_led.blink_fade,
-                                ringcolor_text[ring_led.color_state], ring_led.color_state);
-                else if (power_led.return_code == NUCLED_WMI_RETURN_UNDEFINED)
-                        sprintf(get_buffer_end(), "Ring LED not set for software control\n\n");
-                else
-                        sprintf(get_buffer_end(), "Ring LED state could not be determined: WMI call returned error\n\n");
-        }
+        print_ring_state_to_buffer(status_ring, ring_led);
 
         // Return buffer via proc
         len = strlen(result_buffer);
