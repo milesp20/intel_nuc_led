@@ -165,17 +165,18 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
 	sep = input;
         while ((arg = strsep(&sep, ",")) && *arg)
         {
-                if (i == 0)             // First arg: LED ("power" or "ring")
-                {
+                switch (i) {
+                case 0: // First arg: LED ("power" or "ring")
                         if (!strcmp(arg, "power"))
                                 led = NUCLED_WMI_POWER_LED_ID;
                         else if (!strcmp(arg, "ring"))
                                 led = NUCLED_WMI_RING_LED_ID;
                         else
                                 ret = -EINVAL;
-                }
-                else if (i == 1)        // Second arg: brightness (0 - 100)
-                {
+                        break;
+
+                case 1: // Second arg: brightness (0 - 100)
+                        {
                         long val;
 
                         if (kstrtol(arg, 0, &val))
@@ -189,9 +190,10 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 else
                                         brightness = val;
                         }
-                }
-                else if (i == 2)        // Third arg: fade/brightness (text values)
-                {
+                        break;
+                        }
+
+                case 2: // Third arg: fade/brightness (text values)
                         if (!strcmp(arg, "none"))
                                 blink_fade = NUCLED_WMI_ALWAYS_ON;
                         else if (!strcmp(arg, "blink_fast"))
@@ -208,9 +210,9 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 blink_fade = NUCLED_WMI_FADE_0_25HZ;
                         else
                                 ret = -EINVAL;
-                }
-                else if (i == 3)        // Fourth arg: color (text values)
-                {
+                        break;
+
+                case 3: // Fourth arg: color (text values)
                         if (led == NUCLED_WMI_POWER_LED_ID)
                         {
                                 if (!strcmp(arg, "off"))
@@ -243,12 +245,12 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
                                 else
                                         ret = -EINVAL;
                         }
-                }
-                else                    // Too many args!
+                        break;
+                default: // Too many args!
                         ret = -EOVERFLOW;
-
-                // Track iterations
-                i++;
+                }
+        // Track iterations
+        i++;
         }
 
         vfree(input);
