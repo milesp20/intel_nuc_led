@@ -78,6 +78,12 @@ make dkms-rpm
 ```
 
 ## Usage
+
+Once built, the kernel module will be called `nuc_led.ko` in the dkms tree, usually in `/var/dkms` or `/var/lib/dkms` depending on your distribution.  To add it to a running kernel:
+
+```
+sudo insmod `find /var -name "nuc_led.ko"`
+```
     
 This driver works via '/proc/acpi/nuc_led'.  To get current LED state:
 
