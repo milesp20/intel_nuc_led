@@ -197,14 +197,14 @@ particular profile, the very next read will return the "current" profile, instea
 specified profile again.
 
 Profile `boot` is always invoked during the module startup and is intended to indicate that the
-computer has "booted".  Note that reloading the module will invoke the `boot` profile, however, I
-am not sure if `modprobe` pulls the parameters from the module configuration file at that time.  I
+computer has "booted".  Note that reloading the module will also invoke the `boot` profile, however, 
+I am not sure if `modprobe` pulls the parameters from the module configuration file at that time.  I
 know it does at boot time...
 
 If the `hibernate_same` flag is set to a non-zero value, then the following happens:
 
 1) `hibernate` mode is treated as a `suspend` mode by the module
-2) `restore` is treated as a `wake` mode by the module
+2) `restore`/post-hibernate mode is treated as a `wake` mode by the module.
 3) `hibernate` and `restore` profiles are NEVER used/called!
 
 Profile `shutdown` is always invoked during the shutdown/restart of the computer.  Note that merely
@@ -212,11 +212,11 @@ unloading the module does not invoke this profile....
 
 Profile `recording` exists because I needed a LED profile to be able to switch to when the computer
 is recording from my HDHomeRun cable box.  The module NEVER invokes the `recording` profile by itself,
-due to no system events that trigger the profile.
+due to no system events capable of triggering the profile.
 
 Profile `voice` exists because I want my voice assistant program to turn the LED lights to particular
 settings when it is listening.  The module NEVER invokes the `voice` profile by itself, due to no 
-system events that trigger the profile.
+system events capable of triggering the profile.
 
 While entering a set of profiles as a parameter, the module will stop processing the profile list if
 an error is encountered during the processing of the string.  Any profiles past the point that

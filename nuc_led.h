@@ -139,7 +139,7 @@ struct led_get_state_return power_profile[ NUCLED_MAX_PROFILES ] = {
 		.brightness = NUCLED_CURRENT_SETTING,
 		.blink_fade = NUCLED_CURRENT_SETTING,
 		.color_state = NUCLED_CURRENT_SETTING
-	}
+	},
 	/* Recording */
 	{
 		.brightness = NUCLED_CURRENT_SETTING,
@@ -195,7 +195,7 @@ struct led_get_state_return ring_profile[ NUCLED_MAX_PROFILES ] = {
 		.brightness = NUCLED_CURRENT_SETTING,
 		.blink_fade = NUCLED_CURRENT_SETTING,
 		.color_state = NUCLED_CURRENT_SETTING
-	}
+	},
 	/* Recording */
 	{
 		.brightness = NUCLED_CURRENT_SETTING,

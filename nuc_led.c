@@ -699,7 +699,6 @@ static int handler_pm(struct notifier_block *nb, unsigned long pm_event, void *d
 {
 	switch (pm_event)
 	{
-		case PM_RESTORE_PREPARE:
 		case PM_HIBERNATION_PREPARE:
 			// If hibernation and suspend are treated differently, then do this block:
 			if (!hibernate_same)
