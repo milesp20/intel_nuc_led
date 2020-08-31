@@ -67,10 +67,10 @@ MODULE_ALIAS("wmi:" NUCLED_WMI_MGMT_GUID);
 extern struct proc_dir_entry *acpi_root_dir;
 
 #define INPUT_BUFFER_SIZE 5
-static char input_buffer[INPUT_BUFFER_SIZE];
+static unsigned char input_buffer[INPUT_BUFFER_SIZE];
 
 #define OUTPUT_BUFFER_SIZE 4
-static char output_buffer[OUTPUT_BUFFER_SIZE];
+static unsigned char output_buffer[OUTPUT_BUFFER_SIZE];
 
 /*
  * Invoked by the kernel when the device is written.
