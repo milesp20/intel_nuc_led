@@ -6,3 +6,6 @@
 *.mod.c
 .tmp_versions/
 *~
+pkg/
+src/
+intel_nuc_led-*.pkg*
