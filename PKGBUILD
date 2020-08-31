@@ -27,7 +27,6 @@ build() {
 }
 
 package() {
-    cd
     install -m 0644 -D ${srcdir}/nuc_led.ko -t ${pkgdir}/usr/lib/modules/${_kernelpath}/extramodules/
 
     install -m 0644 -D ${startdir}/contrib/etc/modprobe.d/nuc_led.conf -t ${pkgdir}/usr/lib/modprobe.d/
