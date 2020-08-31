@@ -160,6 +160,10 @@ Errors will appear as warnings in dmesg or journalctl -k. WMI call
 error codes are part of the return value of the WMI call, and shown
 through ``cat /proc/acpi/nuc_led``.
 
+Once the device has been read, the value there will be reset to
+``ff ff ff ff`` (something not used by the WMI call). This is also the
+initial value.
+
 ## Examples
 
 ### NUC6CAY
