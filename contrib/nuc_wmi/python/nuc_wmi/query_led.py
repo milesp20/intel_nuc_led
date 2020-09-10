@@ -51,7 +51,7 @@ def query_leds(control_file=None):
     ]
     led_type_bitmap = byte_list_to_bitmap(led_type_bitmaps)[::-1]
 
-    return [index for index, bit in enumerate(led_type_bitmap) if int(bit) and index in LED_TYPE['new'].keys()]
+    return [index for index, bit in enumerate(led_type_bitmap) if int(bit) and index < len(LED_TYPE['new'])]
 
 
 def query_led_color_type(led_type, control_file=None):
@@ -133,8 +133,8 @@ def query_led_indicator_options(led_type, control_file=None):
     ]
     led_indicator_option_bitmap = byte_list_to_bitmap(led_indicator_option_bitmaps)[::-1]
 
-    return [index for index, bit in enumerate(led_indicator_option_bitmap) if int(bit) and index in
-         LED_INDICATOR_OPTION.keys()]
+    return [index for index, bit in enumerate(led_indicator_option_bitmap) if int(bit) and
+            index < len(LED_INDICATOR_OPTION)]
 
 
 def query_led_control_items(led_type, led_indicator_option, control_file=None):
@@ -185,5 +185,5 @@ def query_led_control_items(led_type, led_indicator_option, control_file=None):
        CONTROL_ITEM[led_indicator_option][led_color_type] is None:
         return []
 
-    return [index for index, bit in enumerate(led_control_item_bitmap) if int(bit) and index in
-            CONTROL_ITEM[led_indicator_option][led_color_type].keys()]
+    return [index for index, bit in enumerate(led_control_item_bitmap) if int(bit) and
+            index < len(CONTROL_ITEM[led_indicator_option][led_color_type])]
