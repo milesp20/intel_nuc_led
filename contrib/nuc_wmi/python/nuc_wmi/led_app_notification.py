@@ -1,5 +1,5 @@
 """
-`nuc_wmi.led_app_notification` provides an interface to the WMI notification function.
+`nuc_wmi.led_app_notification` provides an interface to the WMI notification functions.
 """
 
 from nuc_wmi import NucWmiError, RETURN_ERROR

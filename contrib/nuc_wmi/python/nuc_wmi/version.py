@@ -1,5 +1,5 @@
 """
-`nuc_wmi.version` provides an interface to the WMI version function.
+`nuc_wmi.version` provides an interface to the WMI version functions.
 """
 
 from nuc_wmi import NucWmiError, RETURN_ERROR
@@ -13,7 +13,7 @@ VERSION_TYPE = [
 
 def wmi_interface_spec_compliance_version(control_file=None):
     """
-    Returns the version for the requested version type.
+    Returns the version for the WMI interface spec compliance.
 
     Args:
        control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.

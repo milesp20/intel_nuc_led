@@ -9,11 +9,11 @@ METHOD_ID=0x01
 
 def get_led(led, control_file=None):
     """
-    Get LED state with regard to brightness, frequency, and color.
+    Get legacy LED state with regard to brightness, frequency, and color.
 
     Args:
        control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
-       led: Selects the legacy LED to set a state for.
+       led: Selects the legacy LED to get the state for.
     Exceptions:
        Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
        or if `read_control_file` or `write_control_file` raise an exception.

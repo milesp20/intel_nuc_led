@@ -78,7 +78,19 @@ setup( # pylint: disable=star-args
     download_url='https://github.com/tvision-insights/intel_nuc_led',
     entry_points={
         'console_scripts': [
-            
+            'nuc_wmi-get_led = nuc_wmi.cli.get_led:get_led_cli',
+            'nuc_wmi-get_led_control_item = nuc_wmi.cli.get_led_new:get_led_control_item_cli',
+            'nuc_wmi-get_led_indicator_option = nuc_wmi.cli.get_led_new:get_led_indicator_option_cli',
+            'nuc_wmi-query_led_control_items = nuc_wmi.cli.query_led:query_led_control_items_cli',
+            'nuc_wmi-query_led_color_type = nuc_wmi.cli.query_led:query_led_color_type_cli',
+            'nuc_wmi-query_led_indicator_options = nuc_wmi.cli.query_led:query_led_indicator_options_cli',
+            'nuc_wmi-query_leds = nuc_wmi.cli.query_led:query_leds_cli',
+            'nuc_wmi-save_led_config = nuc_wmi.cli.led_app_notification:save_led_config_cli',
+            'nuc_wmi-set_led = nuc_wmi.cli.set_led:set_led_cli',
+            'nuc_wmi-set_led_control_item = nuc_wmi.cli.set_led_control_item:set_led_control_item_cli',
+            'nuc_wmi-set_led_indicator_option = nuc_wmi.cli.set_led_indicator_option:set_led_indicator_option_cli',
+            'nuc_wmi-switch_led_type = nuc_wmi.cli.switch_led_type:switch_led_type_cli',
+            'nuc_wmi-wmi_interface_spec_compliance_version = nuc_wmi.cli.version:wmi_interface_spec_compliance_version_cli'
         ]
     },
     include_package_data=True,

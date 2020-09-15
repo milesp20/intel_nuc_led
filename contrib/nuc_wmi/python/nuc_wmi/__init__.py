@@ -40,6 +40,7 @@ LED_BLINK_FREQUENCY = {
     #   - Using BIOS AY0029 or BN0042, only 0x01-0x04 are available.
     #   - Using BIOS AY0038 or BN0043, all frequencies are available.
     'legacy': [
+        None,
         '1Hz',
         '0.25Hz',
         '1Hz fade',
@@ -48,10 +49,11 @@ LED_BLINK_FREQUENCY = {
         '0.25Hz fade',
         '0.5Hz fade'
     ],
-    'new': range(0x01, 0x0A + 1)
+    # 0x00 is not supported but we have to add it so its indexed right.
+    'new': [str(freq) for freq in range(0x00, 0x0A + 1)]
 }
 
-LED_BRIGHTNESS_MULTI_COLOR = range(0x00, 0x64 + 1)
+LED_BRIGHTNESS_MULTI_COLOR = [str(brightness) for brightness in range(0x00, 0x64 + 1)]
 
 LED_BRIGHTNESS_SINGLE_COLOR = [
     'OFF',
@@ -105,7 +107,7 @@ LED_COLOR = {
             'Blue',
             'White'
         ],
-        'RGB-color': range(0x00, 0xFF + 1)
+        'RGB-color': [str(rgb) for rgb in range(0x00, 0xFF + 1)]
     }
 }
 
@@ -134,6 +136,7 @@ LED_INDICATOR_OPTION = [
 
 LED_TYPE = {
     'legacy': [
+        None,
         'S0 Power LED',
         'S0 Ring LED'
     ],

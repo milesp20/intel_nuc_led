@@ -1,0 +1,4 @@
+build/
+dist/
+python/nuc_wmi.egg-info/
+*~
