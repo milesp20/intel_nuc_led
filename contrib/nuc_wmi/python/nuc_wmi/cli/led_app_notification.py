@@ -11,11 +11,13 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE
 from nuc_wmi.led_app_notification import save_led_config
 
-def save_led_config_cli():
+def save_led_config_cli(cli_args=None):
     """
     Send a save LED configuration LED app notification.
 
-    Options:
+    Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -37,7 +39,7 @@ def save_led_config_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         save_led_config(control_file=args.control_file)
 
@@ -54,5 +56,3 @@ def save_led_config_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

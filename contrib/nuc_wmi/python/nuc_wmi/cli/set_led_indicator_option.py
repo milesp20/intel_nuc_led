@@ -11,14 +11,16 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.set_led_indicator_option import set_led_indicator_option
 
-def set_led_indicator_option_cli():
+def set_led_indicator_option_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.set_led_indicator_option` `set_led_indicator_option` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led_indicator_option: The indicator option for the specified LED type for which to set the indicator option.
        led: Selects the LED to set the indicator option for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -50,7 +52,7 @@ def set_led_indicator_option_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         set_led_indicator_option(
             LED_TYPE['new'].index(args.led),
@@ -72,5 +74,3 @@ def set_led_indicator_option_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

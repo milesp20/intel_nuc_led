@@ -11,11 +11,13 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE
 from nuc_wmi.version import wmi_interface_spec_compliance_version
 
-def wmi_interface_spec_compliance_version_cli():
+def wmi_interface_spec_compliance_version_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.version` `wmi_interface_spec_compliance_version` function.
 
-    Options:
+    Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -37,7 +39,7 @@ def wmi_interface_spec_compliance_version_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         wmi_version = wmi_interface_spec_compliance_version(control_file=args.control_file)
 
@@ -55,5 +57,3 @@ def wmi_interface_spec_compliance_version_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

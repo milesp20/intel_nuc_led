@@ -22,7 +22,16 @@ def read_control_file(control_file=None):
     # Remove the new line and null char the driver leaves
     raw_hex_byte_string = raw_hex_byte_string.rstrip("\x00").rstrip("\n")
 
-    return tuple([int(hex_byte_str, 16) for hex_byte_str in raw_hex_byte_string.split(' ')])
+    byte_list = [int(hex_byte_str, 16) for hex_byte_str in raw_hex_byte_string.split(' ')]
+
+    for hex_byte in byte_list:
+        if hex_byte < 0 or hex_byte > 255:
+            raise NucWmiError('NUC WMI returned hex byte outside of 0-255 range')
+
+    if len(byte_list) != 4:
+        raise NucWmiError('NUC WMI control file did not return an expected 4 bytes')
+
+    return tuple(byte_list)
 
 
 def write_control_file(int_byte_list, control_file=None):

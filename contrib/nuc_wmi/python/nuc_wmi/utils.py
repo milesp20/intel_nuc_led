@@ -19,4 +19,4 @@ def byte_list_to_bitmap(int_byte_list):
         if int(int_byte) < 0 or int(int_byte) > 255:
             raise ValueError('int byte values must be 0-255')
 
-    return ''.join(["{0:b}".format(int_byte).zfill(8) for int_byte in int_byte_list or [0]])
+    return ''.join(["{0:b}".format(int(int_byte)).zfill(8) for int_byte in int_byte_list or [0]])

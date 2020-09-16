@@ -11,13 +11,15 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
 from nuc_wmi.switch_led_type import LED_COLOR_GROUP, switch_led_type
 
-def switch_led_type_cli():
+def switch_led_type_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.switch_led_type` `switch_led_type` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led_color_group: Selects the LED color group type to set..
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -44,7 +46,7 @@ def switch_led_type_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         switch_led_type(LED_COLOR_GROUP.index(args.led_color_group), control_file=args.control_file)
 
@@ -61,5 +63,3 @@ def switch_led_type_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

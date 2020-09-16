@@ -1,0 +1,9 @@
+clean:
+	rm -rf .coverage build/ dist/ python/cover python/nuc_wmi.egg-info
+	find . -type f -name "*~" -exec rm {} +
+	find . -type f -name "*.pyc" -exec rm {} +
+	find . -type d -name "__pycache__" -exec rmdir {} +
+nosetests:
+	python setup.py nosetests --cover-branches --cover-html --cover-html-dir ./cover --cover-package nuc_wmi -d -s -v --with-coverage --py3where python/
+test:
+	python setup.py test

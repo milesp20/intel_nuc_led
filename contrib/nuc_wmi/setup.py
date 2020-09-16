@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import os
 import sys
+import unittest
 
 try:
     from pkg_resources import parse_version
@@ -54,6 +55,12 @@ if parse_version(PYTHON_VERSION) >= parse_version('3'):
     PYTHON_3_EXTRAS['use_2to3_fixers'] = []
 
 VERSION = read_file(os.path.join(os.path.dirname(__file__), 'VERSION')).strip()
+
+def test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('python', pattern='*_test.py')
+
+    return test_suite
 
 setup( # pylint: disable=star-args
     author='Julio Lajara',
@@ -118,7 +125,7 @@ setup( # pylint: disable=star-args
         'nose-cov',
         'setuptools'
     ],
-    test_suite='test.unit.nuc_wmi',
+    test_suite='setup.test_suite',
     url='https://github.com/tvision-insights/intel_nuc_led',
     version=VERSION,
     zip_safe=True,

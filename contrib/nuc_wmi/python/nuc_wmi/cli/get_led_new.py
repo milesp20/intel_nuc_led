@@ -12,16 +12,18 @@ from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_I
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
 from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
 
-def get_led_control_item_cli():
+def get_led_control_item_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.get_led_new` `get_led_control_item` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        control_item: The control item of the specified LED type indicator option for which to retrieve the value.
        led_indicator_option: The indicator option for the specified LED type for which to retrieve the current control
                             item value.
        led: Selects the LED to get the control item for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -71,9 +73,8 @@ def get_led_control_item_cli():
         help='The control item for the current LED indicator option that is being retrieved.'
     )
 
-
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         available_indicator_options = query_led_indicator_options(
             LED_TYPE['new'].index(args.led),
@@ -134,16 +135,16 @@ def get_led_control_item_cli():
 
         exit(1)
 
-    exit(0)
 
-
-def get_led_indicator_option_cli():
+def get_led_indicator_option_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.get_led_new` `get_led_indicator_option` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led: Selects the LED to get the indicator option for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -170,7 +171,7 @@ def get_led_indicator_option_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         indicator_option = get_led_indicator_option(LED_TYPE['new'].index(args.led), control_file=args.control_file)
 
@@ -188,5 +189,3 @@ def get_led_indicator_option_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

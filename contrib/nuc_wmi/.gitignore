@@ -2,3 +2,7 @@ build/
 dist/
 python/nuc_wmi.egg-info/
 *~
+*.pyc
+.coverage
+python/cover/
+__pycache__/

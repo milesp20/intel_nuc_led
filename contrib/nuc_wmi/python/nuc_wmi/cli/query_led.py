@@ -11,13 +11,15 @@ from sys import exit
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options, query_leds
 
-def query_led_color_type_cli():
+def query_led_color_type_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_color_type` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led: Selects the LED to get the color type for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -44,7 +46,7 @@ def query_led_color_type_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         led_color_type = query_led_color_type(LED_TYPE['new'].index(args.led), control_file=args.control_file)
 
@@ -63,18 +65,18 @@ def query_led_color_type_cli():
 
         exit(1)
 
-    exit(0)
 
-
-def query_led_control_items_cli():
+def query_led_control_items_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_control_items` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led_indicator_option: The indicator option for the specified LED type for which to retrieve the available control
                              items.
        led: Selects the LED to get the available control items for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -106,7 +108,7 @@ def query_led_control_items_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         led_color_type = query_led_color_type(
             LED_TYPE['new'].index(args.led),
@@ -146,16 +148,16 @@ def query_led_control_items_cli():
 
         exit(1)
 
-    exit(0)
 
-
-def query_led_indicator_options_cli():
+def query_led_indicator_options_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_indicator_options` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led: Selects the LED to get the indicator options for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -182,7 +184,7 @@ def query_led_indicator_options_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         led_indicator_options = query_led_indicator_options(
             LED_TYPE['new'].index(args.led),
@@ -204,14 +206,14 @@ def query_led_indicator_options_cli():
 
         exit(1)
 
-    exit(0)
 
-
-def query_leds_cli():
+def query_leds_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_leds` function.
 
-    Options:
+    Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -233,7 +235,7 @@ def query_leds_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         leds = query_leds(control_file=args.control_file)
 
@@ -248,5 +250,3 @@ def query_leds_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

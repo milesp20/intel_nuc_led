@@ -12,17 +12,19 @@ from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_I
 from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
 
-def set_led_control_item_cli():
+def set_led_control_item_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.set_led_control` `set_led_control_item` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        control_item: The control item of the specified LED type indicator option for which to set the value.
        control_item_value: The value for the control item to set.
        led_indicator_option: The indicator option for the specified LED type for which to set the control
                             item value.
        led: Selects the LED to set the control item for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -46,10 +48,7 @@ def set_led_control_item_cli():
             for control_item in control_items:
                 control_item_labels.append(control_item['Control Item'])
 
-                if control_item['Options'] is None:
-                    continue
-
-                if control_item['Options'] != LED_COLOR['new']:
+                if control_item['Options'] is not None and control_item['Options'] != LED_COLOR['new']:
                     control_item_values.extend(control_item['Options'])
 
     control_item_values.extend(LED_COLOR['new']['Dual-color Blue / Amber'])
@@ -88,7 +87,7 @@ def set_led_control_item_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         available_indicator_options = query_led_indicator_options(
             LED_TYPE['new'].index(args.led),
@@ -152,5 +151,3 @@ def set_led_control_item_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

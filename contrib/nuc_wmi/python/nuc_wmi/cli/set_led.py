@@ -11,16 +11,18 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE, LED_BRIGHTNESS, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
 from nuc_wmi.set_led import set_led
 
-def set_led_cli():
+def set_led_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.set_led` `set_led` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        brightness: Controls the brightness level of the LED.
        color: Sets legacy RGB-color for LED.
        frequency: Sets the legacy LED frequency.
        led: Selects the legacy LED to set the state for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -62,7 +64,7 @@ def set_led_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         led_type = LED_TYPE['legacy'].index(args.led)
         frequency = LED_BLINK_FREQUENCY['legacy'].index(args.frequency)
@@ -90,5 +92,3 @@ def set_led_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)

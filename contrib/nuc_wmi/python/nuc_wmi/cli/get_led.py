@@ -11,13 +11,15 @@ from sys import exit
 from nuc_wmi import CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
 from nuc_wmi.get_led import get_led
 
-def get_led_cli():
+def get_led_cli(cli_args=None):
     """
     Creates a CLI interface ontop of the `nuc_wmi.get_led` `get_led` function.
 
     Args:
+       cli_args: If provided, overrides the CLI args to use for `argparse`.
+    CLI Args:
        led: Selects the legacy LED to get the state for.
-    Options:
+    CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
     Outputs:
@@ -44,7 +46,7 @@ def get_led_cli():
     )
 
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(args=cli_args)
 
         (brightness, frequency, color) = get_led(LED_TYPE['legacy'].index(args.led), control_file=args.control_file)
 
@@ -64,5 +66,3 @@ def get_led_cli():
         print(dumps({'error': str(err)}))
 
         exit(1)
-
-    exit(0)
