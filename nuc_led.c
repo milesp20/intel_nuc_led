@@ -164,12 +164,12 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
     acpiInput.length = (acpi_size) inputBufferI-1;
     acpiInput.pointer = input_buffer+1;
 
-    pr_info( "NUC LED wmi_evaluate_method method=%02x, data: %02x %02x %02x %02x\n",
-            (unsigned char) input_buffer[0],
-            ((unsigned char *) acpiInput.pointer)[0],
-            ((unsigned char *) acpiInput.pointer)[1],
-            ((unsigned char *) acpiInput.pointer)[2],
-            ((unsigned char *) acpiInput.pointer)[3] );
+    //pr_info( "NUC LED wmi_evaluate_method method=%02x, data: %02x %02x %02x %02x\n",
+    //        (unsigned char) input_buffer[0],
+    //        ((unsigned char *) acpiInput.pointer)[0],
+    //        ((unsigned char *) acpiInput.pointer)[1],
+    //        ((unsigned char *) acpiInput.pointer)[2],
+    //        ((unsigned char *) acpiInput.pointer)[3] );
 
     acpiStatus = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 0, input_buffer[0],
                                  &acpiInput, &acpiOutput);
