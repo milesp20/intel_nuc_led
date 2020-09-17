@@ -54,8 +54,6 @@ if parse_version(PYTHON_VERSION) >= parse_version('3'):
     PYTHON_3_EXTRAS['use_2to3_exclude_fixers'] = []
     PYTHON_3_EXTRAS['use_2to3_fixers'] = []
 
-VERSION = read_file(os.path.join(os.path.dirname(__file__), 'VERSION')).strip()
-
 def test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('python', pattern='*_test.py')
@@ -127,7 +125,7 @@ setup( # pylint: disable=star-args
     ],
     test_suite='setup.test_suite',
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version=VERSION,
+    version='1.0.0',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )
