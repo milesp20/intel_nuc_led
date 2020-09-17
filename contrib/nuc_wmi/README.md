@@ -25,3 +25,11 @@ Run detailed code coverage report (HTML report available in `python/cover/`):
 ```
 make nosetests
 ```
+
+## Building
+
+Making a debian package (requires `stdeb` python package and should be done directly on the same system it is targeting):
+
+```
+make deb
+```
