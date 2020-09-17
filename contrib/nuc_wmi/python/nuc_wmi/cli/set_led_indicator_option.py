@@ -13,7 +13,7 @@ from nuc_wmi.set_led_indicator_option import set_led_indicator_option
 
 def set_led_indicator_option_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.set_led_indicator_option` `set_led_indicator_option` function.
+    Creates a CLI interface on top of the `nuc_wmi.set_led_indicator_option` `set_led_indicator_option` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

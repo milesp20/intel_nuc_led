@@ -13,7 +13,7 @@ from nuc_wmi.get_led import get_led
 
 def get_led_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.get_led` `get_led` function.
+    Creates a CLI interface on top of the `nuc_wmi.get_led` `get_led` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

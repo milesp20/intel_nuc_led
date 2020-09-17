@@ -13,7 +13,7 @@ from nuc_wmi.switch_led_type import LED_COLOR_GROUP, switch_led_type
 
 def switch_led_type_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.switch_led_type` `switch_led_type` function.
+    Creates a CLI interface on top of the `nuc_wmi.switch_led_type` `switch_led_type` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

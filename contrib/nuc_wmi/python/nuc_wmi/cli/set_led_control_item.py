@@ -14,7 +14,7 @@ from nuc_wmi.set_led_control_item import set_led_control_item
 
 def set_led_control_item_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.set_led_control` `set_led_control_item` function.
+    Creates a CLI interface on top of the `nuc_wmi.set_led_control` `set_led_control_item` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

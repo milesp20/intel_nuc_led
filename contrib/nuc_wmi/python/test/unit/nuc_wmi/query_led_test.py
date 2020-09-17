@@ -141,7 +141,7 @@ class TestQueryLed(unittest.TestCase):
         #           and that the returned control file response is properly processed.
 
         # Query control items of HDD LED with HDD Activity Indicator
-        expected_query_led_control_iitems = [0x00, 0x01, 0x02, 0x03]
+        expected_query_led_control_items = [0x00, 0x01, 0x02, 0x03]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_control_items'),
@@ -165,7 +165,7 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
         nuc_wmi_query_led_color_type.assert_called_with(LED_TYPE['new'].index('HDD LED'), control_file=None)
 
-        self.assertEqual(returned_query_led_control_items, expected_query_led_control_iitems)
+        self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
         # Reset
         nuc_wmi_read_control_file.reset_mock()
@@ -173,7 +173,7 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_query_led_color_type.reset_mock()
 
         # Query control items of HDD LED with Disabled Indicator
-        expected_query_led_control_iitems = []
+        expected_query_led_control_items = []
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_control_items'),
@@ -197,7 +197,7 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
         nuc_wmi_query_led_color_type.assert_called_with(LED_TYPE['new'].index('HDD LED'), control_file=None)
 
-        self.assertEqual(returned_query_led_control_items, expected_query_led_control_iitems)
+        self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
         # Reset
         nuc_wmi_read_control_file.reset_mock()

@@ -14,7 +14,7 @@ from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
 
 def get_led_control_item_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.get_led_new` `get_led_control_item` function.
+    Creates a CLI interface on top of the `nuc_wmi.get_led_new` `get_led_control_item` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
@@ -138,7 +138,7 @@ def get_led_control_item_cli(cli_args=None):
 
 def get_led_indicator_option_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.get_led_new` `get_led_indicator_option` function.
+    Creates a CLI interface on top of the `nuc_wmi.get_led_new` `get_led_indicator_option` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

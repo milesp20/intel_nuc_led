@@ -1,3 +1,3 @@
 """
-`nuc_wmi.cli` provides the CLI interfaces for the exposded Intel NUC WMI functions.
+`nuc_wmi.cli` provides the CLI interfaces for the exposed Intel NUC WMI functions.
 """

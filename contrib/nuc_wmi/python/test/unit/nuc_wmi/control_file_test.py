@@ -104,7 +104,7 @@ class TestControlFile(unittest.TestCase):
         with self.assertRaises((IOError, OSError)) as err:
             read_control_file(control_file=non_existent_file.name)
 
-        # Bramch 5: Test that exception is raised if NUC WMI returns a hex byte outside 0-255 range
+        # Branch 5: Test that exception is raised if NUC WMI returns a hex byte outside 0-255 range
         with open(self.control_file.name, 'w') as fout:
             fout.write("FFF 0E 0A 0D\n\x00")
 
@@ -159,7 +159,7 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        # Branch 5: Test that byte strings outside of the 0-255 value raise an excepton
+        # Branch 5: Test that byte strings outside of the 0-255 value raise an exception
         byte_list = [0xFFF]
 
         with self.assertRaises(NucWmiError) as err:

@@ -13,7 +13,7 @@ from nuc_wmi.version import wmi_interface_spec_compliance_version
 
 def wmi_interface_spec_compliance_version_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.version` `wmi_interface_spec_compliance_version` function.
+    Creates a CLI interface on top of the `nuc_wmi.version` `wmi_interface_spec_compliance_version` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

@@ -13,7 +13,7 @@ from nuc_wmi.query_led import query_led_color_type, query_led_control_items, que
 
 def query_led_color_type_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_color_type` function.
+    Creates a CLI interface on top of the `nuc_wmi.query_led` `query_led_color_type` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
@@ -68,7 +68,7 @@ def query_led_color_type_cli(cli_args=None):
 
 def query_led_control_items_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_control_items` function.
+    Creates a CLI interface on top of the `nuc_wmi.query_led` `query_led_control_items` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
@@ -151,7 +151,7 @@ def query_led_control_items_cli(cli_args=None):
 
 def query_led_indicator_options_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_led_indicator_options` function.
+    Creates a CLI interface on top of the `nuc_wmi.query_led` `query_led_indicator_options` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
@@ -209,7 +209,7 @@ def query_led_indicator_options_cli(cli_args=None):
 
 def query_leds_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.query_led` `query_leds` function.
+    Creates a CLI interface on top of the `nuc_wmi.query_led` `query_leds` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.

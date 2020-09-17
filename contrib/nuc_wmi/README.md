@@ -2,7 +2,7 @@
 
 ## Compatibility
 
-This `nuc_wmi` userland was written from the merger of availabe Intel NUC WMI guides for the NUC 7, 8, and 10 (included in the `contrib/reference/` folder).
+This `nuc_wmi` userland was written from the merger of available Intel NUC WMI guides for the NUC 7, 8, and 10 (included in the `contrib/reference/` folder).
 
 It has been tested on NUC 7 and 10, but theoretically should work for NUC 6 through 10.
 

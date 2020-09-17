@@ -13,7 +13,7 @@ from nuc_wmi.set_led import set_led
 
 def set_led_cli(cli_args=None):
     """
-    Creates a CLI interface ontop of the `nuc_wmi.set_led` `set_led` function.
+    Creates a CLI interface on top of the `nuc_wmi.set_led` `set_led` function.
 
     Args:
        cli_args: If provided, overrides the CLI args to use for `argparse`.
