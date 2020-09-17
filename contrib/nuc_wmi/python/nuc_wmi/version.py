@@ -39,6 +39,6 @@ def wmi_interface_spec_compliance_version(control_file=None):
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:
-        raise NucWmiError(RETURN_ERROR[error_code])
+        raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
 
     return tuple([version_byte_2, version_byte_1])

@@ -33,6 +33,6 @@ def get_led(led, control_file=None):
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:
-        raise NucWmiError(RETURN_ERROR[error_code])
+        raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
 
     return tuple([brightness, frequency, color])

@@ -34,10 +34,10 @@ def set_led(led, brightness, frequency, color, control_file=None):
     ) = read_control_file(control_file=control_file)
 
     if brightness_error > 0:
-        raise NucWmiError(RETURN_ERROR[brightness_error])
+        raise NucWmiError(RETURN_ERROR.get(brightness_error, 'Error (Unknown NUC WMI error code)'))
 
     if frequency_error > 0:
-        raise NucWmiError(RETURN_ERROR[frequency_error])
+        raise NucWmiError(RETURN_ERROR.get(frequency_error, 'Error (Unknown NUC WMI error code)'))
 
     if color_error > 0:
-        raise NucWmiError(RETURN_ERROR[color_error])
+        raise NucWmiError(RETURN_ERROR.get(color_error, 'Error (Unknown NUC WMI error code)'))
