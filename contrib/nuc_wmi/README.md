@@ -3,17 +3,17 @@
 ## Compatibility
 
 This `nuc_wmi` userland was written from the merger of available Intel NUC WMI guides for the NUC 7, 8, and 10
-(included in the `contrib/reference/` folder).
+(included in the [contrib/reference/](../reference) folder).
 
-It has been tested on NUC 7 and 10, but theoretically should work for NUC 6 through 10.
+It has been tested on NUC 6, NUC 7 and 10, but theoretically should work for all NUCS from 6 through 10.
 
 Although we followed the specification documents, we have found that compatibility varies by a number of factors:
 
 * Device generation (NUC 7 devices for example only support the legacy `get_led` and `set_led` WMI methods).
-* BIOS version (For some settings, the BIOS version may impact what options are available).
-* BIOS configuration (For some settings, the BIOS configuration for LEDs can affect whether they are usable and
+* BIOS version (for some settings, the BIOS version may impact what options are available).
+* BIOS configuration (for some settings, the BIOS configuration for LEDs can affect whether they are usable and
   in what default state they are in).
-* BIOS bugs (We have found some device BIOS have bugs where LEDs which should support RGB are only capable of
+* BIOS bugs (we have found some device BIOS have bugs where LEDs which should support RGB are only capable of
   dual color mode through WMI, but are capable of RGB when manually configuring via BIOS).
 
 Aside from the above, command options can change based on the combination of what the BIOS allows and what
@@ -110,7 +110,7 @@ package in the form of a `wheel`, `egg`, or distro specific package using `setup
 
 ## Testing
 
-Use your system's pacakge manager to install your choice of `python` version and `coverage`, `mock`, `nose`, `nose-cov`,
+Use your system's package manager to install your choice of `python` version and `coverage`, `mock`, `nose`, `nose-cov`,
 and `setuptools` Python packages.
 
 Clean directory:
@@ -140,10 +140,10 @@ All `nuc_wmi-*` CLI commands provided by `nuc_wmi` Python module have builtin he
 show allowed argument values. Some commands allow a large number of combinations in terms of accepted input values,
 so please be sure to reference the WMI spec for the device you are using to see what is actually supported.
 
-NUC 7:
+### NUC 7:
 
-``
-# Note: When a legacy device (NUC 7 or older) has disabled software control in BIOS, we cant change it
+```
+# Note: When a legacy device (NUC 7 or older) has disabled software control in BIOS, we can't change it
 # via WMI like we can on newer models. Trying to use a LED that hasnt had software control enabled will return
 # this error.
 $ nuc_wmi-get_led 'S0 Power LED'
@@ -156,7 +156,7 @@ $ nuc_wmi-set_led 'S0 Ring LED' 100 'Always on' 'White'
 {"led": {"color": "White", "frequency": "Always on", "type": "S0 Ring LED", "brightness": "100"}}
 ```
 
-NUC 10:
+### NUC 10:
 
 ```
 $ nuc_wmi-get_led_control_item 'HDD LED' 'Software Indicator' 'Brightness'

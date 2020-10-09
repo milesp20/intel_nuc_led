@@ -1,6 +1,7 @@
 # Intel NUC LED Control: NUC6CAY, NUC7i[x]BN and NUC10i3FNH, maybe more
 
-This is a simple kernel module to control LEDs on Intel NUCs.
+This is a simple kernel module to control LEDs on Intel NUCs, with
+optional high-level userspace tools.
 
 It is based on the previous work at
 [github.com/milesp20/intel_nuc_led](https://github.com/milesp20/intel_nuc_led/), but
@@ -8,9 +9,9 @@ with significant changes:
 
 * it can be used with the more recent NUC10 as well
 * it tracks the more recent kernel APIs
-* currently it is very low-level, and you'll be sending and receiving bytes
+* the kernel API is very low-level, and you'll be sending and receiving bytes
 * higher-level commands like "turn the power LED to flashing red" are not
-  implemented in the kernel module itself.
+  implemented in the kernel module itself, but in user space.
 
 This was primarily created for [UBOS](https://ubos.net/), a Linux distro for
 self-hosting (based on Arch) and is mostly tested there. But chances are you
@@ -26,9 +27,10 @@ Requirements:
 * Intel NUC6CAY, or NUC7i[x]BN or NUC10i3FNH, maybe more
 * BIOS AY0038 or BN0043 or later
 * ACPI/WMI support in kernel
-* LED(s) set to `SW Control` in BIOS
+* LED(s) set to `SW Control` in BIOS for those (older) NUCs where this can
+  only be changed in the BIOS, not via API.
 
-## Building
+## Building the kernel module
 
 THe `nuc_led` kernel module supports building and installing "from source" directly or using `dkms`.
 
@@ -85,7 +87,7 @@ Build and install using system packaging:
 
 ```
 # UBOS
-makepkg
+makepkg -i
 
 # Ubuntu (not verified)
 make dkms-deb
@@ -109,12 +111,14 @@ variety now supported by this module, and a substantially extended number
 of API calls, this interface doesn't make so much sense any more. In
 addition, some settings now require several system calls.
 
-So instead we simply expose the input and outputs of the WMI system call,
-and leave it to the user to send in the right bytes, and interpret the
-resulting bytes.
+So instead, the kernel module now simply exposes the input and outputs of
+the WMI system call, and leaves it to userspace to send in the right bytes,
+and interpret the resulting bytes.
 
-Maybe somebody wants to design some higher-level tools to make this easier?
-As a bonus, those tools could run in userspace.
+~~Maybe somebody wants to design some higher-level tools to make this easier?
+As a bonus, those tools could run in userspace.~~
+Thanks to [Julio Lajara](https://github.com/ju2wheels), who built exactly
+that. See documentation in [contrib/nuc_wmi](contrib/nuc_wmi).
 
 ## Usage (Kernel device)
 
@@ -145,10 +149,12 @@ The following Intel documents describe the available Method IDs and
 parameters:
 
 * for the NUC6CAY, or NUC7i[x]BN:
-  [Use WMI Explorer* to Program the Ring LED and Button LED](https://www.intel.com/content/www/us/en/support/articles/000023426/intel-nuc/intel-nuc-kits.html)
+  [Use WMI Explorer* to Program the Ring LED and Button LED](https://www.intel.com/content/www/us/en/support/articles/000023426/intel-nuc/intel-nuc-kits.html).
 
 * for the NUC10i3FNH:
   [WMI Interface for Intel NUC Products / WMI Specification / Frost Canyon / July2020 Revision 1.0](https://www.intel.com/content/dam/support/us/en/documents/intel-nuc/WMI-Spec-Intel-NUC-NUC10ixFNx.pdf)
+
+There are copies of these documents here in [contrib/reference](contrib/reference/).
 
 Note that the WMI APIs have changed significantly. E.g. the Method IDs
 for the older models are 1 and 2, while the they are 3 to 9 for the newer
@@ -168,7 +174,8 @@ initial value.
 
 ### NUC6CAY
 
-Make sure you have enabled LED software control in the BIOS:
+Make sure you have enabled LED software control in the BIOS, as there
+is no API call to change that setting on this device.
 
 To set the Ring LED to brightness 80, blink at medium speed, and green:
 
@@ -185,7 +192,8 @@ where:
 
 ### NUC10i3FNH
 
-Make sure you have enabled LED software control in the BIOS:
+Make sure you have enabled LED software control in the BIOS, or have
+previously executed the API call to turn on software control.
 
 To set the Power Button LED to brightness 80, blink at medium speed, and color amber:
 
@@ -225,7 +233,7 @@ where:
 ## Permissions
 
 You can change the owner, group and permissions of `/proc/acpi/nuc_led` by
-passing parameters to the nuc_led kernel module. Use:
+passing parameters to the kernel module. Use:
 
 * `nuc_led_uid` to set the owner (default is 0, root)
 * `nuc_led_gid` to set the owning group (default is 0, root)
