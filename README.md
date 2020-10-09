@@ -32,7 +32,7 @@ Requirements:
 
 ## Building the kernel module
 
-THe `nuc_led` kernel module supports building and installing "from source" directly or using `dkms`.
+The `nuc_led` kernel module supports building and installing "from source" directly or using `dkms`.
 
 ### Installing Build Dependencies
 
