@@ -36,7 +36,10 @@ The `nuc_led` kernel module supports building and installing "from source" direc
 
 ### Installing Build Dependencies
 
-UBOS:
+UBOS: you don't need to, it's in the repos: ``pacman -S intel-nuc-led``
+
+If you want to build it anyway, you need:
+
 ```
 pacman -S linux-headers base-develop
 ```

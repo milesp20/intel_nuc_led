@@ -31,6 +31,16 @@ instead of just translating CLI options and blindly passing them into the WMI in
 haven't implemented file locking to prevent two CLI commands from creating a race condition on the control file,
 we recommend not running CLI commands concurrently.
 
+## Installing from package
+
+On UBOS, these userland tools are part of the ``intel-nuc-led`` package. Install with:
+
+```
+sudo pacman -S ubos-nuc-led
+```
+
+On other distros, install from source.
+
 ## Installing from source
 
 The tool conforms to standard Python `pip` packaging and can be installed using `pip` or `setuptools` using
