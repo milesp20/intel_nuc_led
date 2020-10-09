@@ -37,6 +37,7 @@
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/version.h>
 #include <linux/types.h>
 #include <linux/proc_fs.h>
 #include <linux/acpi.h>
@@ -163,12 +164,12 @@ static ssize_t acpi_proc_write(struct file *filp, const char __user *buff,
     acpiInput.length = (acpi_size) inputBufferI-1;
     acpiInput.pointer = input_buffer+1;
 
-    pr_info( "NUC LED wmi_evaluate_method method=%02x, data: %02x %02x %02x %02x\n",
-            (unsigned char) input_buffer[0],
-            ((unsigned char *) acpiInput.pointer)[0],
-            ((unsigned char *) acpiInput.pointer)[1],
-            ((unsigned char *) acpiInput.pointer)[2],
-            ((unsigned char *) acpiInput.pointer)[3] );
+    //pr_info( "NUC LED wmi_evaluate_method method=%02x, data: %02x %02x %02x %02x\n",
+    //        (unsigned char) input_buffer[0],
+    //        ((unsigned char *) acpiInput.pointer)[0],
+    //        ((unsigned char *) acpiInput.pointer)[1],
+    //        ((unsigned char *) acpiInput.pointer)[2],
+    //        ((unsigned char *) acpiInput.pointer)[3] );
 
     acpiStatus = wmi_evaluate_method(NUCLED_WMI_MGMT_GUID, 0, input_buffer[0],
                                  &acpiInput, &acpiOutput);
@@ -220,10 +221,18 @@ static ssize_t acpi_proc_read(struct file *filp, char __user *buff,
 /*
  * Table of ACPI device operations
  */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
 static struct proc_ops proc_acpi_operations = {
-        .proc_read     = acpi_proc_read,
-        .proc_write    = acpi_proc_write,
+        .proc_read  = acpi_proc_read,
+        .proc_write = acpi_proc_write,
 };
+#else
+static struct file_operations proc_acpi_operations = {
+        .owner    = THIS_MODULE,
+        .read     = acpi_proc_read,
+        .write    = acpi_proc_write,
+};
+#endif
 
 /*
  * Kernel module initialization
