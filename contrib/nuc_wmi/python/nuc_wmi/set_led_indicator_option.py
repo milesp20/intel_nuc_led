@@ -26,9 +26,9 @@ def set_led_indicator_option(led_type, led_indicator_option, control_file=None):
 
     (
         error_code,
-        reserved_byte_1,
-        reserved_byte_2,
-        reserved_byte_3
+        reserved_byte_1, # pylint: disable=unused-variable
+        reserved_byte_2, # pylint: disable=unused-variable
+        reserved_byte_3  # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:

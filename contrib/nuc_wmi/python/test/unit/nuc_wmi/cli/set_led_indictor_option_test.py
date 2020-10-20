@@ -35,11 +35,11 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.cli.set_led_indicator_option.print')
-    @patch('nuc_wmi.cli.set_led_indicator_option.exit')
+    @patch('nuc_wmi.cli.set_led_indicator_option.sys.exit')
     @patch('nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option')
     def test_set_led_indicator_option_cli(
             self,
@@ -53,8 +53,8 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
 
         self.assertTrue(nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option is \
                         nuc_wmi_set_led_indicator_option)
-        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.print is nuc_wmi_print)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 1: Test that set_led_indicator_option_cli returns the proper JSON response and exit
         #           code for valid cli args

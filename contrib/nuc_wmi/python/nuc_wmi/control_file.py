@@ -52,7 +52,7 @@ def write_control_file(int_byte_list, control_file=None):
             raise NucWmiError('Error (NUC LED byte values must be 0-255)')
 
     raw_hex_byte_string = ' '.join(
-        ['{:02x}'.format(int(int_byte)) for int_byte in (int_byte_list + ([0] * (5 - len(int_byte_list))))]
+        ['{:02x}'.format(int(int_byte)) for int_byte in int_byte_list + ([0] * (5 - len(int_byte_list)))]
     )
 
     with open(control_file or CONTROL_FILE, 'w') as fout:

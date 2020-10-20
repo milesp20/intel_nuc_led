@@ -5,7 +5,7 @@
 from nuc_wmi import NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 
-METHOD_ID=0x07
+METHOD_ID = 0x07
 
 NOTIFICATION_TYPE = [
     None,
@@ -32,9 +32,9 @@ def save_led_config(control_file=None):
 
     (
         error_code,
-        reserved_byte_1,
-        reserved_byte_2,
-        reserved_byte_3
+        reserved_byte_1, # pylint: disable=unused-variable
+        reserved_byte_2, # pylint: disable=unused-variable
+        reserved_byte_3  # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:

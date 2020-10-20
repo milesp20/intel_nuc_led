@@ -33,7 +33,7 @@ class TestVersion(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.version.read_control_file')
@@ -61,6 +61,7 @@ class TestVersion(unittest.TestCase):
         self.assertEqual(returned_wmi_interface_spec_compliance_version, expected_wmi_interface_spec_compliance_version)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

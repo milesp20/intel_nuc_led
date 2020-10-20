@@ -36,10 +36,10 @@ class TestCliSwitchLedType(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
     @patch('nuc_wmi.cli.switch_led_type.print')
-    @patch('nuc_wmi.cli.switch_led_type.exit')
+    @patch('nuc_wmi.cli.switch_led_type.sys.exit')
     @patch('nuc_wmi.cli.switch_led_type.switch_led_type')
     def test_switch_led_type_cli(
             self,
@@ -53,8 +53,8 @@ class TestCliSwitchLedType(unittest.TestCase):
 
         self.assertTrue(nuc_wmi.cli.switch_led_type.switch_led_type is \
                         nuc_wmi_switch_led_type)
-        self.assertTrue(nuc_wmi.cli.switch_led_type.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.switch_led_type.print is nuc_wmi_print)
+        self.assertTrue(nuc_wmi.cli.switch_led_type.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.switch_led_type.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 1: Test that switch_led_type_cli returns the proper JSON response and exit
         #           code for valid cli args

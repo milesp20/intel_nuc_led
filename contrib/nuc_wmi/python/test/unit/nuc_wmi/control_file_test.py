@@ -9,7 +9,6 @@ Classes:
 import os
 import unittest
 
-from mock import patch
 from tempfile import NamedTemporaryFile
 
 from nuc_wmi import NucWmiError
@@ -41,7 +40,7 @@ class TestControlFile(unittest.TestCase):
         """
 
         self.control_file = NamedTemporaryFile(delete=False)
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
         self.control_file.close()
 
@@ -131,7 +130,7 @@ class TestControlFile(unittest.TestCase):
         # Branch 2, 3: Tests that the number of bytes written to the control file are padded to 5 bytes, and that
         #              integer byte list is properly written to the control file.
         byte_list = [0x0D, 0x0E, 0x0A, 0x0D]
-        expected_byte_string='0d 0e 0a 0d 00'
+        expected_byte_string = '0d 0e 0a 0d 00'
 
         write_control_file(byte_list, control_file=self.control_file.name)
 
@@ -146,7 +145,7 @@ class TestControlFile(unittest.TestCase):
 
         # Branch 4: Tests that an string byte list is properly written to the control file
         byte_list = [str(0x0D), str(0x0E), str(0x0A), str(0x0D)]
-        expected_byte_string='0d 0e 0a 0d 00'
+        expected_byte_string = '0d 0e 0a 0d 00'
 
         write_control_file(byte_list, control_file=self.control_file.name)
 

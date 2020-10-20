@@ -4,15 +4,16 @@
 
 from __future__ import print_function
 
+import sys
+
 from argparse import ArgumentParser
 from json import dumps
-from sys import exit
 
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
 from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
 
-def get_led_control_item_cli(cli_args=None):
+def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
     """
     Creates a CLI interface on top of the `nuc_wmi.get_led_new` `get_led_control_item` function.
 
@@ -114,7 +115,11 @@ def get_led_control_item_cli(cli_args=None):
 
         # Convert the control item value index into its value
         if control_items[control_item_index]['Options'] == LED_COLOR['new']:
-            control_item_value = control_items[control_item_index]['Options'][LED_COLOR_TYPE['new'][led_color_type]][control_item_value]
+            if LED_COLOR_TYPE['new'][led_color_type] == 'Multi-color LED':
+                led_colors = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]][args.led]
+                control_item_value = led_colors[control_item_value]
+            else:
+                control_item_value = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]][control_item_value]
         else:
             control_item_value = control_items[control_item_index]['Options'][control_item_value]
 
@@ -130,10 +135,10 @@ def get_led_control_item_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)
 
 
 def get_led_indicator_option_cli(cli_args=None):
@@ -185,7 +190,7 @@ def get_led_indicator_option_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)

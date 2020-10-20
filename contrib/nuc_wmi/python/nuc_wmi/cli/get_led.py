@@ -4,9 +4,10 @@
 
 from __future__ import print_function
 
+import sys
+
 from argparse import ArgumentParser
 from json import dumps
-from sys import exit
 
 from nuc_wmi import CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
 from nuc_wmi.get_led import get_led
@@ -48,7 +49,10 @@ def get_led_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        (brightness, frequency, color) = get_led(LED_TYPE['legacy'].index(args.led), control_file=args.control_file)
+        (brightness, frequency, color) = get_led( # pylint: disable=unbalanced-tuple-unpacking
+            LED_TYPE['legacy'].index(args.led),
+            control_file=args.control_file
+        )
 
         print(
             dumps(
@@ -62,7 +66,7 @@ def get_led_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)

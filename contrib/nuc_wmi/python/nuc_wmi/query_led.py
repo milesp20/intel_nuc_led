@@ -2,12 +2,12 @@
 `nuc_wmi.query_led` provides an interface to the WMI query led set of functions.
 """
 
-from nuc_wmi import CONTROL_ITEM, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
+from nuc_wmi import CONTROL_ITEM, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 from nuc_wmi.utils import byte_list_to_bitmap
 
 LED_INDICATOR_OPTION_DISABLED = 0x06
-METHOD_ID=0x03
+METHOD_ID = 0x03
 
 QUERY_TYPE = [
     'query_leds',

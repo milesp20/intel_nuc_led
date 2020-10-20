@@ -32,7 +32,7 @@ class TestSetLed(unittest.TestCase):
         Initializes the unit tests;
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.set_led.read_control_file')
@@ -71,6 +71,7 @@ class TestSetLed(unittest.TestCase):
         self.assertEqual(returned_set_led, None)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -102,6 +103,7 @@ class TestSetLed(unittest.TestCase):
         self.assertEqual(str(err.exception), 'Error (Function not supported)')
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -130,6 +132,7 @@ class TestSetLed(unittest.TestCase):
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -158,6 +161,7 @@ class TestSetLed(unittest.TestCase):
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

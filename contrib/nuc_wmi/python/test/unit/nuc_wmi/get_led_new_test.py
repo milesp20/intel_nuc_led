@@ -36,7 +36,7 @@ class TestGetLedNew(unittest.TestCase):
         Initializes the unit tests;
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.get_led_new.read_control_file')
@@ -89,6 +89,7 @@ class TestGetLedNew(unittest.TestCase):
         self.assertEqual(returned_get_led_control_item, read_byte_list[1])
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -170,6 +171,7 @@ class TestGetLedNew(unittest.TestCase):
         self.assertEqual(returned_get_led_indicator_option, read_byte_list[1])
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

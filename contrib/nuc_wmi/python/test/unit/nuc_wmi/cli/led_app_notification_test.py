@@ -35,10 +35,10 @@ class TestCliLedAppNotification(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
     @patch('nuc_wmi.cli.led_app_notification.print')
-    @patch('nuc_wmi.cli.led_app_notification.exit')
+    @patch('nuc_wmi.cli.led_app_notification.sys.exit')
     @patch('nuc_wmi.cli.led_app_notification.save_led_config')
     def test_save_led_config_cli(
             self,
@@ -51,8 +51,8 @@ class TestCliLedAppNotification(unittest.TestCase):
         """
 
         self.assertTrue(nuc_wmi.cli.led_app_notification.save_led_config is nuc_wmi_cli_save_led_config)
-        self.assertTrue(nuc_wmi.cli.led_app_notification.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print)
+        self.assertTrue(nuc_wmi.cli.led_app_notification.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 1: Test that save_led_config_cli returns the proper JSON response and exit
         #           code for valid cli args

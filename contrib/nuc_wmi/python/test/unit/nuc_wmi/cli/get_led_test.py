@@ -35,10 +35,10 @@ class TestCliGetLed(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
     @patch('nuc_wmi.cli.get_led.print')
-    @patch('nuc_wmi.cli.get_led.exit')
+    @patch('nuc_wmi.cli.get_led.sys.exit')
     @patch('nuc_wmi.cli.get_led.get_led')
     def test_get_led_cli(
             self,
@@ -51,8 +51,8 @@ class TestCliGetLed(unittest.TestCase):
         """
 
         self.assertTrue(nuc_wmi.cli.get_led.get_led is nuc_wmi_get_led)
-        self.assertTrue(nuc_wmi.cli.get_led.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.get_led.print is nuc_wmi_print)
+        self.assertTrue(nuc_wmi.cli.get_led.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.get_led.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 1: Test that get_led_cli returns the proper JSON response and exit
         #           code for valid cli args
@@ -88,6 +88,7 @@ class TestCliGetLed(unittest.TestCase):
         self.assertEqual(returned_get_led_cli, None)
 
         # Reset
+        nuc_wmi_get_led.return_value = None
         nuc_wmi_get_led.reset_mock()
         nuc_wmi_sys_exit.reset_mock()
         nuc_wmi_print.reset_mock()

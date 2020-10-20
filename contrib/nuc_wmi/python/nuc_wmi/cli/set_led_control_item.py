@@ -4,15 +4,16 @@
 
 from __future__ import print_function
 
+import sys
+
 from argparse import ArgumentParser
 from json import dumps
-from sys import exit
 
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
 
-def set_led_control_item_cli(cli_args=None):
+def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
     """
     Creates a CLI interface on top of the `nuc_wmi.set_led_control` `set_led_control_item` function.
 
@@ -53,6 +54,8 @@ def set_led_control_item_cli(cli_args=None):
 
     control_item_values.extend(LED_COLOR['new']['Dual-color Blue / Amber'])
     control_item_values.extend(LED_COLOR['new']['Dual-color Blue / White'])
+    control_item_values.extend(filter(None, LED_COLOR['new']['Multi-color LED']['HDD LED']))
+    control_item_values.extend(filter(None, LED_COLOR['new']['Multi-color LED']['RGB Header']))
 
     parser = ArgumentParser(
         description='Set the control item value for the control item of the indicator option ' + \
@@ -121,11 +124,20 @@ def set_led_control_item_cli(cli_args=None):
         try:
             # Convert the control item value into its index
             if control_items[control_item_index]['Options'] == LED_COLOR['new']:
-                control_item_value_index = control_items[control_item_index]['Options'][LED_COLOR_TYPE['new'][led_color_type]].index(args.control_item_value)
+                if LED_COLOR_TYPE['new'][led_color_type] == 'Multi-color LED':
+                    control_item_value_index = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]][args.led].index(
+                        args.control_item_value
+                    )
+                else:
+                    control_item_value_index = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]].index(
+                        args.control_item_value
+                    )
             else:
                 control_item_value_index = control_items[control_item_index]['Options'].index(args.control_item_value)
         except ValueError as err:
-            raise ValueError('Invalid control item value for the specified control item')
+            raise ValueError(
+                'Invalid control item value for the specified control item'
+            )
 
         set_led_control_item(
             LED_TYPE['new'].index(args.led),
@@ -147,7 +159,7 @@ def set_led_control_item_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)

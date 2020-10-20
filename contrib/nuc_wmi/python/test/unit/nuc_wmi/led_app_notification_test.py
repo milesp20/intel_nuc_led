@@ -32,7 +32,7 @@ class TestLedAppNotification(unittest.TestCase):
         Initializes the unit tests;
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.led_app_notification.read_control_file')
@@ -58,6 +58,7 @@ class TestLedAppNotification(unittest.TestCase):
         self.assertEqual(returned_save_led_config, None)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

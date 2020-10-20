@@ -5,7 +5,7 @@
 from nuc_wmi import NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 
-METHOD_ID=0x09
+METHOD_ID = 0x09
 
 VERSION_TYPE = [
     'wmi_interface_spec_compliance_version'
@@ -35,7 +35,7 @@ def wmi_interface_spec_compliance_version(control_file=None):
         error_code,
         version_byte_1,
         version_byte_2,
-        reserved_byte
+        reserved_byte   # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:

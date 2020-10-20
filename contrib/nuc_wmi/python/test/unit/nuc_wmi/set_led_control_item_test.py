@@ -10,7 +10,7 @@ import unittest
 
 from mock import patch
 
-from nuc_wmi import CONTROL_ITEM, CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, LED_BRIGHTNESS_MULTI_COLOR
+from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, LED_BRIGHTNESS_MULTI_COLOR
 from nuc_wmi import LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
 from nuc_wmi.set_led_control_item import METHOD_ID, set_led_control_item
 
@@ -33,12 +33,12 @@ class TestSetLedControlItem(unittest.TestCase):
         Initializes the unit tests;
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.set_led_control_item.read_control_file')
     @patch('nuc_wmi.set_led_control_item.write_control_file')
-    def test_Set_led_control_item(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_control_item(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
         """
         Tests that `Set_led_control_item` returns the expected exceptions, return values, or outputs.
         """
@@ -87,6 +87,7 @@ class TestSetLedControlItem(unittest.TestCase):
         self.assertEqual(returned_set_led_control_item, None)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

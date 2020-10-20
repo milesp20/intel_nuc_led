@@ -32,7 +32,10 @@ LED_BLINK_BEHAVIOR = [
     LED_BLINK_BEHAVIOR_MULTI_COLOR,
 
     # Single-color LED
-    LED_BLINK_BEHAVIOR_SINGLE_COLOR
+    LED_BLINK_BEHAVIOR_SINGLE_COLOR,
+
+    # Multi-Color LED
+    LED_BLINK_BEHAVIOR_MULTI_COLOR
 ]
 
 LED_BLINK_FREQUENCY = {
@@ -76,7 +79,10 @@ LED_BRIGHTNESS = {
         LED_BRIGHTNESS_MULTI_COLOR,
 
         # Single-color LED
-        LED_BRIGHTNESS_SINGLE_COLOR
+        LED_BRIGHTNESS_SINGLE_COLOR,
+
+        # Multi-color LED
+        LED_BRIGHTNESS_MULTI_COLOR
     ]
 }
 
@@ -107,6 +113,29 @@ LED_COLOR = {
             'Blue',
             'White'
         ],
+        'Multi-color LED': {
+            'HDD LED': [
+                None,
+                'Blue',
+                'Red',
+                'Green',
+                'Orange',
+                'Yellow',
+                'Indigo',
+                'Violet',
+                'White'
+            ],
+            'RGB Header': [
+                None,
+                'Cyan',
+                'Magenta',
+                'Yellow',
+                'Blue',
+                'Red',
+                'Green',
+                'White'
+            ]
+        },
         'RGB-color': [str(rgb) for rgb in range(0x00, 0xFF + 1)]
     }
 }
@@ -120,7 +149,8 @@ LED_COLOR_TYPE = {
         'Dual-color Blue / Amber',
         'Dual-color Blue / White',
         'RGB-color',
-        'Single-color LED'
+        'Single-color LED',
+        'Multi-color LED'
     ]
 }
 
@@ -148,6 +178,7 @@ LED_TYPE = {
         'Front LED1',
         'Front LED2',
         'Front LED3',
+        'RGB Header'
     ]
 }
 
@@ -439,7 +470,10 @@ CONTROL_ITEM = [
         CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_POWER_STATE_INDICATOR_SINGLE_COLOR
+        CONTROL_ITEM_POWER_STATE_INDICATOR_SINGLE_COLOR,
+
+        # Multi-color LED
+        CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR
     ],
 
     # HDD Activity Indicator
@@ -456,7 +490,10 @@ CONTROL_ITEM = [
         CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_SINGLE_COLOR
+        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_SINGLE_COLOR,
+
+        # Multi-color LED
+        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR
     ],
 
     # Ethernet Indicator
@@ -473,6 +510,9 @@ CONTROL_ITEM = [
         CONTROL_ITEM_ETHERNET_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
+        None,
+
+        # Multi-color LED
         None
     ],
 
@@ -490,6 +530,9 @@ CONTROL_ITEM = [
         CONTROL_ITEM_WIFI_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
+        None,
+
+        # Multi-color LED
         None
     ],
 
@@ -507,7 +550,10 @@ CONTROL_ITEM = [
         CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_SOFTWARE_INDICATOR_SINGLE_COLOR
+        CONTROL_ITEM_SOFTWARE_INDICATOR_SINGLE_COLOR,
+
+        # Multi-color LED
+        CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR
     ],
 
     # Power Limit Indicator
@@ -524,6 +570,9 @@ CONTROL_ITEM = [
         CONTROL_ITEM_POWER_LIMIT_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
+        None,
+
+        # Multi-color LED
         None
     ],
 
@@ -538,9 +587,9 @@ RETURN_ERROR = {
     0xE2: 'Error (Undefined device)',
     0xE3: 'Error (EC doesn\'t respond)',
     0xE4: 'Error (Invalid Parameter)',
-    0xE5: 'Error (Node busy. Command could not be executed because ' +
+    0xE5: 'Error (Node busy. Command could not be executed because ' + \
     'command processing resources are temporarily unavailable.)',
-    0xE6: 'Error (Command execution failure. ' +
+    0xE6: 'Error (Command execution failure. ' + \
     'Parameter is illegal because destination device has been disabled or is unavailable)',
     0xE7: 'Error (Invalid CEC Opcode)',
     0xE8: 'Error (Data Buffer size is not enough)',
@@ -549,4 +598,7 @@ RETURN_ERROR = {
 }
 
 class NucWmiError(Exception):
-    pass
+    """
+    NUC WMI error exception type.
+    """
+    pass # pylint: disable=unnecessary-pass

@@ -4,9 +4,10 @@
 
 from __future__ import print_function
 
+import sys
+
 from argparse import ArgumentParser
 from json import dumps
-from sys import exit
 
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options, query_leds
@@ -60,10 +61,10 @@ def query_led_color_type_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)
 
 
 def query_led_control_items_cli(cli_args=None):
@@ -143,10 +144,10 @@ def query_led_control_items_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)
 
 
 def query_led_indicator_options_cli(cli_args=None):
@@ -201,10 +202,10 @@ def query_led_indicator_options_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)
 
 
 def query_leds_cli(cli_args=None):
@@ -246,7 +247,7 @@ def query_leds_cli(cli_args=None):
                 }
             )
         )
-    except Exception as err:
+    except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
-        exit(1)
+        sys.exit(1)

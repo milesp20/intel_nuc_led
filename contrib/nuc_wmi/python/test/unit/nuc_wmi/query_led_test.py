@@ -46,7 +46,7 @@ class TestQueryLed(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.query_led.read_control_file')
@@ -87,6 +87,7 @@ class TestQueryLed(unittest.TestCase):
         self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -168,6 +169,8 @@ class TestQueryLed(unittest.TestCase):
         self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_query_led_color_type.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
         nuc_wmi_query_led_color_type.reset_mock()
@@ -200,6 +203,8 @@ class TestQueryLed(unittest.TestCase):
         self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_query_led_color_type.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
         nuc_wmi_query_led_color_type.reset_mock()
@@ -275,6 +280,7 @@ class TestQueryLed(unittest.TestCase):
         self.assertEqual(returned_query_led_indicator_options, expected_query_led_indicator_options)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 
@@ -321,7 +327,7 @@ class TestQueryLed(unittest.TestCase):
         #           and that the returned control file response is properly processed.
 
         # Query HDD LED indicator options
-        expected_query_leds = [0x00 , 0x01]
+        expected_query_leds = [0x00, 0x01]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_leds')
@@ -341,6 +347,7 @@ class TestQueryLed(unittest.TestCase):
         self.assertEqual(returned_query_leds, expected_query_leds)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

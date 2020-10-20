@@ -9,7 +9,7 @@ GET_LED_TYPE = [
     'get_led_indicator_option',
     'get_led_control_item'
 ]
-METHOD_ID=0x04
+METHOD_ID = 0x04
 
 def get_led_control_item(led_type, led_indicator_option, control_item, control_file=None):
     """
@@ -41,8 +41,8 @@ def get_led_control_item(led_type, led_indicator_option, control_item, control_f
     (
         error_code,
         control_item_value,
-        reserved_byte_1,
-        reserved_byte_2
+        reserved_byte_1,    # pylint: disable=unused-variable
+        reserved_byte_2     # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:
@@ -76,8 +76,8 @@ def get_led_indicator_option(led_type, control_file=None):
     (
         error_code,
         led_indicator_option,
-        reserved_byte_1,
-        reserved_byte_2
+        reserved_byte_1,      # pylint: disable=unused-variable
+        reserved_byte_2       # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if error_code > 0:

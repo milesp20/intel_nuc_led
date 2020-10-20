@@ -5,7 +5,7 @@
 from nuc_wmi import NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 
-METHOD_ID=0x02
+METHOD_ID = 0x02
 
 def set_led(led, brightness, frequency, color, control_file=None):
     """
@@ -30,7 +30,7 @@ def set_led(led, brightness, frequency, color, control_file=None):
         brightness_error,
         frequency_error,
         color_error,
-        reserved_byte
+        reserved_byte     # pylint: disable=unused-variable
     ) = read_control_file(control_file=control_file)
 
     if brightness_error > 0:

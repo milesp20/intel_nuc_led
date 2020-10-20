@@ -5,7 +5,7 @@
 from nuc_wmi import NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 
-METHOD_ID=0x01
+METHOD_ID = 0x01
 
 def get_led(led, control_file=None):
     """

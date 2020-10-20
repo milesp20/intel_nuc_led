@@ -32,7 +32,7 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         Initializes the unit tests;
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     @patch('nuc_wmi.set_led_indicator_option.read_control_file')
@@ -72,6 +72,7 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         self.assertEqual(returned_set_led_indicator_option, None)
 
         # Reset
+        nuc_wmi_read_control_file.return_value = None
         nuc_wmi_read_control_file.reset_mock()
         nuc_wmi_write_control_file.reset_mock()
 

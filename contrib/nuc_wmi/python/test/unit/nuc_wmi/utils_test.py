@@ -8,7 +8,6 @@ Classes:
 
 import unittest
 
-from nuc_wmi import NucWmiError
 from nuc_wmi.utils import byte_list_to_bitmap
 
 
@@ -30,7 +29,7 @@ class TestUtils(unittest.TestCase):
         Initializes the unit tests.
         """
 
-        self.maxDiff = None
+        self.maxDiff = None # pylint: disable=invalid-name
 
 
     def test_byte_list_to_bitmap(self):
