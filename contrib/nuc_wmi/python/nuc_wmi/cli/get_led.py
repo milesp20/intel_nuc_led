@@ -49,10 +49,16 @@ def get_led_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        (brightness, frequency, color) = get_led( # pylint: disable=unbalanced-tuple-unpacking
-            LED_TYPE['legacy'].index(args.led),
+        led_color_type = LED_COLOR_TYPE['legacy'][args.led]
+        led_type_index = LED_TYPE['legacy'].index(args.led)
+
+        (brightness, frequency_index, color_index) = get_led( # pylint: disable=unbalanced-tuple-unpacking
+            led_type_index,
             control_file=args.control_file
         )
+
+        led_color = LED_COLOR['legacy'][led_color_type][color_index]
+        led_frequency = LED_BLINK_FREQUENCY['legacy'][frequency_index]
 
         print(
             dumps(
@@ -60,8 +66,8 @@ def get_led_cli(cli_args=None):
                     'led': {
                         'type': args.led,
                         'brightness': str(brightness),
-                        'frequency': LED_BLINK_FREQUENCY['legacy'][frequency],
-                        'color': LED_COLOR['legacy'][LED_COLOR_TYPE['legacy'][args.led]][color]
+                        'frequency': led_frequency,
+                        'color': led_color
                     }
                 }
             )

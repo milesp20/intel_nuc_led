@@ -49,14 +49,18 @@ def query_led_color_type_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_color_type = query_led_color_type(LED_TYPE['new'].index(args.led), control_file=args.control_file)
+        led_type_index = LED_TYPE['new'].index(args.led)
+
+        led_color_type_index = query_led_color_type(led_type_index, control_file=args.control_file)
+
+        led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
 
         print(
             dumps(
                 {
                     'led': {
                         'type': args.led,
-                        'color_type': LED_COLOR_TYPE['new'][led_color_type]
+                        'color_type': led_color_type
                     }
                 }
             )
@@ -111,26 +115,33 @@ def query_led_control_items_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_color_type = query_led_color_type(
-            LED_TYPE['new'].index(args.led),
+        led_type_index = LED_TYPE['new'].index(args.led)
+
+        led_color_type_index = query_led_color_type(
+            led_type_index,
             control_file=args.control_file
         )
 
-        available_indicator_options = query_led_indicator_options(
-            LED_TYPE['new'].index(args.led),
+        available_indicator_option_indexes = query_led_indicator_options(
+            led_type_index,
             control_file=args.control_file
         )
 
-        indicator = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
 
-        if indicator not in available_indicator_options:
+        if led_indicator_option_index not in available_indicator_option_indexes:
             raise ValueError('Invalid indicator option for the selected LED')
 
-        control_items = query_led_control_items(
-            LED_TYPE['new'].index(args.led),
-            indicator,
+        available_control_item_indexes = query_led_control_items(
+            led_type_index,
+            led_indicator_option_index,
             control_file=args.control_file
         )
+
+        led_control_items = [
+            CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
+            for control_item_index in available_control_item_indexes
+        ]
 
         print(
             dumps(
@@ -138,8 +149,7 @@ def query_led_control_items_cli(cli_args=None):
                     'led': {
                         'type': args.led,
                         'indicator_option': args.led_indicator_option,
-                        'control_items': [CONTROL_ITEM[indicator][led_color_type][control_item]['Control Item'] \
-                                          for control_item in control_items]
+                        'control_items': led_control_items
                     }
                 }
             )
@@ -187,17 +197,24 @@ def query_led_indicator_options_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_indicator_options = query_led_indicator_options(
-            LED_TYPE['new'].index(args.led),
+        led_type_index = LED_TYPE['new'].index(args.led)
+
+        available_indicator_option_indexes = query_led_indicator_options(
+            led_type_index,
             control_file=args.control_file
         )
+
+        led_indicator_options = [
+            LED_INDICATOR_OPTION[led_indicator_option_index] \
+            for led_indicator_option_index in available_indicator_option_indexes
+        ]
 
         print(
             dumps(
                 {
                     'led': {
                         'type': args.led,
-                        'indicator_options': [LED_INDICATOR_OPTION[indicator] for indicator in led_indicator_options]
+                        'indicator_options': led_indicator_options
                     }
                 }
             )
@@ -238,12 +255,14 @@ def query_leds_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        leds = query_leds(control_file=args.control_file)
+        available_led_type_indexes = query_leds(control_file=args.control_file)
+
+        led_types = [LED_TYPE['new'][led_type_index] for led_type_index in available_led_type_indexes]
 
         print(
             dumps(
                 {
-                    'leds': [LED_TYPE['new'][led] for led in leds]
+                    'leds': led_types
                 }
             )
         )

@@ -110,3 +110,38 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_sys_exit.assert_called_with(1)
 
         self.assertEqual(returned_set_led_indicator_option_cli, None)
+
+        # Reset
+        nuc_wmi_set_led_indicator_option.side_effect = None
+        nuc_wmi_set_led_indicator_option.reset_mock()
+        nuc_wmi_sys_exit.reset_mock()
+        nuc_wmi_print.reset_mock()
+
+        # Branch 3: Test that set_led_indicator_option_cli returns the proper JSON response and exit
+        #           code for valid cli args
+
+        # Set HDD LED indicator option to Software Indicator
+        returned_set_led_indicator_option_cli = set_led_indicator_option_cli(
+            [
+                LED_TYPE['new'][1],
+                LED_INDICATOR_OPTION[4]
+            ]
+        )
+
+        nuc_wmi_set_led_indicator_option.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            control_file=None
+        )
+        nuc_wmi_print.assert_called()
+        self.assertEqual(
+            json.loads(nuc_wmi_print.call_args.args[0]),
+            {
+                'led': {
+                    'type': LED_TYPE['new'][1],
+                    'indicator_option': LED_INDICATOR_OPTION[4]
+                }
+            }
+        )
+
+        self.assertEqual(returned_set_led_indicator_option_cli, None)

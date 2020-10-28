@@ -44,12 +44,14 @@ def wmi_interface_spec_compliance_version_cli(cli_args=None):
 
         wmi_version = wmi_interface_spec_compliance_version(control_file=args.control_file)
 
+        wmi_semver = '.'.join([str(semver_component) for semver_component in wmi_version])
+
         print(
             dumps(
                 {
                     'version': {
                         'type': 'wmi_interface_spec_compliance',
-                        'semver': '.'.join([str(semver_component) for semver_component in wmi_version])
+                        'semver': wmi_semver
                     }
                 }
             )

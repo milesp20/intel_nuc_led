@@ -10,8 +10,9 @@ import unittest
 
 from mock import patch
 
-from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, LED_BRIGHTNESS_MULTI_COLOR, LED_INDICATOR_OPTION
-from nuc_wmi import LED_TYPE, NucWmiError
+from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR
+from nuc_wmi import LED_BLINK_FREQUENCY, LED_BRIGHTNESS_MULTI_COLOR, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import NucWmiError
 from nuc_wmi.get_led_new import GET_LED_TYPE, METHOD_ID, get_led_control_item, get_led_indicator_option
 
 import nuc_wmi
@@ -67,7 +68,7 @@ class TestGetLedNew(unittest.TestCase):
         ]
         read_byte_list = [
             0x00,
-            LED_BRIGHTNESS_MULTI_COLOR.index('30'),
+            0x30,
             0x00,
             0x00
         ]
@@ -134,6 +135,94 @@ class TestGetLedNew(unittest.TestCase):
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 3: Test that get_led_control_item sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Get RGB Header Software Indicator Brightness of 30% for multi color led
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_control_item'),
+            LED_TYPE['new'].index('RGB Header'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Brightness',
+                    'Options': LED_BRIGHTNESS_MULTI_COLOR
+                }
+            ),
+        ]
+        read_byte_list = [
+            0x00,
+            0x30,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_get_led_control_item = get_led_control_item(
+            LED_TYPE['new'].index('RGB Header'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Brightness',
+                    'Options': LED_BRIGHTNESS_MULTI_COLOR
+                }
+            )
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_get_led_control_item, read_byte_list[1])
+
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 4: Test that get_led_control_item sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Get RGB Header Software Indicator Blinking Frequency of 1 Hz for multi color led
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_control_item'),
+            LED_TYPE['new'].index('RGB Header'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Blinking Frequency',
+                    'Options': LED_BLINK_FREQUENCY['new']
+                }
+            ),
+        ]
+        read_byte_list = [
+            0x00,
+            0x0A,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_get_led_control_item = get_led_control_item(
+            LED_TYPE['new'].index('RGB Header'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Blinking Frequency',
+                    'Options': LED_BLINK_FREQUENCY['new']
+                }
+            )
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_get_led_control_item, read_byte_list[1])
+
 
     @patch('nuc_wmi.get_led_new.read_control_file')
     @patch('nuc_wmi.get_led_new.write_control_file')
@@ -156,7 +245,7 @@ class TestGetLedNew(unittest.TestCase):
         ]
         read_byte_list = [
             0x00,
-            LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+            0x02,
             0x00,
             0x00
         ]
@@ -168,7 +257,7 @@ class TestGetLedNew(unittest.TestCase):
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
-        self.assertEqual(returned_get_led_indicator_option, read_byte_list[1])
+        self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('HDD Activity Indicator'))
 
         # Reset
         nuc_wmi_read_control_file.return_value = None
@@ -201,3 +290,33 @@ class TestGetLedNew(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
+
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 3: Test that get_led_indicator_option sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Get HDD LED with Software Indicator
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_indicator_option'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0x10,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_get_led_indicator_option = get_led_indicator_option(
+            LED_TYPE['new'].index('HDD LED')
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('Software Indicator'))

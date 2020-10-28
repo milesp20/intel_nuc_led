@@ -55,9 +55,13 @@ def set_led_indicator_option_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
+        led_type_index = LED_TYPE['new'].index(args.led)
+
+        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+
         set_led_indicator_option(
-            LED_TYPE['new'].index(args.led),
-            LED_INDICATOR_OPTION.index(args.led_indicator_option),
+            led_type_index,
+            led_indicator_option_index,
             control_file=args.control_file
         )
 

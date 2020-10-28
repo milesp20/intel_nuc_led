@@ -32,10 +32,7 @@ LED_BLINK_BEHAVIOR = [
     LED_BLINK_BEHAVIOR_MULTI_COLOR,
 
     # Single-color LED
-    LED_BLINK_BEHAVIOR_SINGLE_COLOR,
-
-    # Multi-Color LED
-    LED_BLINK_BEHAVIOR_MULTI_COLOR
+    LED_BLINK_BEHAVIOR_SINGLE_COLOR
 ]
 
 LED_BLINK_FREQUENCY = {
@@ -79,10 +76,7 @@ LED_BRIGHTNESS = {
         LED_BRIGHTNESS_MULTI_COLOR,
 
         # Single-color LED
-        LED_BRIGHTNESS_SINGLE_COLOR,
-
-        # Multi-color LED
-        LED_BRIGHTNESS_MULTI_COLOR
+        LED_BRIGHTNESS_SINGLE_COLOR
     ]
 }
 
@@ -113,30 +107,32 @@ LED_COLOR = {
             'Blue',
             'White'
         ],
-        'Multi-color LED': {
-            'HDD LED': [
-                None,
-                'Blue',
-                'Red',
-                'Green',
-                'Orange',
-                'Yellow',
-                'Indigo',
-                'Violet',
-                'White'
-            ],
-            'RGB Header': [
-                None,
-                'Cyan',
-                'Magenta',
-                'Yellow',
-                'Blue',
-                'Red',
-                'Green',
-                'White'
-            ]
-        },
-        'RGB-color': [str(rgb) for rgb in range(0x00, 0xFF + 1)]
+        'RGB-color': {
+            '1d':  {
+                'HDD LED': [
+                    None,
+                    'Blue',
+                    'Red',
+                    'Green',
+                    'Orange',
+                    'Yellow',
+                    'Indigo',
+                    'Violet',
+                    'White'
+                ],
+                'RGB Header': [
+                    None,
+                    'Cyan',
+                    'Magenta',
+                    'Yellow',
+                    'Blue',
+                    'Red',
+                    'Green',
+                    'White'
+                ]
+            },
+            '3d': [str(rgb) for rgb in range(0x00, 0xFF + 1)]
+        }
     }
 }
 
@@ -149,8 +145,7 @@ LED_COLOR_TYPE = {
         'Dual-color Blue / Amber',
         'Dual-color Blue / White',
         'RGB-color',
-        'Single-color LED',
-        'Multi-color LED'
+        'Single-color LED'
     ]
 }
 
@@ -203,11 +198,11 @@ CONTROL_ITEM_ETHERNET_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     }
 ]
 
@@ -227,11 +222,11 @@ CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Behavior',
@@ -270,11 +265,11 @@ CONTROL_ITEM_POWER_LIMIT_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     }
 ]
 
@@ -297,11 +292,11 @@ CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'S0 Indicator Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'S0 Indicator Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'S3 Indicator Brightness',
@@ -321,11 +316,11 @@ CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'S3 Indicator Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'S3 Indicator Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Modern Standby Indicator Brightness',
@@ -345,11 +340,11 @@ CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Modern Standby Indicator Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Modern Standby Indicator Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'S5 Indicator Brightness',
@@ -369,11 +364,11 @@ CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'S5 Indicator Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'S5 Indicator Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     }
 ]
 
@@ -415,11 +410,11 @@ CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     }
 ]
 
@@ -445,11 +440,11 @@ CONTROL_ITEM_WIFI_INDICATOR_MULTI_COLOR = [
     },
     {
         'Control Item': 'Color 2',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     },
     {
         'Control Item': 'Color 3',
-        'Options': LED_COLOR['new']['RGB-color']
+        'Options': LED_COLOR['new']['RGB-color']['3d']
     }
 ]
 
@@ -470,10 +465,7 @@ CONTROL_ITEM = [
         CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_POWER_STATE_INDICATOR_SINGLE_COLOR,
-
-        # Multi-color LED
-        CONTROL_ITEM_POWER_STATE_INDICATOR_MULTI_COLOR
+        CONTROL_ITEM_POWER_STATE_INDICATOR_SINGLE_COLOR
     ],
 
     # HDD Activity Indicator
@@ -490,10 +482,7 @@ CONTROL_ITEM = [
         CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_SINGLE_COLOR,
-
-        # Multi-color LED
-        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR
+        CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_SINGLE_COLOR
     ],
 
     # Ethernet Indicator
@@ -510,9 +499,6 @@ CONTROL_ITEM = [
         CONTROL_ITEM_ETHERNET_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        None,
-
-        # Multi-color LED
         None
     ],
 
@@ -530,9 +516,6 @@ CONTROL_ITEM = [
         CONTROL_ITEM_WIFI_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        None,
-
-        # Multi-color LED
         None
     ],
 
@@ -550,10 +533,7 @@ CONTROL_ITEM = [
         CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        CONTROL_ITEM_SOFTWARE_INDICATOR_SINGLE_COLOR,
-
-        # Multi-color LED
-        CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR
+        CONTROL_ITEM_SOFTWARE_INDICATOR_SINGLE_COLOR
     ],
 
     # Power Limit Indicator
@@ -570,9 +550,6 @@ CONTROL_ITEM = [
         CONTROL_ITEM_POWER_LIMIT_INDICATOR_MULTI_COLOR,
 
         # Single-color LED
-        None,
-
-        # Multi-color LED
         None
     ],
 

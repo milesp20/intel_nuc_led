@@ -103,3 +103,34 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
+
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 1: Test that set_led_indicator_option sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Set HDD LED with Software Indicator
+        expected_write_byte_list = [
+            METHOD_ID,
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator')
+        ]
+        read_byte_list = [
+            0x00,
+            0x00,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_set_led_indicator_option = set_led_indicator_option(
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator')
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_set_led_indicator_option, None)

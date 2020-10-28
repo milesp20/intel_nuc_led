@@ -11,9 +11,12 @@ from json import dumps
 
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
-from nuc_wmi.query_led import query_led_color_type, query_led_indicator_options
+from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 
-def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
+RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
+RGB_COLOR_3D = LED_COLOR['new']['RGB-color']['3d']
+
+def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches,too-many-locals
     """
     Creates a CLI interface on top of the `nuc_wmi.get_led_new` `get_led_control_item` function.
 
@@ -77,22 +80,26 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
     try:
         args = parser.parse_args(args=cli_args)
 
+        led_type_index = LED_TYPE['new'].index(args.led)
+
         available_indicator_options = query_led_indicator_options(
-            LED_TYPE['new'].index(args.led),
+            led_type_index,
             control_file=args.control_file
         )
 
-        led_color_type = query_led_color_type(
-            LED_TYPE['new'].index(args.led),
+        led_color_type_index = query_led_color_type(
+            led_type_index,
             control_file=args.control_file
         )
 
-        indicator = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+        led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
 
-        if indicator not in available_indicator_options:
+        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+
+        if led_indicator_option_index not in available_indicator_options:
             raise ValueError('Invalid indicator option for the selected LED')
 
-        control_items = CONTROL_ITEM[indicator][led_color_type]
+        control_items = CONTROL_ITEM[led_indicator_option_index][led_color_type_index]
 
         if control_items is None:
             raise ValueError('No control items are available for the selected LED and indicator option')
@@ -107,19 +114,37 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             raise ValueError('Invalid control item specified for the selected LED and indicator option')
 
         control_item_value = get_led_control_item(
-            LED_TYPE['new'].index(args.led),
-            indicator,
+            led_type_index,
+            led_indicator_option_index,
             control_item_index,
             control_file=args.control_file
         )
 
         # Convert the control item value index into its value
         if control_items[control_item_index]['Options'] == LED_COLOR['new']:
-            if LED_COLOR_TYPE['new'][led_color_type] == 'Multi-color LED':
-                led_colors = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]][args.led]
+            if led_color_type == 'RGB-color':
+                color_dimensions = '1d'
+
+                available_control_item_indexes = query_led_control_items(
+                    led_type_index,
+                    led_indicator_option_index,
+                    control_file=args.control_file
+                )
+
+                for control_item_index2 in available_control_item_indexes:
+                    if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
+                        color_dimensions = '3d'
+
+                        break
+
+                if color_dimensions == '1d':
+                    led_colors = RGB_COLOR_1D[args.led]
+                else:
+                    led_colors = RGB_COLOR_3D
+
                 control_item_value = led_colors[control_item_value]
             else:
-                control_item_value = LED_COLOR['new'][LED_COLOR_TYPE['new'][led_color_type]][control_item_value]
+                control_item_value = LED_COLOR['new'][led_color_type][control_item_value]
         else:
             control_item_value = control_items[control_item_index]['Options'][control_item_value]
 
@@ -178,14 +203,18 @@ def get_led_indicator_option_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        indicator_option = get_led_indicator_option(LED_TYPE['new'].index(args.led), control_file=args.control_file)
+        led_type_index = LED_TYPE['new'].index(args.led)
+
+        led_indicator_option_index = get_led_indicator_option(led_type_index, control_file=args.control_file)
+
+        led_indicator_option = LED_INDICATOR_OPTION[led_indicator_option_index]
 
         print(
             dumps(
                 {
                     'led': {
                         'type': args.led,
-                        'indicator_option': LED_INDICATOR_OPTION[indicator_option]
+                        'indicator_option': led_indicator_option
                     }
                 }
             )

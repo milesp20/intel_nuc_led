@@ -190,6 +190,8 @@ $ nuc_wmi-query_led_color_type 'HDD LED'
 {"led": {"color_type": "Dual-color Blue / White", "type": "HDD LED"}}
 $ nuc_wmi-query_led_color_type 'Power Button LED'
 {"led": {"color_type": "Dual-color Blue / Amber", "type": "Power Button LED"}}
+$ nuc_wmi-query_led_color_type 'HDD LED'
+{"led": {"color_type": "RGB-color", "type": "HDD LED"}}
 
 $ nuc_wmi-query_led_control_items 'Power Button LED' 'Power State Indicator'
 {"led": {"control_items": ["S0 Indicator Brightness", "S0 Indicator Blinking Behavior", "S0 Indicator Blinking Frequency", "S0 Indicator Color"], "type": "Power Button LED", "indicator_option": "Power State Indicator"}}
@@ -217,12 +219,12 @@ $ nuc_wmi-set_led_control_item 'HDD LED' 'Software Indicator' 'Brightness' 100
 {"led": {"control_item": "Brightness", "type": "HDD LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
 $ nuc_wmi-set_led_control_item 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' Blue
 {"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Blue"}}
-# For BIOS where the HDD LED LED color type is "Multi-color LED"
+# For BIOS where the HDD LED LED color type is "RGB-color" but 1D (where only 'Color' is a supported control item)
 $ nuc_wmi-set_led_control_item 'HDD LED' 'Software Indicator' 'Color' 'Indigo'
 {"led": {"control_item": "Color", "type": "HDD LED", "indicator_option": "Software Indicator", "control_item_value": "Indigo"}}
-# For LEDs where the color type is RGB, the color is controlled by 3 dimension settings (one for Red, Green, and Blue respectively) that accept
+# For LEDs where the color type is RGB-color but 3D, the color is controlled by 3 dimension settings (one for Red, Green, and Blue respectively) that accept
 # an integer value from 0-255 for each color dimension. There may be multiple control item triplets for RGB colors per indicator option. For
-# this example we pretend the HDD LED reports its color type as RGB and we set the LED to Red (you must set all 3 dimensions to ensure you end up with the correct color).
+# this example we pretend the HDD LED reports its color type as RGB-color and we set the LED to Red (you must set all 3 dimensions to ensure you end up with the correct color).
 # If you want to avoid having the color change as you set the dimensions, your only option is to drop the brightness down to 0 before settng the color and back to a
 # non zero brightness once its set.
 $ nuc_wmi-set_led_control_item 'HDD LED' 'Software Indicator' 'Color' '255' # Red dimension

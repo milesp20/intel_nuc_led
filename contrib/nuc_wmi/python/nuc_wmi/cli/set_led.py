@@ -67,15 +67,22 @@ def set_led_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type = LED_TYPE['legacy'].index(args.led)
-        frequency = LED_BLINK_FREQUENCY['legacy'].index(args.frequency)
+        led_color_type = LED_COLOR_TYPE['legacy'][args.led]
+        led_type_index = LED_TYPE['legacy'].index(args.led)
+        frequency_index = LED_BLINK_FREQUENCY['legacy'].index(args.frequency)
 
         try:
-            color = LED_COLOR['legacy'][LED_COLOR_TYPE['legacy'][args.led]].index(args.color)
+            color_index = LED_COLOR['legacy'][led_color_type].index(args.color)
         except ValueError as err:
             raise ValueError('Invalid color for the specified legacy LED')
 
-        set_led(led_type, args.brightness, frequency, color, control_file=args.control_file)
+        set_led(
+            led_type_index,
+            args.brightness,
+            frequency_index,
+            color_index,
+            control_file=args.control_file
+        )
 
         print(
             dumps(

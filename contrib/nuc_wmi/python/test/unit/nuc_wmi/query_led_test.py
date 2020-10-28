@@ -72,7 +72,7 @@ class TestQueryLed(unittest.TestCase):
         ]
         read_byte_list = [
             0x00,
-            LED_COLOR_TYPE['new'].index('Dual-color Blue / White'),
+            0x02,
             0x00,
             0x00
         ]
@@ -119,6 +119,37 @@ class TestQueryLed(unittest.TestCase):
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 3: Test that query_led_color_type send the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Query HDD LED that returns a color type of Single-color LED
+        expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Single-color LED')
+        expected_write_byte_list = [
+            METHOD_ID,
+            QUERY_TYPE.index('query_led_color_type'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0x08,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_query_led_color_type = query_led_color_type(
+            LED_TYPE['new'].index('HDD LED')
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
+
 
     @patch('nuc_wmi.query_led.query_led_color_type')
     @patch('nuc_wmi.query_led.read_control_file')
@@ -142,7 +173,7 @@ class TestQueryLed(unittest.TestCase):
         #           and that the returned control file response is properly processed.
 
         # Query control items of HDD LED with HDD Activity Indicator
-        expected_query_led_control_items = [0x00, 0x01, 0x02, 0x03]
+        expected_query_led_control_items = [0, 1, 2, 3]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_control_items'),
@@ -213,7 +244,7 @@ class TestQueryLed(unittest.TestCase):
         #           error code.
 
         # Incorrect led
-        expected_query_led_control_items = [0x00, 0x01, 0x02, 0x03]
+        expected_query_led_control_items = [0, 1, 2, 3]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_control_items'),
@@ -257,7 +288,7 @@ class TestQueryLed(unittest.TestCase):
         #           and that the returned control file response is properly processed.
 
         # Query HDD LED indicator options
-        expected_query_led_indicator_options = [0x01, 0x04]
+        expected_query_led_indicator_options = [1, 4]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_indicator_options'),
@@ -288,7 +319,7 @@ class TestQueryLed(unittest.TestCase):
         #           error code.
 
         # Incorrect led
-        expected_query_led_indicator_options = [0x01, 0x04]
+        expected_query_led_indicator_options = [1, 4]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_indicator_options'),
@@ -327,7 +358,7 @@ class TestQueryLed(unittest.TestCase):
         #           and that the returned control file response is properly processed.
 
         # Query HDD LED indicator options
-        expected_query_leds = [0x00, 0x01]
+        expected_query_leds = [0, 1]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_leds')
@@ -355,7 +386,7 @@ class TestQueryLed(unittest.TestCase):
         #           error code.
 
         # Incorrect led
-        expected_query_leds = [0x00, 0x01]
+        expected_query_leds = [0, 1]
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_leds')

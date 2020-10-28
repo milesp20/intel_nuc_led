@@ -18,7 +18,7 @@ def get_led(led, control_file=None):
        Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
        or if `read_control_file` or `write_control_file` raise an exception.
     Returns:
-       Tuple of legacy brightness, frequency, and color of the select LED.
+       Tuple of legacy brightness, frequency, and color indexes of the select LED.
     """
 
     get_led_byte_list = [METHOD_ID, led]

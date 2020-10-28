@@ -122,6 +122,40 @@ class TestCliQueryLed(unittest.TestCase):
 
         self.assertEqual(returned_query_led_color_type_cli, None)
 
+        # Reset
+        nuc_wmi_query_led_color_type.side_effect = None
+        nuc_wmi_query_led_color_type.reset_mock()
+        nuc_wmi_sys_exit.reset_mock()
+        nuc_wmi_print.reset_mock()
+
+        # Branch 3: Test that query_led_color_type_cli returns the proper JSON response and exit
+        #           code for valid cli args
+
+        # Return HDD LED color type of Single-color LED
+        nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Single-color LED')
+        returned_query_led_color_type_cli = query_led_color_type_cli(
+            [
+                LED_TYPE['new'][1]
+            ]
+        )
+
+        nuc_wmi_query_led_color_type.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None
+        )
+        nuc_wmi_print.assert_called()
+        self.assertEqual(
+            json.loads(nuc_wmi_print.call_args.args[0]),
+            {
+                'led': {
+                    'type': LED_TYPE['new'][1],
+                    'color_type': LED_COLOR_TYPE['new'][3]
+                }
+            }
+        )
+
+        self.assertEqual(returned_query_led_color_type_cli, None)
+
 
     @patch('nuc_wmi.cli.query_led.print')
     @patch('nuc_wmi.cli.query_led.sys.exit')
@@ -150,9 +184,9 @@ class TestCliQueryLed(unittest.TestCase):
         #           code for valid cli args
 
         # Get control items for HDD LED set to HDD Activity Indicator
-        expected_control_items = [0x00, 0x01, 0x02, 0x03]
+        expected_control_items = [0, 1, 2, 3]
         nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
-        nuc_wmi_query_led_indicator_options.return_value = [0x01, 0x04]
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4]
         nuc_wmi_query_led_control_items.return_value = expected_control_items
         returned_query_led_control_items_cli = query_led_control_items_cli(
             [
@@ -201,9 +235,9 @@ class TestCliQueryLed(unittest.TestCase):
 
         # Branch 2: Test that query_led_control_items_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
-        expected_control_items = [0x00, 0x01, 0x02, 0x03]
+        expected_control_items = [0, 1, 2, 3]
         nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
-        nuc_wmi_query_led_indicator_options.return_value = [0x01, 0x04]
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4]
         nuc_wmi_query_led_control_items.side_effect = NucWmiError('Error (Function not supported)')
         returned_query_led_control_items_cli = query_led_control_items_cli(
             [
@@ -241,7 +275,7 @@ class TestCliQueryLed(unittest.TestCase):
         nuc_wmi_print.reset_mock()
 
         # Branch 3: Tests that invalid LED indicator raises appropriate error.
-        expected_control_items = [0x00, 0x01, 0x02, 0x03]
+        expected_control_items = [0, 1, 2, 3]
         nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
         nuc_wmi_query_led_indicator_options.return_value = []
         nuc_wmi_query_led_control_items.return_value = expected_control_items
@@ -288,7 +322,7 @@ class TestCliQueryLed(unittest.TestCase):
         #           code for valid cli args
 
         # Return HDD LED indicator options of HDD Activity Indicator and Software Indicator
-        expected_indicator_options = [0x01, 0x04]
+        expected_indicator_options = [1, 4]
         nuc_wmi_query_led_indicator_options.return_value = expected_indicator_options
         returned_query_led_indicator_options_cli = query_led_indicator_options_cli(
             [
@@ -358,7 +392,7 @@ class TestCliQueryLed(unittest.TestCase):
 
         # Branch 1: Test that query_leds_cli returns the proper JSON response and exit
         #           code for valid cli args
-        expected_leds = [0x00, 0x01]
+        expected_leds = [0, 1]
         nuc_wmi_query_leds.return_value = expected_leds
         returned_query_leds_cli = query_leds_cli([])
 

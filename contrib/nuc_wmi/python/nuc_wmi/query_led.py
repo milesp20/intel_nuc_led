@@ -50,9 +50,9 @@ def query_led_color_type(led_type, control_file=None):
         led_color_type_bitmap_2,
         led_color_type_bitmap_1
     ]
-    led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)
+    led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)[::-1]
 
-    return int(led_color_type_bitmap, 2)
+    return led_color_type_bitmap.index('1')
 
 
 def query_led_control_items(led_type, led_indicator_option, control_file=None):

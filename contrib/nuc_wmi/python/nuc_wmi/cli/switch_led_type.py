@@ -49,7 +49,9 @@ def switch_led_type_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        switch_led_type(LED_COLOR_GROUP.index(args.led_color_group), control_file=args.control_file)
+        led_color_group_index = LED_COLOR_GROUP.index(args.led_color_group)
+
+        switch_led_type(led_color_group_index, control_file=args.control_file)
 
         print(
             dumps(

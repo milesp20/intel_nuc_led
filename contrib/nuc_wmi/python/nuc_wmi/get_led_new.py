@@ -4,6 +4,7 @@
 
 from nuc_wmi import NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
+from nuc_wmi.utils import byte_list_to_bitmap
 
 GET_LED_TYPE = [
     'get_led_indicator_option',
@@ -83,4 +84,7 @@ def get_led_indicator_option(led_type, control_file=None):
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR[error_code])
 
-    return led_indicator_option
+    led_indicator_option_bitmaps = [led_indicator_option]
+    led_indicator_option_bitmap = byte_list_to_bitmap(led_indicator_option_bitmaps)[::-1]
+
+    return led_indicator_option_bitmap.index('1')

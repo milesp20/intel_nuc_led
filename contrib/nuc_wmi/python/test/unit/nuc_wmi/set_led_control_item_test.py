@@ -10,8 +10,9 @@ import unittest
 
 from mock import patch
 
-from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, LED_BRIGHTNESS_MULTI_COLOR
-from nuc_wmi import LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
+from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR
+from nuc_wmi import LED_BLINK_FREQUENCY, LED_BRIGHTNESS_MULTI_COLOR, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import NucWmiError
 from nuc_wmi.set_led_control_item import METHOD_ID, set_led_control_item
 
 import nuc_wmi
@@ -132,3 +133,48 @@ class TestSetLedControlItem(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
+
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 3: Test that set_led_control_item sends the expected byte string to the control file
+        #           and that the returned control file response is properly processed.
+
+        # Set HDD LED Softtware Indicator Blinking Frequency of 1Hz for multi color led
+        expected_write_byte_list = [
+            METHOD_ID,
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Blinking Frequency',
+                    'Options': LED_BLINK_FREQUENCY['new']
+                }
+            ),
+            LED_BLINK_FREQUENCY['new'].index('10')
+        ]
+        read_byte_list = [
+            0x00,
+            0x00,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        returned_set_led_control_item = set_led_control_item(
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Blinking Frequency',
+                    'Options': LED_BLINK_FREQUENCY['new']
+                }
+            ),
+            LED_BLINK_FREQUENCY['new'].index('10')
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+        self.assertEqual(returned_set_led_control_item, None)
