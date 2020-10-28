@@ -9,7 +9,8 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_BLINK_FREQUENCY, LED_COLOR_TYPE, LED_INDICATOR_OPTION
+from nuc_wmi import LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
 
@@ -52,9 +53,12 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             for control_item in control_items:
                 control_item_labels.append(control_item['Control Item'])
 
-                if control_item['Options'] is not None and control_item['Options'] != LED_COLOR['new']:
+                if control_item['Options'] is not None and \
+                   control_item['Options'] != LED_COLOR['new'] and \
+                   control_item['Options'] != LED_BLINK_FREQUENCY['new']:
                     control_item_values.extend(control_item['Options'])
 
+    control_item_values.extend(filter(None, LED_BLINK_FREQUENCY['new']))
     control_item_values.extend(LED_COLOR['new']['Dual-color Blue / Amber'])
     control_item_values.extend(LED_COLOR['new']['Dual-color Blue / White'])
     control_item_values.extend(filter(None, LED_COLOR['new']['RGB-color']['1d']['HDD LED']))

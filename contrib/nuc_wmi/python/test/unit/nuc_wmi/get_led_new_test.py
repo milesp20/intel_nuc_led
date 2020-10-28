@@ -221,7 +221,7 @@ class TestGetLedNew(unittest.TestCase):
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
-        self.assertEqual(returned_get_led_control_item, read_byte_list[1])
+        self.assertEqual(returned_get_led_control_item, LED_BLINK_FREQUENCY['new'].index('1.0Hz'))
 
 
     @patch('nuc_wmi.get_led_new.read_control_file')

@@ -14,8 +14,8 @@ import unittest
 from mock import patch
 
 from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR
-from nuc_wmi import LED_BRIGHTNESS_MULTI_COLOR
-from nuc_wmi import LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
+from nuc_wmi import LED_BLINK_FREQUENCY, LED_BRIGHTNESS_MULTI_COLOR, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION
+from nuc_wmi import LED_TYPE, NucWmiError
 from nuc_wmi.cli.get_led_new import get_led_control_item_cli, get_led_indicator_option_cli
 
 import nuc_wmi
@@ -619,6 +619,71 @@ class TestCliGetLedNew(unittest.TestCase):
                     'indicator_option': LED_INDICATOR_OPTION[4],
                     'control_item': CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR[3]['Control Item'],
                     'control_item_value': LED_COLOR['new']['RGB-color']['3d'][expected_color]
+                }
+            }
+        )
+
+        self.assertEqual(returned_get_led_control_item_cli, None)
+
+        # Reset
+        nuc_wmi_query_led_color_type.return_value = None
+        nuc_wmi_query_led_control_items.return_value = None
+        nuc_wmi_query_led_indicator_options.return_value = None
+        nuc_wmi_get_led_control_item.return_value = None
+        nuc_wmi_query_led_color_type.reset_mock()
+        nuc_wmi_query_led_control_items.reset_mock()
+        nuc_wmi_query_led_indicator_options.reset_mock()
+        nuc_wmi_get_led_control_item.reset_mock()
+        nuc_wmi_sys_exit.reset_mock()
+        nuc_wmi_print.reset_mock()
+
+        # Branch 11: Test getting control item that uses blink frequency
+
+        # Get HDD LED control item Blink Frequency of 1.0Hz for Blink Frequency of Software Indicator
+        # with 3d RGB-color LED type
+        expected_blinking_frequency = LED_BLINK_FREQUENCY['new'].index('1.0Hz')
+        nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('RGB-color')
+        nuc_wmi_query_led_control_items.return_value = [0, 1, 2, 3, 4, 5]
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4]
+        nuc_wmi_get_led_control_item.return_value = expected_blinking_frequency
+        returned_get_led_control_item_cli = get_led_control_item_cli(
+            [
+                LED_TYPE['new'][1],
+                LED_INDICATOR_OPTION[4],
+                CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR[2]['Control Item']
+            ]
+        )
+
+        nuc_wmi_query_led_color_type.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None
+        )
+        nuc_wmi_query_led_indicator_options.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None
+        )
+        nuc_wmi_query_led_control_items.assert_not_called()
+
+        nuc_wmi_get_led_control_item.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Blinking Frequency',
+                    'Options': LED_BLINK_FREQUENCY['new']
+                }
+            ),
+            control_file=None
+        )
+        nuc_wmi_print.assert_called()
+        self.assertEqual(
+            json.loads(nuc_wmi_print.call_args.args[0]),
+            {
+                'led': {
+                    'type': LED_TYPE['new'][1],
+                    'indicator_option': LED_INDICATOR_OPTION[4],
+                    'control_item': CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR[2]['Control Item'],
+                    'control_item_value': LED_BLINK_FREQUENCY['new'][expected_blinking_frequency]
                 }
             }
         )

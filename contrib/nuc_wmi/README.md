@@ -180,6 +180,8 @@ $ nuc_wmi-get_led_control_item 'Power Button LED' 'Power State Indicator' 'S0 In
 {"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Blue"}}
 $ nuc_wmi-get_led_control_item 'Power Button LED' 'Power State Indicator' 'S0 Indicator Brightness'
 {"led": {"control_item": "S0 Indicator Brightness", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "50"}}
+$ nuc_wmi-get_led_control_item 'HDD LED' 'Software Indicator' 'Blinking Frequency'
+{"led": {"control_item": "Blinking Frequency", "type": "HDD LED", "indicator_option": "Software Indicator", "control_item_value": "1.0Hz"}}
 
 $ nuc_wmi-get_led_indicator_option 'HDD LED'
 {"led": {"type": "HDD LED", "indicator_option": "Software Indicator"}}
@@ -217,6 +219,9 @@ $ nuc_wmi-save_led_config
 # Brightness is an integer percentage 0-100 and not the internal WMI hex value.
 $ nuc_wmi-set_led_control_item 'HDD LED' 'Software Indicator' 'Brightness' 100
 {"led": {"control_item": "Brightness", "type": "HDD LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
+# Blinking Frequency is 0.1Hz-1.0Hz
+$ nuc_wmi-set_led_control_item 'HDD LED' 'Software Indicator' 'Blinking Frequency' '1.0Hz'
+{"led": {"control_item": "Blinking Frequency", "type": "HDD LED", "indicator_option": "Software Indicator", "control_item_value": "1.0Hz"}}
 $ nuc_wmi-set_led_control_item 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' Blue
 {"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Blue"}}
 # For BIOS where the HDD LED LED color type is "RGB-color" but 1D (where only 'Color' is a supported control item)

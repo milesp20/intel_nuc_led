@@ -49,8 +49,19 @@ LED_BLINK_FREQUENCY = {
         '0.25Hz fade',
         '0.5Hz fade'
     ],
-    # 0x00 is not supported but we have to add it so its indexed right.
-    'new': [str(freq) for freq in range(0x00, 0x0A + 1)]
+    'new': [
+        None,
+        '0.1Hz',
+        '0.2Hz',
+        '0.3Hz',
+        '0.4Hz',
+        '0.5Hz',
+        '0.6Hz',
+        '0.7Hz',
+        '0.8Hz',
+        '0.9Hz',
+        '1.0Hz'
+    ]
 }
 
 LED_BRIGHTNESS_MULTI_COLOR = [str(brightness) for brightness in range(0x00, 0x64 + 1)]

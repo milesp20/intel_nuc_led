@@ -153,7 +153,7 @@ class TestSetLedControlItem(unittest.TestCase):
                     'Options': LED_BLINK_FREQUENCY['new']
                 }
             ),
-            LED_BLINK_FREQUENCY['new'].index('10')
+            LED_BLINK_FREQUENCY['new'].index('1.0Hz')
         ]
         read_byte_list = [
             0x00,
@@ -172,7 +172,7 @@ class TestSetLedControlItem(unittest.TestCase):
                     'Options': LED_BLINK_FREQUENCY['new']
                 }
             ),
-            LED_BLINK_FREQUENCY['new'].index('10')
+            LED_BLINK_FREQUENCY['new'].index('1.0Hz')
         )
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
