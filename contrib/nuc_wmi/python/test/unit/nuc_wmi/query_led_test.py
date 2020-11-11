@@ -150,6 +150,34 @@ class TestQueryLed(unittest.TestCase):
 
         self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
 
+        # Branch 4: Test that query_led_color_type changes the return value format when QUIRKS mode
+        #           NUC10_RETURN_VALUE is enabled.
+
+        # Query HDD LED that returns a color type of Single-color LED
+        expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Single-color LED')
+        expected_write_byte_list = [
+            METHOD_ID,
+            QUERY_TYPE.index('query_led_color_type'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0x03,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+
+        with patch('nuc_wmi.query_led.QUIRKS_ENABLED', ['NUC10_RETURN_VALUE']):
+            returned_query_led_color_type = query_led_color_type(
+                LED_TYPE['new'].index('HDD LED')
+            )
+
+            nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+            self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
+
 
     @patch('nuc_wmi.query_led.query_led_color_type')
     @patch('nuc_wmi.query_led.read_control_file')

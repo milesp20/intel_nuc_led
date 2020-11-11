@@ -2,7 +2,11 @@
 `nuc_wmi.control_file` module provides interfaces for interacting with Intel NUC LED kernel module control file.
 """
 
-from nuc_wmi import CONTROL_FILE, NucWmiError
+from __future__ import print_function
+
+import sys
+
+from nuc_wmi import CONTROL_FILE, DEBUG, NucWmiError
 
 def read_control_file(control_file=None):
     """
@@ -21,6 +25,9 @@ def read_control_file(control_file=None):
 
     # Remove the new line and null char the driver leaves
     raw_hex_byte_string = raw_hex_byte_string.rstrip("\x00").rstrip("\n")
+
+    if DEBUG:
+        print('r: ', raw_hex_byte_string, file=sys.stderr)
 
     byte_list = [int(hex_byte_str, 16) for hex_byte_str in raw_hex_byte_string.split(' ')]
 
@@ -54,6 +61,9 @@ def write_control_file(int_byte_list, control_file=None):
     raw_hex_byte_string = ' '.join(
         ['{:02x}'.format(int(int_byte)) for int_byte in int_byte_list + ([0] * (5 - len(int_byte_list)))]
     )
+
+    if DEBUG:
+        print('w: ', raw_hex_byte_string, file=sys.stderr)
 
     with open(control_file or CONTROL_FILE, 'w') as fout:
         fout.write(raw_hex_byte_string)

@@ -12,6 +12,8 @@ from json import dumps
 from nuc_wmi import CONTROL_FILE
 from nuc_wmi.led_app_notification import save_led_config
 
+import nuc_wmi
+
 def save_led_config_cli(cli_args=None):
     """
     Send a save LED configuration LED app notification.
@@ -38,9 +40,25 @@ def save_led_config_cli(cli_args=None):
         default=None,
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
+    parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         save_led_config(control_file=args.control_file)
 

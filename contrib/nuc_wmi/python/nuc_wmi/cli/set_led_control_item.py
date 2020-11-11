@@ -9,10 +9,12 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_BLINK_FREQUENCY, LED_COLOR_TYPE, LED_INDICATOR_OPTION
-from nuc_wmi import LED_TYPE
+from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_BLINK_FREQUENCY, LED_COLOR_TYPE
+from nuc_wmi import LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
+
+import nuc_wmi
 
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
 RGB_COLOR_3D = LED_COLOR['new']['RGB-color']['3d']
@@ -77,6 +79,20 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led',
         choices=LED_TYPE['new'],
         help='The LED for which to set the control item value.'
@@ -99,6 +115,8 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
 
     try: # pylint: disable=too-many-nested-blocks
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 

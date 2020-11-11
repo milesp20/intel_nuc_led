@@ -251,3 +251,23 @@ $ nuc_wmi-switch_led_type 'Multi color LED'
 $ nuc_wmi-wmi_interface_spec_compliance_version
 {"version": {"semver": "1.32", "type": "wmi_interface_spec_compliance"}}
 ```
+## Quirks Mode
+
+Unfortunately there can be a large set of differences across the devices and sometimes bugs in the BIOS
+implementation make it out into the wild. All CLI commands support `quirks mode` via the `-q` and `--quirks`
+CLI options.
+
+### NUC 10 Quirks
+
+* `NUC10_RETURN_VALUE`: This `quirks mode` changes the processing of the return value for the `query_led_color_type`
+    and `get_led_indicator_option` WMI methods for NUC 10 BIOS released before December 2020 that also did not support
+    the NUC 10 RGB header. In NUC 10 BIOS released before December 2020, the implementation for these two WMI methods do
+    not follow the spec, therefore they are only compatible `nuc_wmi` `1.0`. If you have the December 2020 or later BIOS,
+    then `nuc_wmi` `1.1` or later is required. `nuc_wmi` `2.1` was the first version to support this `quirks mode` so
+    any version `2.1` or greater supports all these BIOS.
+
+    In order to determine whether or not you need to enable this `quirks mode`, you can run `nuc_wmi-query_leds` and
+    if `RGB Header` is not an option then you will likely have to enable this `quirk`. Note that although only
+    `query_led_color_type` and `get_led_indicator_option` WMI method's return value processing is affected, some of the
+    other `nuc_wmi` CLI functions may call these two functions when processing CLI arguments, therefore you should always
+    enable this `quirks mode` if your BIOS version is old enough to be affected by it.

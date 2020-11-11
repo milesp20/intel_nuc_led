@@ -320,3 +320,35 @@ class TestGetLedNew(unittest.TestCase):
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 
         self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('Software Indicator'))
+
+        # Reset
+        nuc_wmi_read_control_file.return_value = None
+        nuc_wmi_read_control_file.reset_mock()
+        nuc_wmi_write_control_file.reset_mock()
+
+        # Branch 4: Test that get_led_indicator_option changes the return value format when QUIRKS mode
+        #           NUC10_RETURN_VALUE is enabled.
+
+        # Get HDD LED with HDD Activity Indicator
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_indicator_option'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0x01,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+
+        with patch('nuc_wmi.get_led_new.QUIRKS_ENABLED', ['NUC10_RETURN_VALUE']):
+            returned_get_led_indicator_option = get_led_indicator_option(
+                LED_TYPE['new'].index('HDD LED')
+            )
+
+            nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+
+            self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('HDD Activity Indicator'))

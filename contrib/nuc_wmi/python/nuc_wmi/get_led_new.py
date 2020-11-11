@@ -2,7 +2,7 @@
 `nuc_wmi.get_led_new` provides an interface to the new WMI get led set of functions.
 """
 
-from nuc_wmi import NucWmiError, RETURN_ERROR
+from nuc_wmi import NucWmiError, QUIRKS_ENABLED, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 from nuc_wmi.utils import byte_list_to_bitmap
 
@@ -83,6 +83,9 @@ def get_led_indicator_option(led_type, control_file=None):
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR[error_code])
+
+    if 'NUC10_RETURN_VALUE' in QUIRKS_ENABLED:
+        return led_indicator_option
 
     led_indicator_option_bitmaps = [led_indicator_option]
     led_indicator_option_bitmap = byte_list_to_bitmap(led_indicator_option_bitmaps)[::-1]

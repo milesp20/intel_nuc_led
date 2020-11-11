@@ -12,6 +12,8 @@ from json import dumps
 from nuc_wmi import CONTROL_FILE
 from nuc_wmi.switch_led_type import LED_COLOR_GROUP, switch_led_type
 
+import nuc_wmi
+
 def switch_led_type_cli(cli_args=None):
     """
     Creates a CLI interface on top of the `nuc_wmi.switch_led_type` `switch_led_type` function.
@@ -41,6 +43,20 @@ def switch_led_type_cli(cli_args=None):
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led_color_group',
         choices=LED_COLOR_GROUP,
         help='The LED color group type to set the LEDs to.'
@@ -48,6 +64,8 @@ def switch_led_type_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_color_group_index = LED_COLOR_GROUP.index(args.led_color_group)
 

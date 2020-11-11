@@ -12,6 +12,8 @@ from json import dumps
 from nuc_wmi import CONTROL_FILE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.set_led_indicator_option import set_led_indicator_option
 
+import nuc_wmi
+
 def set_led_indicator_option_cli(cli_args=None):
     """
     Creates a CLI interface on top of the `nuc_wmi.set_led_indicator_option` `set_led_indicator_option` function.
@@ -42,6 +44,20 @@ def set_led_indicator_option_cli(cli_args=None):
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led',
         choices=LED_TYPE['new'],
         help='The LED for which to set the indicator option.'
@@ -54,6 +70,8 @@ def set_led_indicator_option_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 

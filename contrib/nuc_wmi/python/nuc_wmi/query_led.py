@@ -2,7 +2,7 @@
 `nuc_wmi.query_led` provides an interface to the WMI query led set of functions.
 """
 
-from nuc_wmi import CONTROL_ITEM, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
+from nuc_wmi import CONTROL_ITEM, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, QUIRKS_ENABLED, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
 from nuc_wmi.utils import byte_list_to_bitmap
 
@@ -50,6 +50,12 @@ def query_led_color_type(led_type, control_file=None):
         led_color_type_bitmap_2,
         led_color_type_bitmap_1
     ]
+
+    if 'NUC10_RETURN_VALUE' in QUIRKS_ENABLED:
+        led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)
+
+        return int(led_color_type_bitmap, 2)
+
     led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)[::-1]
 
     return led_color_type_bitmap.index('1')

@@ -12,6 +12,9 @@ from json import dumps
 from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options, query_leds
 
+import nuc_wmi
+
+
 def query_led_color_type_cli(cli_args=None):
     """
     Creates a CLI interface on top of the `nuc_wmi.query_led` `query_led_color_type` function.
@@ -41,6 +44,20 @@ def query_led_color_type_cli(cli_args=None):
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led',
         choices=LED_TYPE['new'],
         help='The LED for which to get the color type.'
@@ -48,6 +65,8 @@ def query_led_color_type_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 
@@ -102,6 +121,20 @@ def query_led_control_items_cli(cli_args=None):
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led',
         choices=LED_TYPE['new'],
         help='The LED for which to get the control items.'
@@ -114,6 +147,8 @@ def query_led_control_items_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 
@@ -189,6 +224,20 @@ def query_led_indicator_options_cli(cli_args=None):
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
     parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
+    parser.add_argument(
         'led',
         choices=LED_TYPE['new'],
         help='The LED for which to get the indicator options.'
@@ -196,6 +245,8 @@ def query_led_indicator_options_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 
@@ -251,9 +302,25 @@ def query_leds_cli(cli_args=None):
         default=None,
         help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
     )
+    parser.add_argument(
+        '-d',
+        '--debug',
+        default=False,
+        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+    )
+    parser.add_argument(
+        '-q',
+        '--quirks',
+        action='append',
+        choices=nuc_wmi.QUIRKS_AVAILABLE,
+        default=[],
+        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
+    )
 
     try:
         args = parser.parse_args(args=cli_args)
+        nuc_wmi.DEBUG = args.debug
+        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         available_led_type_indexes = query_leds(control_file=args.control_file)
 

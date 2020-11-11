@@ -4,6 +4,8 @@ nuc_wmi CLI userland for the Intel NUC LED kernel module.
 
 CONTROL_FILE = '/proc/acpi/nuc_led'
 
+DEBUG = False
+
 LED_BLINK_BEHAVIOR_MULTI_COLOR = [
     'Solid',
     'Breathing',
@@ -567,6 +569,12 @@ CONTROL_ITEM = [
     # Disable
     None
 ]
+
+QUIRKS_AVAILABLE = [
+    'NUC10_RETURN_VALUE'
+]
+
+QUIRKS_ENABLED = []
 
 # Return value of FF FF FF FF is specific to the driver, not the actual WMI implementation.
 # Some of these return errors are the generic NUC WMI errors, not all are specific to the NUC LEDs.
