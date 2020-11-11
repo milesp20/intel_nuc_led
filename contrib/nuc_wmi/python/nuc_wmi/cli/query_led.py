@@ -46,7 +46,7 @@ def query_led_color_type_cli(cli_args=None):
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
@@ -123,7 +123,7 @@ def query_led_control_items_cli(cli_args=None):
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
@@ -226,7 +226,7 @@ def query_led_indicator_options_cli(cli_args=None):
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
@@ -305,7 +305,7 @@ def query_leds_cli(cli_args=None):
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(

@@ -66,7 +66,7 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
@@ -215,7 +215,7 @@ def get_led_indicator_option_cli(cli_args=None):
     parser.add_argument(
         '-d',
         '--debug',
-        default=False,
+        action='store_true',
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
