@@ -53,7 +53,7 @@ def get_led_cli(cli_args=None):
         '--quirks',
         action='append',
         choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=[],
+        default=None,
         help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
     )
     parser.add_argument(
@@ -64,15 +64,15 @@ def get_led_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
-        nuc_wmi.DEBUG = args.debug
-        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_color_type = LED_COLOR_TYPE['legacy'][args.led]
         led_type_index = LED_TYPE['legacy'].index(args.led)
 
         (brightness, frequency_index, color_index) = get_led( # pylint: disable=unbalanced-tuple-unpacking
             led_type_index,
-            control_file=args.control_file
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
         )
 
         led_color = LED_COLOR['legacy'][led_color_type][color_index]

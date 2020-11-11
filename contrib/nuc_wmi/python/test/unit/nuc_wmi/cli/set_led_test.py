@@ -75,7 +75,9 @@ class TestCliSetLed(unittest.TestCase):
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
             LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Cyan'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -129,7 +131,9 @@ class TestCliSetLed(unittest.TestCase):
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
             LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Cyan'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

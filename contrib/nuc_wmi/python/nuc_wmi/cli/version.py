@@ -51,16 +51,18 @@ def wmi_interface_spec_compliance_version_cli(cli_args=None):
         '--quirks',
         action='append',
         choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=[],
+        default=None,
         help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
     )
 
     try:
         args = parser.parse_args(args=cli_args)
-        nuc_wmi.DEBUG = args.debug
-        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
-        wmi_version = wmi_interface_spec_compliance_version(control_file=args.control_file)
+        wmi_version = wmi_interface_spec_compliance_version(
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
+        )
 
         wmi_semver = '.'.join([str(semver_component) for semver_component in wmi_version])
 

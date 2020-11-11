@@ -70,7 +70,9 @@ class TestCliGetLed(unittest.TestCase):
 
         nuc_wmi_get_led.assert_called_with(
             LED_TYPE['legacy'].index('S0 Ring LED'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -117,7 +119,9 @@ class TestCliGetLed(unittest.TestCase):
 
         nuc_wmi_get_led.assert_called_with(
             LED_TYPE['legacy'].index('S0 Ring LED'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

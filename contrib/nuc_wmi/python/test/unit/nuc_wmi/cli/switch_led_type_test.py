@@ -61,7 +61,10 @@ class TestCliSwitchLedType(unittest.TestCase):
         returned_switch_led_type_cli = switch_led_type_cli([LED_COLOR_GROUP[0]])
 
         nuc_wmi_switch_led_type.assert_called_with(
-            LED_COLOR_GROUP.index('Single color LED'), control_file=None
+            LED_COLOR_GROUP.index('Single color LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -97,7 +100,10 @@ class TestCliSwitchLedType(unittest.TestCase):
         returned_switch_led_type_cli = switch_led_type_cli([LED_COLOR_GROUP[0]])
 
         nuc_wmi_switch_led_type.assert_called_with(
-            LED_COLOR_GROUP.index('Single color LED'), control_file=None
+            LED_COLOR_GROUP.index('Single color LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

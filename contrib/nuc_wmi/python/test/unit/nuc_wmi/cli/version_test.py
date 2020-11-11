@@ -64,7 +64,9 @@ class TestCliVersion(unittest.TestCase):
         returned_wmi_interface_spec_compliance_version_cli = wmi_interface_spec_compliance_version_cli([])
 
         nuc_wmi_cli_wmi_interface_spec_compliance_version.assert_called_with(
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -101,7 +103,9 @@ class TestCliVersion(unittest.TestCase):
         returned_wmi_interface_spec_compliance_version_cli = wmi_interface_spec_compliance_version_cli([])
 
         nuc_wmi_cli_wmi_interface_spec_compliance_version.assert_called_with(
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

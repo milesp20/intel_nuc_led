@@ -79,10 +79,18 @@ class TestQueryLed(unittest.TestCase):
 
         nuc_wmi_read_control_file.return_value = read_byte_list
         returned_query_led_color_type = query_led_color_type(
-            LED_TYPE['new'].index('HDD LED')
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
 
@@ -118,10 +126,18 @@ class TestQueryLed(unittest.TestCase):
 
         with self.assertRaises(NucWmiError) as err:
             query_led_color_type(
-                len(LED_TYPE['new']) # Incorrect led index
+                len(LED_TYPE['new']), # Incorrect led index
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -156,10 +172,18 @@ class TestQueryLed(unittest.TestCase):
 
         nuc_wmi_read_control_file.return_value = read_byte_list
         returned_query_led_color_type = query_led_color_type(
-            LED_TYPE['new'].index('HDD LED')
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
 
@@ -194,14 +218,21 @@ class TestQueryLed(unittest.TestCase):
 
         nuc_wmi_read_control_file.return_value = read_byte_list
 
-        with patch('nuc_wmi.query_led.QUIRKS_ENABLED', ['NUC10_RETURN_VALUE']):
-            returned_query_led_color_type = query_led_color_type(
-                LED_TYPE['new'].index('HDD LED')
-            )
+        returned_query_led_color_type = query_led_color_type(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=['NUC10_RETURN_VALUE']
+        )
 
-            nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=['NUC10_RETURN_VALUE']
+        )
 
-            self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
+        self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
 
 
     @patch('nuc_wmi.query_led.query_led_color_type')
@@ -244,11 +275,24 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
         returned_query_led_control_items = query_led_control_items(
             LED_TYPE['new'].index('HDD LED'),
-            LED_INDICATOR_OPTION.index('HDD Activity Indicator')
+            LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
-        nuc_wmi_query_led_color_type.assert_called_with(LED_TYPE['new'].index('HDD LED'), control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
+        nuc_wmi_query_led_color_type.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
@@ -290,11 +334,24 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
         returned_query_led_control_items = query_led_control_items(
             LED_TYPE['new'].index('HDD LED'),
-            LED_INDICATOR_OPTION_DISABLED
+            LED_INDICATOR_OPTION_DISABLED,
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
-        nuc_wmi_query_led_color_type.assert_called_with(LED_TYPE['new'].index('HDD LED'), control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
+        nuc_wmi_query_led_color_type.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_led_control_items, expected_query_led_control_items)
 
@@ -340,11 +397,24 @@ class TestQueryLed(unittest.TestCase):
         with self.assertRaises(NucWmiError) as err:
             query_led_control_items(
                 len(LED_TYPE['new']), # Invalid led index
-                LED_INDICATOR_OPTION.index('HDD Activity Indicator')
+                LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
-        nuc_wmi_query_led_color_type.assert_called_with(len(LED_TYPE['new']), control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
+        nuc_wmi_query_led_color_type.assert_called_with(
+            len(LED_TYPE['new']),
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -379,10 +449,18 @@ class TestQueryLed(unittest.TestCase):
 
         nuc_wmi_read_control_file.return_value = read_byte_list
         returned_query_led_indicator_options = query_led_indicator_options(
-            LED_TYPE['new'].index('HDD LED')
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_led_indicator_options, expected_query_led_indicator_options)
 
@@ -418,10 +496,18 @@ class TestQueryLed(unittest.TestCase):
 
         with self.assertRaises(NucWmiError) as err:
             query_led_indicator_options(
-                len(LED_TYPE['new']) # Incorrect led index
+                len(LED_TYPE['new']), # Incorrect led index
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -453,9 +539,18 @@ class TestQueryLed(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-        returned_query_leds = query_leds()
+        returned_query_leds = query_leds(
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_query_leds, expected_query_leds)
 
@@ -488,8 +583,17 @@ class TestQueryLed(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            query_leds()
+            query_leds(
+                control_file=None,
+                debug=False,
+                quirks=None
+            )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')

@@ -74,7 +74,7 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         '--quirks',
         action='append',
         choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=[],
+        default=None,
         help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
     )
     parser.add_argument(
@@ -95,19 +95,21 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
 
     try:
         args = parser.parse_args(args=cli_args)
-        nuc_wmi.DEBUG = args.debug
-        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 
         available_indicator_options = query_led_indicator_options(
             led_type_index,
-            control_file=args.control_file
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
         )
 
         led_color_type_index = query_led_color_type(
             led_type_index,
-            control_file=args.control_file
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
         )
 
         led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
@@ -135,7 +137,9 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             led_type_index,
             led_indicator_option_index,
             control_item_index,
-            control_file=args.control_file
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
         )
 
         # Convert the control item value index into its value
@@ -146,7 +150,9 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 available_control_item_indexes = query_led_control_items(
                     led_type_index,
                     led_indicator_option_index,
-                    control_file=args.control_file
+                    control_file=args.control_file,
+                    debug=args.debug,
+                    quirks=args.quirks
                 )
 
                 for control_item_index2 in available_control_item_indexes:
@@ -223,7 +229,7 @@ def get_led_indicator_option_cli(cli_args=None):
         '--quirks',
         action='append',
         choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=[],
+        default=None,
         help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
     )
     parser.add_argument(
@@ -234,12 +240,15 @@ def get_led_indicator_option_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
-        nuc_wmi.DEBUG = args.debug
-        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_type_index = LED_TYPE['new'].index(args.led)
 
-        led_indicator_option_index = get_led_indicator_option(led_type_index, control_file=args.control_file)
+        led_indicator_option_index = get_led_indicator_option(
+            led_type_index,
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
+        )
 
         led_indicator_option = LED_INDICATOR_OPTION[led_indicator_option_index]
 

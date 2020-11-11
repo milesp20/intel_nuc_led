@@ -51,9 +51,18 @@ class TestLedAppNotification(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-        returned_save_led_config = save_led_config()
+        returned_save_led_config = save_led_config(
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_save_led_config, None)
 
@@ -76,8 +85,17 @@ class TestLedAppNotification(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            save_led_config()
+            save_led_config(
+                control_file=None,
+                debug=False,
+                quirks=None
+            )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')

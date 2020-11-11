@@ -70,7 +70,9 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_set_led_indicator_option.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -118,7 +120,9 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_set_led_indicator_option.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)
@@ -158,7 +162,9 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_set_led_indicator_option.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
-            control_file=None
+            control_file=None,
+            debug=False,
+            quirks=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(

@@ -63,10 +63,18 @@ class TestSetLed(unittest.TestCase):
             LED_TYPE['legacy'].index('S0 Ring LED'),
             LED_BRIGHTNESS['legacy'].index('63'),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
-            LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow')
+            LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_set_led, None)
 
@@ -101,10 +109,18 @@ class TestSetLed(unittest.TestCase):
                 len(LED_TYPE['legacy']), # Set incorrect led
                 LED_BRIGHTNESS['legacy'].index('63'),
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
-                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow')
+                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')
 
@@ -136,10 +152,18 @@ class TestSetLed(unittest.TestCase):
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 len(LED_BRIGHTNESS['legacy']), # Set incorrect brightness
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
-                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow')
+                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -171,10 +195,18 @@ class TestSetLed(unittest.TestCase):
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 LED_BRIGHTNESS['legacy'].index('63'),
                 len(LED_BLINK_FREQUENCY['legacy']), # Set incorrect frequency
-                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow')
+                LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -206,9 +238,17 @@ class TestSetLed(unittest.TestCase):
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 LED_BRIGHTNESS['legacy'].index('63'),
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
-                len(LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']]) # Set incorrect color
+                len(LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']]), # Set incorrect color
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')

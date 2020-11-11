@@ -53,7 +53,7 @@ def switch_led_type_cli(cli_args=None):
         '--quirks',
         action='append',
         choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=[],
+        default=None,
         help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
     )
     parser.add_argument(
@@ -64,12 +64,15 @@ def switch_led_type_cli(cli_args=None):
 
     try:
         args = parser.parse_args(args=cli_args)
-        nuc_wmi.DEBUG = args.debug
-        nuc_wmi.QUIRKS_ENABLED = args.quirks
 
         led_color_group_index = LED_COLOR_GROUP.index(args.led_color_group)
 
-        switch_led_type(led_color_group_index, control_file=args.control_file)
+        switch_led_type(
+            led_color_group_index,
+            control_file=args.control_file,
+            debug=args.debug,
+            quirks=args.quirks
+        )
 
         print(
             dumps(

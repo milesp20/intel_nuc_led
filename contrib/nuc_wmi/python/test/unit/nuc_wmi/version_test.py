@@ -54,9 +54,18 @@ class TestVersion(unittest.TestCase):
         read_byte_list = [0x00, 0x36, 0x01, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-        returned_wmi_interface_spec_compliance_version = wmi_interface_spec_compliance_version()
+        returned_wmi_interface_spec_compliance_version = wmi_interface_spec_compliance_version(
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_wmi_interface_spec_compliance_version, expected_wmi_interface_spec_compliance_version)
 
@@ -80,8 +89,17 @@ class TestVersion(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            wmi_interface_spec_compliance_version()
+            wmi_interface_spec_compliance_version(
+                control_file=None,
+                debug=False,
+                quirks=None
+            )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')

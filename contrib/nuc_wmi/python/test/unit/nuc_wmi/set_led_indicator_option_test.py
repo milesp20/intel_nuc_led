@@ -64,10 +64,18 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
         returned_set_led_indicator_option = set_led_indicator_option(
             LED_TYPE['new'].index('HDD LED'),
-            LED_INDICATOR_OPTION.index('HDD Activity Indicator')
+            LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_set_led_indicator_option, None)
 
@@ -103,10 +111,18 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         with self.assertRaises(NucWmiError) as err:
             set_led_indicator_option(
                 len(LED_TYPE['new']), # Incorrect led
-                LED_INDICATOR_OPTION.index('HDD Activity Indicator')
+                LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+                control_file=None,
+                debug=False,
+                quirks=None
             )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
@@ -140,9 +156,17 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
         returned_set_led_indicator_option = set_led_indicator_option(
             LED_TYPE['new'].index('HDD LED'),
-            LED_INDICATOR_OPTION.index('Software Indicator')
+            LED_INDICATOR_OPTION.index('Software Indicator'),
+            control_file=None,
+            debug=False,
+            quirks=None
         )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_set_led_indicator_option, None)

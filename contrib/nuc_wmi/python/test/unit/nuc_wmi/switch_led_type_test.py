@@ -51,9 +51,19 @@ class TestSwitchLedType(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-        returned_switch_led_type = switch_led_type(LED_COLOR_GROUP.index('Single color LED'))
+        returned_switch_led_type = switch_led_type(
+            LED_COLOR_GROUP.index('Single color LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_switch_led_type, None)
 
@@ -76,8 +86,18 @@ class TestSwitchLedType(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            switch_led_type(len(LED_COLOR_GROUP))
+            switch_led_type(
+                len(LED_COLOR_GROUP),
+                control_file=None,
+                debug=False,
+                quirks=None
+            )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')

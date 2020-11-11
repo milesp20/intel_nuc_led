@@ -61,9 +61,19 @@ class TestGetLed(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-        returned_get_led = get_led(LED_TYPE['legacy'].index('S0 Ring LED'))
+        returned_get_led = get_led(
+            LED_TYPE['legacy'].index('S0 Ring LED'),
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(returned_get_led, tuple(read_byte_list[1:]))
 
@@ -91,8 +101,18 @@ class TestGetLed(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            get_led(len(LED_TYPE['legacy'])) # Set incorrect led
+            get_led(
+                len(LED_TYPE['legacy']),
+                control_file=None,
+                debug=False,
+                quirks=None
+            ) # Set incorrect led
 
-        nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None
+        )
 
         self.assertEqual(str(err.exception), 'Error (Undefined device)')
