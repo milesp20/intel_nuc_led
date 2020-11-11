@@ -57,10 +57,16 @@ class TestLedAppNotification(unittest.TestCase):
 
         self.assertEqual(returned_save_led_config, None)
 
-        # Reset
-        nuc_wmi_read_control_file.return_value = None
-        nuc_wmi_read_control_file.reset_mock()
-        nuc_wmi_write_control_file.reset_mock()
+
+    @patch('nuc_wmi.led_app_notification.read_control_file')
+    @patch('nuc_wmi.led_app_notification.write_control_file')
+    def test_save_led_config2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `save_led_config` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.led_app_notification.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.led_app_notification.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that save_led_config raises an exception when the control file returns an
         #           error code.
@@ -70,7 +76,7 @@ class TestLedAppNotification(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            returned_save_led_config = save_led_config()
+            save_led_config()
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 

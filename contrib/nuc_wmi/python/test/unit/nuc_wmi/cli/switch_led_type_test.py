@@ -71,10 +71,24 @@ class TestCliSwitchLedType(unittest.TestCase):
 
         self.assertEqual(returned_switch_led_type_cli, None)
 
-        # Reset
-        nuc_wmi_switch_led_type.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.switch_led_type.print')
+    @patch('nuc_wmi.cli.switch_led_type.sys.exit')
+    @patch('nuc_wmi.cli.switch_led_type.switch_led_type')
+    def test_switch_led_type_cli2(
+            self,
+            nuc_wmi_switch_led_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `switch_led_type_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.switch_led_type.switch_led_type is \
+                        nuc_wmi_switch_led_type)
+        self.assertTrue(nuc_wmi.cli.switch_led_type.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.switch_led_type.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that switch_led_type_cli captures raised errors and returns
         #           the proper JSON error response and exit code.

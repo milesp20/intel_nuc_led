@@ -87,17 +87,26 @@ class TestCliGetLed(unittest.TestCase):
 
         self.assertEqual(returned_get_led_cli, None)
 
-        # Reset
-        nuc_wmi_get_led.return_value = None
-        nuc_wmi_get_led.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.get_led.print')
+    @patch('nuc_wmi.cli.get_led.sys.exit')
+    @patch('nuc_wmi.cli.get_led.get_led')
+    def test_get_led_cli2(
+            self,
+            nuc_wmi_get_led,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `get_led_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.get_led.get_led is nuc_wmi_get_led)
+        self.assertTrue(nuc_wmi.cli.get_led.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.get_led.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that get_led_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
-        expected_brightness = str(LED_BRIGHTNESS['legacy'].index('47'))
-        expected_frequency = LED_BLINK_FREQUENCY['legacy'].index('Always on')
-        expected_color = LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Cyan')
         nuc_wmi_get_led.side_effect = NucWmiError('Error (Function not supported)')
 
         returned_get_led_cli = get_led_cli(

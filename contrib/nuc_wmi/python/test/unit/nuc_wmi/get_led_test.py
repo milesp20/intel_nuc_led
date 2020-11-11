@@ -67,10 +67,16 @@ class TestGetLed(unittest.TestCase):
 
         self.assertEqual(returned_get_led, tuple(read_byte_list[1:]))
 
-        # Reset
-        nuc_wmi_read_control_file.return_value = None
-        nuc_wmi_read_control_file.reset_mock()
-        nuc_wmi_write_control_file.reset_mock()
+
+    @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.write_control_file')
+    def test_get_led2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `get_led` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that get_led raises an exception when the control file returns an
         #           error code.
@@ -85,7 +91,7 @@ class TestGetLed(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            returned_get_led = get_led(len(LED_TYPE['legacy'])) # Set incorrect led
+            get_led(len(LED_TYPE['legacy'])) # Set incorrect led
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 

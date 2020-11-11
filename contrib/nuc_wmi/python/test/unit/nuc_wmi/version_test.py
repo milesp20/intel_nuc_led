@@ -60,21 +60,27 @@ class TestVersion(unittest.TestCase):
 
         self.assertEqual(returned_wmi_interface_spec_compliance_version, expected_wmi_interface_spec_compliance_version)
 
-        # Reset
-        nuc_wmi_read_control_file.return_value = None
-        nuc_wmi_read_control_file.reset_mock()
-        nuc_wmi_write_control_file.reset_mock()
+
+    @patch('nuc_wmi.version.read_control_file')
+    @patch('nuc_wmi.version.write_control_file')
+    def test_wmi_interface_spec_compliance_version2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `wmi_interface_spec_compliance_version` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.version.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.version.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that wmi_interface_spec_compliance_version raises an exception when the control file returns an
         #           error code.
-        expected_wmi_interface_spec_compliance_version = (0x01, 0x36)
         expected_write_byte_list = [METHOD_ID, VERSION_TYPE.index('wmi_interface_spec_compliance_version')]
         read_byte_list = [0xE1, 0x00, 0x00, 0x00] # Return function not supported
 
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            returned_wmi_interface_spec_compliance_version = wmi_interface_spec_compliance_version()
+            wmi_interface_spec_compliance_version()
 
         nuc_wmi_write_control_file.assert_called_with(expected_write_byte_list, control_file=None)
 

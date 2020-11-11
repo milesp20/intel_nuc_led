@@ -71,7 +71,7 @@ class TestControlFile(unittest.TestCase):
 
         # Branch 1: Test that `read_control_file` raises exception when `nuc_wmi.CONTROL_FILE` doesnt exist
         #           Assumes we are testing on a system without the driver installed.
-        with self.assertRaises((IOError, OSError)) as err:
+        with self.assertRaises((IOError, OSError)):
             read_control_file()
 
         nuc_wmi_print.assert_not_called()
@@ -80,7 +80,14 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.control_file.print')
+    def test_read_control_file2(self, nuc_wmi_print):
+        """
+        Tests that `read_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that `read_control_file` raise exception if less than 4 bytes are read
         with open(self.control_file.name, 'w') as fout:
@@ -98,7 +105,14 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.control_file.print')
+    def test_read_control_file3(self, nuc_wmi_print):
+        """
+        Tests that `read_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 3: Test that overriding control file with existing file works
         with open(self.control_file.name, 'w') as fout:
@@ -114,20 +128,33 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.control_file.print')
+    def test_read_control_file4(self, nuc_wmi_print):
+        """
+        Tests that `read_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 4: Test that overriding control file with non existing file raises exception
         non_existent_file = NamedTemporaryFile()
 
         non_existent_file.close()
 
-        with self.assertRaises((IOError, OSError)) as err:
+        with self.assertRaises((IOError, OSError)):
             read_control_file(control_file=non_existent_file.name)
 
         nuc_wmi_print.assert_not_called()
 
-        # Reset
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.control_file.print')
+    def test_read_control_file5(self, nuc_wmi_print):
+        """
+        Tests that `read_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 5: Test that exception is raised if NUC WMI returns a hex byte outside 0-255 range
         with open(self.control_file.name, 'w') as fout:
@@ -140,8 +167,14 @@ class TestControlFile(unittest.TestCase):
 
         nuc_wmi_print.assert_not_called()
 
-        # Reset
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.control_file.print')
+    def test_read_control_file6(self, nuc_wmi_print):
+        """
+        Tests that `read_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 6: Test that debug logging prints read bytes
         with open(self.control_file.name, 'w') as fout:
@@ -158,6 +191,7 @@ class TestControlFile(unittest.TestCase):
                 file=sys.stderr
             )
 
+
     @patch('nuc_wmi.control_file.print')
     def test_write_control_file(self, nuc_wmi_print):
         """
@@ -168,7 +202,7 @@ class TestControlFile(unittest.TestCase):
 
         # Branch 1: Tests that `write_control_file` raises the expected exception when `nuc_wmi.CONTROL_FILE` doesnt
         #           exist. Assumes we are testing on a system without the driver installed.
-        with self.assertRaises((IOError, OSError)) as err:
+        with self.assertRaises((IOError, OSError)):
             read_control_file()
 
         nuc_wmi_print.assert_not_called()
@@ -177,10 +211,17 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
 
-        # Branch 2, 3: Tests that the number of bytes written to the control file are padded to 5 bytes, and that
-        #              integer byte list is properly written to the control file.
+    @patch('nuc_wmi.control_file.print')
+    def test_write_control_file2(self, nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 2: Tests that the number of bytes written to the control file are padded to 5 bytes, and that
+        #           integer byte list is properly written to the control file.
         byte_list = [0x0D, 0x0E, 0x0A, 0x0D]
         expected_byte_string = '0d 0e 0a 0d 00'
 
@@ -197,9 +238,16 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
 
-        # Branch 4: Tests that an string byte list is properly written to the control file
+    @patch('nuc_wmi.control_file.print')
+    def test_write_control_file3(self, nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 3: Tests that an string byte list is properly written to the control file
         byte_list = [str(0x0D), str(0x0E), str(0x0A), str(0x0D)]
         expected_byte_string = '0d 0e 0a 0d 00'
 
@@ -216,9 +264,16 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
 
-        # Branch 5: Test that byte strings outside of the 0-255 value raise an exception
+    @patch('nuc_wmi.control_file.print')
+    def test_write_control_file4(self, nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 4: Test that byte strings outside of the 0-255 value raise an exception
         byte_list = [0xFFF]
 
         with self.assertRaises(NucWmiError) as err:
@@ -232,9 +287,16 @@ class TestControlFile(unittest.TestCase):
         with open(self.control_file.name, 'w') as fout:
             fout.truncate()
 
-        nuc_wmi_print.reset_mock()
 
-        # Branch 6: Test that debug logging prints written bytess
+    @patch('nuc_wmi.control_file.print')
+    def test_write_control_file5(self, nuc_wmi_print):
+        """
+        Tests that `write_control_file` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 5: Test that debug logging prints written bytess
 
         byte_list = [0x0D, 0x0E, 0x0A, 0x0D]
         expected_byte_string = '0d 0e 0a 0d 00'

@@ -71,10 +71,16 @@ class TestSetLedIndicatorOption(unittest.TestCase):
 
         self.assertEqual(returned_set_led_indicator_option, None)
 
-        # Reset
-        nuc_wmi_read_control_file.return_value = None
-        nuc_wmi_read_control_file.reset_mock()
-        nuc_wmi_write_control_file.reset_mock()
+
+    @patch('nuc_wmi.set_led_indicator_option.read_control_file')
+    @patch('nuc_wmi.set_led_indicator_option.write_control_file')
+    def test_set_led_indicator_option2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `set_led_indicator_option` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.set_led_indicator_option.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_indicator_option.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that set_led_indicator_option raises an exception when the control file returns an
         #           error code.
@@ -95,7 +101,7 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         nuc_wmi_read_control_file.return_value = read_byte_list
 
         with self.assertRaises(NucWmiError) as err:
-            returned_set_led_indicator_option = set_led_indicator_option(
+            set_led_indicator_option(
                 len(LED_TYPE['new']), # Incorrect led
                 LED_INDICATOR_OPTION.index('HDD Activity Indicator')
             )
@@ -104,12 +110,18 @@ class TestSetLedIndicatorOption(unittest.TestCase):
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
-        # Reset
-        nuc_wmi_read_control_file.return_value = None
-        nuc_wmi_read_control_file.reset_mock()
-        nuc_wmi_write_control_file.reset_mock()
 
-        # Branch 1: Test that set_led_indicator_option sends the expected byte string to the control file
+    @patch('nuc_wmi.set_led_indicator_option.read_control_file')
+    @patch('nuc_wmi.set_led_indicator_option.write_control_file')
+    def test_set_led_indicator_option3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `set_led_indicator_option` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.set_led_indicator_option.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_indicator_option.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 3: Test that set_led_indicator_option sends the expected byte string to the control file
         #           and that the returned control file response is properly processed.
 
         # Set HDD LED with Software Indicator

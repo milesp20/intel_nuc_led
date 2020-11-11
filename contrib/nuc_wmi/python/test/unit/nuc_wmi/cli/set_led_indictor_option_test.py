@@ -85,10 +85,24 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
 
         self.assertEqual(returned_set_led_indicator_option_cli, None)
 
-        # Reset
-        nuc_wmi_set_led_indicator_option.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_indicator_option.print')
+    @patch('nuc_wmi.cli.set_led_indicator_option.sys.exit')
+    @patch('nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option')
+    def test_set_led_indicator_option_cli2(
+            self,
+            nuc_wmi_set_led_indicator_option,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_indicator_option_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option is \
+                        nuc_wmi_set_led_indicator_option)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that set_led_indicator_option_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
@@ -111,11 +125,24 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
 
         self.assertEqual(returned_set_led_indicator_option_cli, None)
 
-        # Reset
-        nuc_wmi_set_led_indicator_option.side_effect = None
-        nuc_wmi_set_led_indicator_option.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_indicator_option.print')
+    @patch('nuc_wmi.cli.set_led_indicator_option.sys.exit')
+    @patch('nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option')
+    def test_set_led_indicator_option_cli3(
+            self,
+            nuc_wmi_set_led_indicator_option,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_indicator_option_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.set_led_indicator_option is \
+                        nuc_wmi_set_led_indicator_option)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_indicator_option.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 3: Test that set_led_indicator_option_cli returns the proper JSON response and exit
         #           code for valid cli args

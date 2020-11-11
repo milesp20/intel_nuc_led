@@ -121,15 +121,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli2( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that set_led_control_item_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
@@ -173,16 +191,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_set_led_control_item.side_effect = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli3( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 3: Test that set_led_control_item_cli raises proper error when an invalid indicator
         #           option for the current LED is chosen and returns he proper JSON error response and exit code.
@@ -214,15 +249,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli4( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 4: Test that set_led_control_item_cli raises proper error when there are no control items for
         #           for the current LED and indicator option chosen and returns he proper JSON error response and exit
@@ -257,15 +310,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli5( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 5: Test that set_led_control_item_cli raises proper error when an invalid control item for
         #           for the current LED and indicator option is chosen and returns the proper JSON error response and
@@ -300,15 +371,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli6( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 6: Test setting control item that uses color
 
@@ -361,15 +450,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli7( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 7: Test setting control item that uses wrong color raises proper error
 
@@ -403,15 +510,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli8( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 8: Test setting control item that uses color
 
@@ -469,16 +594,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_control_items.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli9( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 9: Test setting control item that uses color
 
@@ -536,16 +678,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_control_items.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli10( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 10: Test setting control item that uses color
 
@@ -603,16 +762,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_control_items.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli11( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 11: Test setting control item that uses color
 
@@ -670,16 +846,33 @@ class TestCliSetLedControlItem(unittest.TestCase):
 
         self.assertEqual(returned_set_led_control_item_cli, None)
 
-        # Reset
-        nuc_wmi_query_led_color_type.return_value = None
-        nuc_wmi_query_led_control_items.return_value = None
-        nuc_wmi_query_led_indicator_options.return_value = None
-        nuc_wmi_query_led_color_type.reset_mock()
-        nuc_wmi_query_led_control_items.reset_mock()
-        nuc_wmi_query_led_indicator_options.reset_mock()
-        nuc_wmi_set_led_control_item.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    def test_set_led_control_item_cli12( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 12: Test setting control item that uses blinking frequency
 

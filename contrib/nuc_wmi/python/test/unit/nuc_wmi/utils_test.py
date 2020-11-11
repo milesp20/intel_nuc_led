@@ -44,6 +44,12 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual(str(err.exception), 'int byte values must be 0-255')
 
+
+    def test_byte_list_to_bitmap2(self):
+        """
+        Tests that `byte_list_to_bitmap` returns the expected exceptions, return values, or outputs.
+        """
+
         # Branch 2: Test that `byte_list_to_bitmap` returns the proper bitmap string regardless of whether the inputs
         #           are ints or str.
         self.assertEqual(
@@ -56,12 +62,24 @@ class TestUtils(unittest.TestCase):
             '00001101000011100000101000001101'
         )
 
+
+    def test_byte_list_to_bitmap3(self):
+        """
+        Tests that `byte_list_to_bitmap` returns the expected exceptions, return values, or outputs.
+        """
+
         # Branch 3: Tests that `byte_list_to_bitmap` explicitly pads each byte to 8 bits.
         self.assertEqual(
             byte_list_to_bitmap([0x00]),
             '00000000'
         )
 
+
+    def test_byte_list_to_bitmap4(self):
+        """
+        Tests that `byte_list_to_bitmap` returns the expected exceptions, return values, or outputs.
+        """
+
         # Branch 4: Test that `byte_list_bitmap` raises an exception when the input value is not an int
-        with self.assertRaises(ValueError) as err:
+        with self.assertRaises(ValueError):
             byte_list_to_bitmap(["0xZ"])

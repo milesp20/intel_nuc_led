@@ -74,11 +74,25 @@ class TestCliVersion(unittest.TestCase):
 
         self.assertEqual(returned_wmi_interface_spec_compliance_version_cli, None)
 
-        # Reset
-        nuc_wmi_cli_wmi_interface_spec_compliance_version.return_value = None
-        nuc_wmi_cli_wmi_interface_spec_compliance_version.reset_mock()
-        nuc_wmi_sys_exit.reset_mock()
-        nuc_wmi_print.reset_mock()
+
+    @patch('nuc_wmi.cli.version.print')
+    @patch('nuc_wmi.cli.version.sys.exit')
+    @patch('nuc_wmi.cli.version.wmi_interface_spec_compliance_version')
+    def test_wmi_interface_spec_compliance_version_cli2(
+            self,
+            nuc_wmi_cli_wmi_interface_spec_compliance_version,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `wmi_interface_spec_compliance_version_cli` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.version.wmi_interface_spec_compliance_version is \
+                        nuc_wmi_cli_wmi_interface_spec_compliance_version)
+        self.assertTrue(nuc_wmi.cli.version.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.version.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that wmi_interface_spec_compliance_version_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
