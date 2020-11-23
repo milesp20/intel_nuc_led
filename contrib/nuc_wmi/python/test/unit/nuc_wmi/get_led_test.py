@@ -94,7 +94,7 @@ class TestGetLed(unittest.TestCase):
         # Incorrect led
         expected_write_byte_list = [
             METHOD_ID,
-            len(LED_TYPE['legacy']), # Set incorrect led
+            len(LED_TYPE['legacy']) # Set incorrect led
         ]
         read_byte_list = [0xE2, 0x00, 0x00, 0x00] # Return undefined device
 
@@ -116,3 +116,43 @@ class TestGetLed(unittest.TestCase):
         )
 
         self.assertEqual(str(err.exception), 'Error (Undefined device)')
+
+
+    @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.write_control_file')
+    def test_get_led3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `get_led` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 3: Test that get_led returns a non null value when we enable the quirks
+        #           mode NUC7_FREQUENCY_DEFAULT.
+
+        # Incorrect led
+        expected_write_byte_list = [
+            METHOD_ID,
+            LED_TYPE['legacy'].index('S0 Ring LED')
+        ]
+        read_byte_list = [0x00, 0x00, 0x00, 0x00]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+
+
+        returned_get_led = get_led(
+            LED_TYPE['legacy'].index('S0 Ring LED'),
+            control_file=None,
+            debug=False,
+            quirks=['NUC7_FREQUENCY_DEFAULT']
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=['NUC7_FREQUENCY_DEFAULT']
+        )
+
+        self.assertEqual(returned_get_led, tuple([0x00, 0x01, 0x00]))

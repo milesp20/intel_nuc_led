@@ -37,4 +37,10 @@ def get_led(led, control_file=None, debug=False, quirks=None):
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
 
+    # On a factory fresh NUC 7, the BIOS can return a default frequency value of 0 which
+    # is not a valid enum range value and this causes the frequency value to be returned as
+    # null due to how we implemented the enums.
+    if quirks is not None and 'NUC7_FREQUENCY_DEFAULT' in quirks and frequency == 0:
+        frequency = 0x01
+
     return tuple([brightness, frequency, color])

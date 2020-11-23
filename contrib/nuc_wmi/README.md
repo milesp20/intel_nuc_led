@@ -257,6 +257,15 @@ Unfortunately there can be a large set of differences across the devices and som
 implementation make it out into the wild. All CLI commands support `quirks mode` via the `-q` and `--quirks`
 CLI options.
 
+### NUC 7 Quirks
+
+* `NUC7_FREQUENCY_DEFAULT`: This `quirks mode` changes the processing of the return value for the `get_led`
+    WMI method for NUC 7 BIOS. This affects NUC 7 in a factory default state where the NUC LEDs state hasnt been changed.
+    In a factory default state, the NUC 7 can properly return `0` for `brightness` and `0` for `color` (aka `Disabled`),
+    however it also returns `0` for `frequency` which is an invalid enum value according to the documentation. Enabling
+    this quirks mode overrides any `0` value returned for `frequency` and converts it to `1` for `1Hz`. Enabling this
+    quirks mode on a BIOS not affected by this issue will not cause a change in the return value for `frequency`.
+
 ### NUC 10 Quirks
 
 * `NUC10_RETURN_VALUE`: This `quirks mode` changes the processing of the return value for the `query_led_color_type`
