@@ -1,42 +1,37 @@
-# Intel NUC LED Control: NUC6CAY, NUC7i[x]BN and NUC10i3FNH, maybe more
+# Intel NUC WMI kernel driver and Python userland CLI tools
 
-This is a simple kernel module to control LEDs on Intel NUCs, with
-optional high-level userspace tools.
+This is a simple kernel module that serves as an RPC interface for internal WMI functions
+on Intel NUCs through a control file leveraging the Linux kernel /proc tree with
+optional high-level userspace tools written in Python.
 
-It is based on the previous work at
-[github.com/milesp20/intel_nuc_led](https://github.com/milesp20/intel_nuc_led/), but
-with significant changes:
+The current `2.0` version of the kernel driver is backwards incompatible with the original `1.0`
+version which only supported NUC 6 and 7. Reference the
+[old documentation](https://github.com/milesp20/intel_nuc_led/tree/6a3850eadff554053ca7d95e830a624b28c53670)
+for `1.0` usage.
 
-* it can be used with the more recent NUC10 as well
-* it tracks the more recent kernel APIs
-* the kernel API is very low-level, and you'll be sending and receiving bytes
-* higher-level commands like "turn the power LED to flashing red" are not
-  implemented in the kernel module itself, but in user space.
+Please be aware that while this repo was originally intended to control the NUC LED, the driver has
+now been renamed to be generic and not specific to the LED now that its a low level interface to the WMI
+functions since some NUC models also support controlling the HDMI and USB bus via other WMI functions. We
+currently do not implement CLI helper methods for those and only support the NUC LED WMI functions in the
+current userland.
 
-This was primarily created for [UBOS](https://ubos.net/), a Linux distro for
-self-hosting (based on Arch) and is mostly tested there. But chances are you
-can run it on other distros as well.
-
-Pull requests appreciated. And reports if you could (or could not) get it
+Pull requests appreciated as well reports if you could (or could not) get it
 running on other NUCs with software-controllable LEDs, and other distros.
 
 ## Requirements
 
 Requirements:
 
-* Intel NUC6CAY, or NUC7i[x]BN or NUC10i3FNH, maybe more
-* BIOS AY0038 or BN0043 or later
+* Intel NUC 6 through 12
 * ACPI/WMI support in kernel
-* LED(s) set to `SW Control` in BIOS for those (older) NUCs where this can
-  only be changed in the BIOS, not via API.
 
 ## Building the kernel module
 
-The `nuc_led` kernel module supports building and installing "from source" directly or using `dkms`.
+The `nuc_wmi` kernel module supports building and installing "from source" directly or using `dkms`.
 
 ### Installing Build Dependencies
 
-UBOS: you don't need to, it's in the repos: ``pacman -S intel-nuc-led``
+UBOS: you don't need to, it's in the repos: `pacman -S intel-nuc-wmi`
 
 If you want to build it anyway, you need:
 
@@ -44,7 +39,7 @@ If you want to build it anyway, you need:
 pacman -S linux-headers base-develop
 ```
 
-Ubuntu (not verified):
+Ubuntu:
 
 ```
 apt-get install build-essential linux-headers-$(uname -r)
@@ -53,7 +48,7 @@ apt-get install build-essential linux-headers-$(uname -r)
 apt-get install debhelper dkms
 ```
 
-Redhat (not verified):
+Redhat:
 
 ```
 yum groupinstall "Development Tools"
@@ -103,34 +98,17 @@ make dkms-rpm
 
 ## Low-level vs high-level interface
 
-In the previous, NUC6/NUC7-only version by milesp20, you would use something like:
+### High-level Python Userland CLI
+
+See [Python nuc_wmi userland](contrib/nuc_wmi) documentation for NUC WMI CLI commands. We recommend using this interface over
+using the low lowel control file directly for ease of use.
+
+### Low-level Control File Usage (Kernel device)
 
 ```
-echo 'ring,80,blink_medium,green' > /proc/acpi/nuc_led
+echo xx xx xx xx xx > /proc/acpi/nuc_wmi
 ```
-
-to turn the ring LED to a blinking green. But with the greater hardware
-variety now supported by this module, and a substantially extended number
-of API calls, this interface doesn't make so much sense any more. In
-addition, some settings now require several system calls.
-
-So instead, the kernel module now simply exposes the input and outputs of
-the WMI system call, and leaves it to userspace to send in the right bytes,
-and interpret the resulting bytes.
-
-~~Maybe somebody wants to design some higher-level tools to make this easier?
-As a bonus, those tools could run in userspace.~~
-Thanks to [Julio Lajara](https://github.com/ju2wheels), who built exactly
-that. See documentation in [contrib/nuc_wmi](contrib/nuc_wmi).
-
-## Usage (Kernel device)
-
-NOTE: this works differently from the previous version by milesp20.
-
-```
-echo xx xx xx xx xx > /proc/acpi/nuc_led
-```
-where the ``xx`` are 1-byte hex numbers:
+where the `xx` are 1-byte hex numbers:
 
 * first byte: the Method ID of the WMI call
 * bytes 2-5: the four bytes of arguments passed into the WMI call
@@ -141,12 +119,12 @@ and save the return results.
 And then:
 
 ```
-cat /proc/acpi/nuc_led
+cat /proc/acpi/nuc_wmi
 ```
 will emit 4 hex numbers, which are the bytes returned by the last
 invocation of the WMI system call.
 
-## The bytes and their values
+### Low-level Control File bytes and their values
 
 The following Intel documents describe the available Method IDs and
 parameters:
@@ -159,18 +137,18 @@ parameters:
 
 There are copies of these documents here in [contrib/reference](contrib/reference/).
 
-Note that the WMI APIs have changed significantly. E.g. the Method IDs
+Note that the WMI functions have changed significantly. E.g. the Method IDs
 for the older models are 1 and 2, while the they are 3 to 9 for the newer
 model.
 
-## Errors
+### Low-level Control File Errors
 
-Errors will appear as warnings in dmesg or journalctl -k. WMI call
+Errors will appear as warnings in `dmesg` or `journalctl -k`. WMI call
 error codes are part of the return value of the WMI call, and shown
-through ``cat /proc/acpi/nuc_led``.
+through `cat /proc/acpi/nuc_wmi`.
 
 Once the device has been read, the value there will be reset to
-``ff ff ff ff`` (something not used by the WMI call). This is also the
+`ff ff ff ff` (something not used by the WMI call). This is also the
 initial value.
 
 ## Examples
@@ -178,12 +156,12 @@ initial value.
 ### NUC6CAY
 
 Make sure you have enabled LED software control in the BIOS, as there
-is no API call to change that setting on this device.
+is no WMI call to change that setting on this device.
 
 To set the Ring LED to brightness 80, blink at medium speed, and green:
 
 ```
-echo 02 02 50 05 06 > /proc/acpi/nuc_led
+echo 02 02 50 05 06 > /proc/acpi/nuc_wmi
 ```
 
 where:
@@ -196,16 +174,15 @@ where:
 ### NUC10i3FNH
 
 Make sure you have enabled LED software control in the BIOS, or have
-previously executed the API call to turn on software control.
+previously executed the WMI call to turn on software control.
 
 To set the Power Button LED to brightness 80, blink at medium speed, and color amber:
 
 ```
-echo 06 00 04 00 50 > /proc/acpi/nuc_led # brightness
-echo 06 00 04 01 02 > /proc/acpi/nuc_led # blinking behavior
-echo 06 00 04 02 05 > /proc/acpi/nuc_led # blinking frequency
-echo 06 00 04 03 01 > /proc/acpi/nuc_led # color
-
+echo 06 00 04 00 50 > /proc/acpi/nuc_wmi # brightness
+echo 06 00 04 01 02 > /proc/acpi/nuc_wmi # blinking behavior
+echo 06 00 04 02 05 > /proc/acpi/nuc_wmi # blinking frequency
+echo 06 00 04 03 01 > /proc/acpi/nuc_wmi # color
 ```
 
 where:
@@ -235,14 +212,10 @@ where:
 
 ## Permissions
 
-You can change the owner, group and permissions of `/proc/acpi/nuc_led` by
+You can change the owner, group and permissions of `/proc/acpi/nuc_wmi` by
 passing parameters to the kernel module. Use:
 
-* `nuc_led_uid` to set the owner (default is 0, root)
-* `nuc_led_gid` to set the owning group (default is 0, root)
-* `nuc_led_perms` to set the file permissions (default is r+w for
+* `nuc_wmi_uid` to set the owner (default is 0, root)
+* `nuc_wmi_gid` to set the owning group (default is 0, root)
+* `nuc_wmi_perms` to set the file permissions (default is r+w for
   group and user and r for others)
-
-Note: Once an LED has been set to `SW Control` in the BIOS, it will
-remain off initially until a color is explicitly set, after which the set
-color is retained across reboots.

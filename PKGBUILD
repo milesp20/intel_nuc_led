@@ -41,5 +41,5 @@ package() {
 
     # Build and package userspace
     cd ${startdir}/contrib/nuc_wmi
-    python setup.py install --root ${pkgdir}
+    python3 setup.py install --root ${pkgdir}
 }

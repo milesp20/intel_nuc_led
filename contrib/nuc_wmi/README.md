@@ -1,11 +1,11 @@
-# nuc_wmi Python userland for Intel NUC LED kernel module
+# nuc_wmi Python userland for Intel NUC WMI kernel module
 
 ## Compatibility
 
 This `nuc_wmi` userland was written from the merger of available Intel NUC WMI guides for the NUC 7, 8, and 10
 (included in the [contrib/reference/](../reference) folder).
 
-It has been tested on NUC 6, NUC 7 and 10, but theoretically should work for all NUCS from 6 through 10.
+It has been tested on NUC 6, 7, 10, and 12 but theoretically should work for all NUCS from 6 through 12.
 
 Although we followed the specification documents, we have found that compatibility varies by a number of factors:
 
@@ -19,24 +19,32 @@ Although we followed the specification documents, we have found that compatibili
 Aside from the above, command options can change based on the combination of what the BIOS allows and what
 indicator option mode LEDs are put in.
 
+The kernel side `nuc_wmi` driver used to be named `nuc_led` but this was renamed to `nuc_wmi` due the driver
+being turned into a generalized RPC interface for the WMI functions and the fact that some Intel NUCs also
+have additional WMI functions for HDMI and USB that can be controlled via the same WMI ID. We currently only
+implement the userland functionality for the NUC LED WMI functions.
+
+NUC 7's do not allow for the LEDs to be set to `SW Control` via the WMI calls, and thus in order to control
+the LEDs with the Python userland, you must explicitly enable `SW Control` manually in the BIOS. Once an LED
+has been set to `SW Control` in the BIOS, it will remain off initially until a color is explicitly set, after
+which the set color is retained across reboots.
+
 ## Warnings
 
-The `nuc_led` kernel module only allows return values for the last command issued to be read once. If multiple
+The `nuc_wmi` kernel module only allows return values for the last command issued to be read once. If multiple
 commands are issued in rapid succession without reading the return code for each in between, then the return
 codes are lost.
 
-In the same light, there is an unresolved race condition in using the `nuc_wmi` userland as a result of this
-behavior. Some of the CLI commands issue multiple WMI calls in succession in order to provide better usability
-instead of just translating CLI options and blindly passing them into the WMI interface. Therefore, since we
-haven't implemented file locking to prevent two CLI commands from creating a race condition on the control file,
-we recommend not running CLI commands concurrently.
+Starting with `nuc_wmi` version `2.3.0`, the CLI commands now use a lock file to prevent overlapping concurrent
+access to the NUC WMI control file, however if you are sending commands manually to the control file then it is
+up to you to make sure you dont send concurrent commands and potentially lose the return value.
 
 ## Installing from package
 
-On UBOS, these userland tools are part of the ``intel-nuc-led`` package. Install with:
+On UBOS, these userland tools are part of the `intel-nuc-wmi` package. Install with:
 
 ```
-sudo pacman -S ubos-nuc-led
+sudo pacman -S ubos-nuc-wmi
 ```
 
 On other distros, install from source.
@@ -112,7 +120,8 @@ package in the form of a `wheel`, `egg`, or distro specific package using `setup
 
 1. Use `apt` to install your choice of `python` version and `setuptools` and `stdeb` Python packages.
 2. Use `apt` to install `debhelper` and `fakeroot`.
-2. Build the `deb`:
+2. Build the `deb` (Note: the Python used for packaging is based on the one used to run the command, we recommend being
+    being explicit and using `python2` or `python3` when creating the deb package):
     ```
     DEB_BUILD_OPTIONS=nocheck python setup.py --command-packages=stdeb.command bdist_deb
     ```
@@ -266,10 +275,16 @@ CLI options.
     this quirks mode overrides any `0` value returned for `frequency` and converts it to `1` for `1Hz`. Enabling this
     quirks mode on a BIOS not affected by this issue will not cause a change in the return value for `frequency`.
 
+* `NUC7_OUT_OF_BOUND_READ`: This quirks mode supercedes `NUC7_FREQUENCY_DEFUALT`. Some NUC 7 factory refurb devices
+    are now showing up with what appears to be in memory defaults for brightness, frequency, and color initialized to
+    `0xFF` instead of `0x00` like we were finding before and this leads to the values for all 3 to end being outside of
+    the spec. Enabling this quirks mode now overrides brightness and color to `0` and frequency to `1` if any of their
+    values are outside of accepted spec range.
+
 ### NUC 10 Quirks
 
 * `NUC10_RETURN_VALUE`: This `quirks mode` changes the processing of the return value for the `query_led_color_type`
-    and `get_led_indicator_option` WMI methods for NUC 10 BIOS released before December 2020 that also did not support
+    and `get_led_indicator_option` WMI methods for NUC 10 BIOS released before December 2020 that did not support
     the NUC 10 RGB header. In NUC 10 BIOS released before December 2020, the implementation for these two WMI methods do
     not follow the spec, therefore they are only compatible `nuc_wmi` `1.0`. If you have the December 2020 or later BIOS,
     then `nuc_wmi` `1.1` or later is required. `nuc_wmi` `2.1` was the first version to support this `quirks mode` so
