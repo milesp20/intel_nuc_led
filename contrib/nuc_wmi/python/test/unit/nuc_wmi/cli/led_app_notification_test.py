@@ -61,7 +61,8 @@ class TestCliLedAppNotification(unittest.TestCase):
         nuc_wmi_cli_save_led_config.assert_called_with(
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -102,7 +103,8 @@ class TestCliLedAppNotification(unittest.TestCase):
         nuc_wmi_cli_save_led_config.assert_called_with(
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

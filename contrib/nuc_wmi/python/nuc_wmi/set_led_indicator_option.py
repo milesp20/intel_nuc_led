@@ -7,7 +7,14 @@ from nuc_wmi.control_file import read_control_file, write_control_file
 
 METHOD_ID = 0x05
 
-def set_led_indicator_option(led_type, led_indicator_option, control_file=None, debug=False, quirks=None):
+def set_led_indicator_option(
+        led_type,
+        led_indicator_option,
+        control_file=None,
+        debug=False,
+        quirks=None,
+        quirks_metadata=None
+):
     """
     Set the LED indicator option for the specified LED type,
 
@@ -17,21 +24,23 @@ def set_led_indicator_option(led_type, led_indicator_option, control_file=None, 
       led_indicator_option: The LED indicator option to set for the LED type.
       led_type: The LED type for which to set the LED indicator option.
       quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
     Exceptions:
-       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
-       or if `read_control_file` or `write_control_file` raise an exception.
+      Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
+      or if `read_control_file` or `write_control_file` raise an exception.
     """
 
     set_led_indicator_option_byte_list = [METHOD_ID, led_type, led_indicator_option]
 
-    write_control_file(set_led_indicator_option_byte_list, control_file=control_file, debug=debug, quirks=quirks)
+    write_control_file(set_led_indicator_option_byte_list, control_file=control_file, debug=debug, quirks=quirks,
+                       quirks_metadata=quirks_metadata)
 
     (
         error_code,
         reserved_byte_1, # pylint: disable=unused-variable
         reserved_byte_2, # pylint: disable=unused-variable
         reserved_byte_3  # pylint: disable=unused-variable
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks)
+    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))

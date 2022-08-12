@@ -9,8 +9,9 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, LOCK_FILE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options, query_leds
+from nuc_wmi.utils import acquire_file_lock
 
 import nuc_wmi
 
@@ -50,6 +51,12 @@ def query_led_color_type_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -66,27 +73,31 @@ def query_led_color_type_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        led_color_type_index = query_led_color_type(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
-
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'color_type': led_color_type
-                    }
-                }
+            led_color_type_index = query_led_color_type(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'color_type': led_color_type
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
@@ -130,6 +141,12 @@ def query_led_control_items_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -151,51 +168,57 @@ def query_led_control_items_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        led_color_type_index = query_led_color_type(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        available_indicator_option_indexes = query_led_indicator_options(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
-
-        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
-
-        if led_indicator_option_index not in available_indicator_option_indexes:
-            raise ValueError('Invalid indicator option for the selected LED')
-
-        available_control_item_indexes = query_led_control_items(
-            led_type_index,
-            led_indicator_option_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
-
-        led_control_items = [
-            CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
-            for control_item_index in available_control_item_indexes
-        ]
-
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'indicator_option': args.led_indicator_option,
-                        'control_items': led_control_items
-                    }
-                }
+            led_color_type_index = query_led_color_type(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            available_indicator_option_indexes = query_led_indicator_options(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
+            )
+
+            led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+
+            if led_indicator_option_index not in available_indicator_option_indexes:
+                raise ValueError('Invalid indicator option for the selected LED')
+
+            available_control_item_indexes = query_led_control_items(
+                led_type_index,
+                led_indicator_option_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
+            )
+
+            led_control_items = [
+                CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
+                for control_item_index in available_control_item_indexes
+            ]
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'indicator_option': args.led_indicator_option,
+                            'control_items': led_control_items
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
@@ -237,6 +260,12 @@ def query_led_indicator_options_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -253,30 +282,34 @@ def query_led_indicator_options_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        available_indicator_option_indexes = query_led_indicator_options(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        led_indicator_options = [
-            LED_INDICATOR_OPTION[led_indicator_option_index] \
-            for led_indicator_option_index in available_indicator_option_indexes
-        ]
-
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'indicator_options': led_indicator_options
-                    }
-                }
+            available_indicator_option_indexes = query_led_indicator_options(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            led_indicator_options = [
+                LED_INDICATOR_OPTION[led_indicator_option_index] \
+                for led_indicator_option_index in available_indicator_option_indexes
+            ]
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'indicator_options': led_indicator_options
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
@@ -316,6 +349,12 @@ def query_leds_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -327,21 +366,25 @@ def query_leds_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        available_led_type_indexes = query_leds(
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        led_types = [LED_TYPE['new'][led_type_index] for led_type_index in available_led_type_indexes]
-
-        print(
-            dumps(
-                {
-                    'leds': led_types
-                }
+            available_led_type_indexes = query_leds(
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            led_types = [LED_TYPE['new'][led_type_index] for led_type_index in available_led_type_indexes]
+
+            print(
+                dumps(
+                    {
+                        'leds': led_types
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

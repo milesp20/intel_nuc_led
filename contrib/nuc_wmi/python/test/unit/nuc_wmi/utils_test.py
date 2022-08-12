@@ -6,9 +6,11 @@ Classes:
     TestUtils: A unit test class for the functions in `nuc_wmi.utils`.
 """
 
+import tempfile
 import unittest
 
-from nuc_wmi.utils import byte_list_to_bitmap
+from nuc_wmi import NucWmiError
+from nuc_wmi.utils import acquire_file_lock, byte_list_to_bitmap, defined_indexes
 
 
 class TestUtils(unittest.TestCase):
@@ -30,6 +32,42 @@ class TestUtils(unittest.TestCase):
         """
 
         self.maxDiff = None # pylint: disable=invalid-name
+
+
+    def test_acquire_file_lock(self):
+        """
+        Test that `acquire_file_lock` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 1: Test that `acquire_file_lock` can successfully acquire a file lock and returns None.
+
+        with tempfile.NamedTemporaryFile(delete=True) as temp_lock_file:
+            returned_acquire_file_lock = acquire_file_lock(temp_lock_file)
+
+            self.assertEqual(returned_acquire_file_lock, None)
+
+
+    def test_acquire_file_lock2(self):
+        """
+        Test that `acquire_file_lock` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 2: Test that `acquire_file_lock` raises an exception when the file lock is already acquired.
+
+        with tempfile.NamedTemporaryFile(delete=True) as temp_lock_file:
+            returned_acquire_file_lock = acquire_file_lock(temp_lock_file)
+
+            self.assertEqual(returned_acquire_file_lock, None)
+
+            with open(temp_lock_file.name, 'w', encoding='utf8') as temp_lock_file2:
+                with self.assertRaises(NucWmiError) as err:
+                    acquire_file_lock(temp_lock_file2)
+
+                self.assertEqual(
+                    str(err.exception),
+                    'Error (Intel NUC WMI failed to acquire lock file %s: %s)' % \
+                    (temp_lock_file2.name, '[Errno 11] Resource temporarily unavailable')
+                )
 
 
     def test_byte_list_to_bitmap(self):
@@ -83,3 +121,37 @@ class TestUtils(unittest.TestCase):
         # Branch 4: Test that `byte_list_bitmap` raises an exception when the input value is not an int
         with self.assertRaises(ValueError):
             byte_list_to_bitmap(["0xZ"])
+
+
+    def test_defined_indexes(self):
+        """
+        Tests that `defined_indexes` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 1: Test that a list input returns a list of indexes with non None values.
+        defined_list = [None, "some value", "some value 2"]
+        expected_defined_indexes = [1, 2]
+
+        returned_defined_indexes = defined_indexes(defined_list)
+
+        self.assertEqual(
+            returned_defined_indexes,
+            expected_defined_indexes
+        )
+
+
+    def test_defined_indexes2(self):
+        """
+        Tests that `defined_indexes` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 2: Test that a non list input returns an emptylist of indexes.
+        defined_list = None
+        expected_defined_indexes = []
+
+        returned_defined_indexes = defined_indexes(defined_list)
+
+        self.assertEqual(
+            returned_defined_indexes,
+            expected_defined_indexes
+        )

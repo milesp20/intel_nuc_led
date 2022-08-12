@@ -17,6 +17,7 @@ from nuc_wmi import CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR, CONTROL_ITE
 from nuc_wmi import LED_BLINK_FREQUENCY, LED_BRIGHTNESS_MULTI_COLOR, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION
 from nuc_wmi import LED_TYPE, NucWmiError
 from nuc_wmi.cli.get_led_new import get_led_control_item_cli, get_led_indicator_option_cli
+from nuc_wmi.utils import defined_indexes
 
 import nuc_wmi
 
@@ -90,13 +91,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -111,7 +114,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -172,13 +176,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -193,7 +199,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)
@@ -243,13 +250,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -303,13 +312,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -365,13 +376,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -429,13 +442,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -450,7 +465,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -514,20 +530,23 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_get_led_control_item.assert_called_with(
@@ -541,7 +560,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -605,20 +625,23 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_get_led_control_item.assert_called_with(
@@ -632,7 +655,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -696,20 +720,23 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_get_led_control_item.assert_called_with(
@@ -723,7 +750,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -787,20 +815,23 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_get_led_control_item.assert_called_with(
@@ -814,7 +845,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -879,13 +911,15 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_query_led_control_items.assert_not_called()
 
@@ -900,7 +934,8 @@ class TestCliGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -914,6 +949,93 @@ class TestCliGetLedNew(unittest.TestCase):
                 }
             }
         )
+
+        self.assertEqual(returned_get_led_control_item_cli, None)
+
+
+    @patch('nuc_wmi.cli.get_led_new.print')
+    @patch('nuc_wmi.cli.get_led_new.sys.exit')
+    @patch('nuc_wmi.cli.get_led_new.query_led_color_type')
+    @patch('nuc_wmi.cli.get_led_new.query_led_control_items')
+    @patch('nuc_wmi.cli.get_led_new.query_led_indicator_options')
+    @patch('nuc_wmi.cli.get_led_new.get_led_control_item')
+    def test_get_led_control_item_cli12( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_get_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_sys_exit,
+            nuc_wmi_print
+    ):
+        """
+        Tests that `get_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.get_led_new.get_led_control_item is nuc_wmi_get_led_control_item)
+        self.assertTrue(nuc_wmi.cli.get_led_new.query_led_indicator_options is nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.get_led_new.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.get_led_new.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.get_led_new.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.get_led_new.print is nuc_wmi_print) # pylint: disable=no-member
+
+        # Branch 12: Test that get_led_control_item_cli raises proper error when the control file returns an invalid
+        #            control item value.
+
+        # Get HDD LED control item with invalid Brightness of HDD Activity Indicator
+        control_item_value_range = defined_indexes(LED_BRIGHTNESS_MULTI_COLOR)
+        expected_brightness = 0xFF
+        nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4]
+        nuc_wmi_get_led_control_item.return_value = expected_brightness
+
+        returned_get_led_control_item_cli = get_led_control_item_cli(
+                [
+                    LED_TYPE['new'][1],
+                    LED_INDICATOR_OPTION[1],
+                    CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR[0]['Control Item']
+                ]
+            )
+
+        nuc_wmi_query_led_color_type.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None,
+            quirks_metadata=None
+        )
+        nuc_wmi_query_led_indicator_options.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            quirks=None,
+            quirks_metadata=None
+        )
+        nuc_wmi_query_led_control_items.assert_not_called()
+
+        nuc_wmi_get_led_control_item.assert_called_with(
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
+            CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
+                {
+                    'Control Item': 'Brightness',
+                    'Options': LED_BRIGHTNESS_MULTI_COLOR
+                }
+            ),
+            control_file=None,
+            debug=False,
+            quirks=None,
+            quirks_metadata=None
+        )
+        nuc_wmi_print.assert_called()
+        self.assertEqual(
+            json.loads(nuc_wmi_print.call_args.args[0]),
+            {
+                'error': ('Error (Intel NUC WMI get_led_control_item function returned invalid control item value of' +
+                ' %i, expected one of %s)') % (expected_brightness, str(control_item_value_range))
+            }
+        )
+        nuc_wmi_sys_exit.assert_called_with(1)
 
         self.assertEqual(returned_get_led_control_item_cli, None)
 
@@ -951,7 +1073,8 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -998,7 +1121,8 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)
@@ -1039,7 +1163,8 @@ class TestCliGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(

@@ -9,8 +9,10 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
+from nuc_wmi import CONTROL_FILE, LED_BLINK_FREQUENCY, LED_BRIGHTNESS, LED_COLOR, LED_COLOR_TYPE, LED_TYPE, LOCK_FILE
+from nuc_wmi import NucWmiError
 from nuc_wmi.get_led import get_led
+from nuc_wmi.utils import acquire_file_lock, defined_indexes
 
 import nuc_wmi
 
@@ -49,6 +51,12 @@ def get_led_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -65,31 +73,61 @@ def get_led_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_color_type = LED_COLOR_TYPE['legacy'][args.led]
-        led_type_index = LED_TYPE['legacy'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        (brightness, frequency_index, color_index) = get_led( # pylint: disable=unbalanced-tuple-unpacking
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_color_type = LED_COLOR_TYPE['legacy'][args.led]
+            led_type_index = LED_TYPE['legacy'].index(args.led)
 
-        led_color = LED_COLOR['legacy'][led_color_type][color_index]
-        led_frequency = LED_BLINK_FREQUENCY['legacy'][frequency_index]
+            brightness_range = defined_indexes(LED_BRIGHTNESS['legacy'])
+            color_range = defined_indexes(LED_COLOR['legacy'][led_color_type])
+            frequency_range = defined_indexes(LED_BLINK_FREQUENCY['legacy'])
 
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'brightness': str(brightness),
-                        'frequency': led_frequency,
-                        'color': led_color
-                    }
+            (brightness, frequency_index, color_index) = get_led( # pylint: disable=unbalanced-tuple-unpacking
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata={
+                    'brightness_range': brightness_range,
+                    'color_range': color_range,
+                    'frequency_range': frequency_range
                 }
             )
-        )
+
+            if brightness not in brightness_range:
+                raise NucWmiError(
+                    "Error (Intel NUC WMI get_led function returned invalid brightness of %i, expected one of %s)" % \
+                    (brightness, str(brightness_range))
+                )
+
+            if color_index not in color_range:
+                raise NucWmiError(
+                    "Error (Intel NUC WMI get_led function returned invalid color of %i, expected one of %s)" % \
+                    (color_index, str(color_range))
+                )
+
+            if frequency_index not in frequency_range:
+                raise NucWmiError(
+                    "Error (Intel NUC WMI get_led function returned invalid frequency of %i, expected one of %s)" % \
+                    (frequency_index, str(frequency_range))
+                )
+
+            led_color = LED_COLOR['legacy'][led_color_type][color_index]
+            led_frequency = LED_BLINK_FREQUENCY['legacy'][frequency_index]
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'brightness': str(brightness),
+                            'frequency': led_frequency,
+                            'color': led_color
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

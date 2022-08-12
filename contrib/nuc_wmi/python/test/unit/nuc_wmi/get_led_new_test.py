@@ -85,14 +85,16 @@ class TestGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_control_item, read_byte_list[1])
@@ -145,14 +147,16 @@ class TestGetLedNew(unittest.TestCase):
                 ),
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
@@ -203,14 +207,16 @@ class TestGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_control_item, read_byte_list[1])
@@ -260,14 +266,16 @@ class TestGetLedNew(unittest.TestCase):
             ),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_control_item, LED_BLINK_FREQUENCY['new'].index('1.0Hz'))
@@ -304,14 +312,16 @@ class TestGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('HDD Activity Indicator'))
@@ -350,14 +360,16 @@ class TestGetLedNew(unittest.TestCase):
                 len(LED_TYPE['new']), # Incorrect led
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
@@ -394,14 +406,16 @@ class TestGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('Software Indicator'))
@@ -439,14 +453,118 @@ class TestGetLedNew(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
-            quirks=['NUC10_RETURN_VALUE']
+            quirks=['NUC10_RETURN_VALUE'],
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=['NUC10_RETURN_VALUE']
+            quirks=['NUC10_RETURN_VALUE'],
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_get_led_indicator_option, LED_INDICATOR_OPTION.index('HDD Activity Indicator'))
+
+
+    @patch('nuc_wmi.get_led_new.read_control_file')
+    @patch('nuc_wmi.get_led_new.write_control_file')
+    def test_get_led_indicator_option5(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `get_led_indicator_option` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.get_led_new.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led_new.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 5: Test that get_led_indicator_option raises an exception when the control file returns
+        #           a bitmap with an invalid led indicator option.
+
+        # Get HDD LED with HDD Activity Indicator
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_indicator_option'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0xFF,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+
+        with self.assertRaises(NucWmiError) as err:
+            get_led_indicator_option(
+                LED_TYPE['new'].index('HDD LED'),
+                control_file=None,
+                debug=False,
+                quirks=None,
+                quirks_metadata=None
+            )
+
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None,
+            quirks_metadata=None
+        )
+
+        self.assertEqual(
+            str(err.exception),
+            'Error (Intel NUC WMI get_led_indicator_option function returned invalid led indicator option)'
+        )
+
+
+    @patch('nuc_wmi.get_led_new.read_control_file')
+    @patch('nuc_wmi.get_led_new.write_control_file')
+    def test_get_led_indicator_option6(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+        """
+        Tests that `get_led_indicator_option` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.get_led_new.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led_new.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 6: Test that get_led_indicator_option raises an exception when the control file returns
+        #           a bitmap with multiple led indicator options.
+
+        # Get HDD LED with HDD Activity Indicator
+        expected_write_byte_list = [
+            METHOD_ID,
+            GET_LED_TYPE.index('get_led_indicator_option'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        read_byte_list = [
+            0x00,
+            0x03,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+
+        with self.assertRaises(NucWmiError) as err:
+            get_led_indicator_option(
+                LED_TYPE['new'].index('HDD LED'),
+                control_file=None,
+                debug=False,
+                quirks=None,
+                quirks_metadata=None
+            )
+
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False,
+            quirks=None,
+            quirks_metadata=None
+        )
+
+        self.assertEqual(
+            str(err.exception),
+            'Error (Intel NUC WMI get_led_indicator_option function returned multiple led indicator options in bitmap)'
+        )

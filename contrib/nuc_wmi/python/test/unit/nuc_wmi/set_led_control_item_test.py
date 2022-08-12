@@ -83,14 +83,16 @@ class TestSetLedControlItem(unittest.TestCase):
             LED_BRIGHTNESS_MULTI_COLOR.index('30'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_set_led_control_item, None)
@@ -144,14 +146,16 @@ class TestSetLedControlItem(unittest.TestCase):
                 LED_BRIGHTNESS_MULTI_COLOR.index('30'),
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
@@ -203,14 +207,16 @@ class TestSetLedControlItem(unittest.TestCase):
             LED_BLINK_FREQUENCY['new'].index('1.0Hz'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_set_led_control_item, None)

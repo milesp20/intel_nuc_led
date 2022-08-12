@@ -57,14 +57,16 @@ class TestVersion(unittest.TestCase):
         returned_wmi_interface_spec_compliance_version = wmi_interface_spec_compliance_version(
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_wmi_interface_spec_compliance_version, expected_wmi_interface_spec_compliance_version)
@@ -92,14 +94,16 @@ class TestVersion(unittest.TestCase):
             wmi_interface_spec_compliance_version(
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')

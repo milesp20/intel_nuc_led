@@ -9,8 +9,9 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_FILE, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import CONTROL_FILE, LED_INDICATOR_OPTION, LED_TYPE, LOCK_FILE
 from nuc_wmi.set_led_indicator_option import set_led_indicator_option
+from nuc_wmi.utils import acquire_file_lock
 
 import nuc_wmi
 
@@ -50,6 +51,12 @@ def set_led_indicator_option_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -71,28 +78,32 @@ def set_led_indicator_option_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        set_led_indicator_option(
-            led_type_index,
-            led_indicator_option_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
 
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'indicator_option': args.led_indicator_option
-                    }
-                }
+            set_led_indicator_option(
+                led_type_index,
+                led_indicator_option_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'indicator_option': args.led_indicator_option
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

@@ -5,6 +5,7 @@ python/nuc_wmi.egg-info/
 *~
 *.pyc
 .coverage
+.eggs/
 python/cover/
 __pycache__/
 nuc_wmi-*.tar.gz

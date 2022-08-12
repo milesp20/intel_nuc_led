@@ -2,7 +2,10 @@
 nuc_wmi CLI userland for the Intel NUC LED kernel module.
 """
 
-CONTROL_FILE = '/proc/acpi/nuc_led'
+import os
+import tempfile
+
+CONTROL_FILE = '/proc/acpi/nuc_wmi'
 
 LED_BLINK_BEHAVIOR_MULTI_COLOR = [
     'Solid',
@@ -187,6 +190,8 @@ LED_TYPE = {
         'RGB Header'
     ]
 }
+
+LOCK_FILE = os.path.join(tempfile.gettempdir(), 'nuc_wmi.lock')
 
 CONTROL_ITEM_ETHERNET_INDICATOR_TYPE = [
     'LAN1',
@@ -570,6 +575,7 @@ CONTROL_ITEM = [
 
 QUIRKS_AVAILABLE = [
     'NUC7_FREQUENCY_DEFAULT',
+    'NUC7_OUT_OF_BOUND_READ',
     'NUC10_RETURN_VALUE'
 ]
 

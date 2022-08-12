@@ -8,28 +8,34 @@ import sys
 
 from nuc_wmi import CONTROL_FILE, NucWmiError
 
-def read_control_file(control_file=None, debug=False, quirks=None): # pylint: disable=unused-argument
+def read_control_file( # pylint: disable=unused-argument
+        control_file=None,
+        debug=False,
+        quirks=None,
+        quirks_metadata=None
+):
     """
     Read the NUC LED control file hex bytes string.
 
     Args:
-       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
-       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
-       quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
+      debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
+      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
     Exceptions:
-       Raises normal `IOError`/`OSError` on failure to read the control file, or `ValueError` for hex conversion error.
+      Raises normal `IOError`/`OSError` on failure to read the control file, or `ValueError` for hex conversion error.
     Returns:
-       Tuple of ints representing the hex numbers read in from the control file.
+      Tuple of ints representing the hex numbers read in from the control file.
     """
 
-    with open(control_file or CONTROL_FILE, 'r') as fin:
+    with open(control_file or CONTROL_FILE, 'r', encoding='utf8') as fin:
         raw_hex_byte_string = fin.read()
 
     # Remove the new line and null char the driver leaves
     raw_hex_byte_string = raw_hex_byte_string.rstrip("\x00").rstrip("\n")
 
     if debug:
-        print('r: ', raw_hex_byte_string, file=sys.stderr)
+        print('nuc_wmi read: ', raw_hex_byte_string, file=sys.stderr)
 
     byte_list = [int(hex_byte_str, 16) for hex_byte_str in raw_hex_byte_string.split(' ')]
 
@@ -43,19 +49,26 @@ def read_control_file(control_file=None, debug=False, quirks=None): # pylint: di
     return tuple(byte_list)
 
 
-def write_control_file(int_byte_list, control_file=None, debug=False, quirks=None): # pylint: disable=unused-argument
+def write_control_file( # pylint: disable=unused-argument
+        int_byte_list,
+        control_file=None,
+        debug=False,
+        quirks=None,
+        quirks_metadata=None
+):
     """
     Converts the integer byte list into a hex byte string and writes it to the NUC control file.
 
     Args:
-       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
-       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
-       int_byte_list: List of integers bytes to be converted into a hex byte string to send to the NUC control file. May
-                       be int byte strings. Integers must be 0-255.
-       quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
+      debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
+      int_byte_list: List of integers bytes to be converted into a hex byte string to send to the NUC control file. May
+                      be int byte strings. Integers must be 0-255.
+      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
     Exceptions:
-       Raises normal `IOError`/`OSError` on failure to read the control file, `ValueError` for hex conversion error, or
-       `nuc_wmi.NucWmiError` for input value errors.
+      Raises normal `IOError`/`OSError` on failure to read the control file, `ValueError` for hex conversion error, or
+      `nuc_wmi.NucWmiError` for input value errors.
     """
 
     for int_byte in int_byte_list:
@@ -67,7 +80,7 @@ def write_control_file(int_byte_list, control_file=None, debug=False, quirks=Non
     )
 
     if debug:
-        print('w: ', raw_hex_byte_string, file=sys.stderr)
+        print('nuc_wmi write: ', raw_hex_byte_string, file=sys.stderr)
 
-    with open(control_file or CONTROL_FILE, 'w') as fout:
+    with open(control_file or CONTROL_FILE, 'w', encoding='utf8') as fout:
         fout.write(raw_hex_byte_string)

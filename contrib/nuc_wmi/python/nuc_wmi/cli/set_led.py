@@ -9,8 +9,9 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_FILE, LED_BRIGHTNESS, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE
+from nuc_wmi import CONTROL_FILE, LED_BRIGHTNESS, LED_COLOR, LED_COLOR_TYPE, LED_BLINK_FREQUENCY, LED_TYPE, LOCK_FILE
 from nuc_wmi.set_led import set_led
+from nuc_wmi.utils import acquire_file_lock
 
 import nuc_wmi
 
@@ -52,6 +53,12 @@ def set_led_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -83,37 +90,41 @@ def set_led_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_color_type = LED_COLOR_TYPE['legacy'][args.led]
-        led_type_index = LED_TYPE['legacy'].index(args.led)
-        frequency_index = LED_BLINK_FREQUENCY['legacy'].index(args.frequency)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        try:
-            color_index = LED_COLOR['legacy'][led_color_type].index(args.color)
-        except ValueError as err:
-            raise ValueError('Invalid color for the specified legacy LED')
+            led_color_type = LED_COLOR_TYPE['legacy'][args.led]
+            led_type_index = LED_TYPE['legacy'].index(args.led)
+            frequency_index = LED_BLINK_FREQUENCY['legacy'].index(args.frequency)
 
-        set_led(
-            led_type_index,
-            args.brightness,
-            frequency_index,
-            color_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            try:
+                color_index = LED_COLOR['legacy'][led_color_type].index(args.color)
+            except ValueError as err:
+                raise ValueError('Invalid color for the specified legacy LED') from err
 
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'brightness': str(args.brightness),
-                        'frequency': args.frequency,
-                        'color': args.color
-                    }
-                }
+            set_led(
+                led_type_index,
+                args.brightness,
+                frequency_index,
+                color_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'brightness': str(args.brightness),
+                            'frequency': args.frequency,
+                            'color': args.color
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

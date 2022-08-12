@@ -14,34 +14,37 @@ def set_led( # pylint: disable=too-many-arguments
         color,
         control_file=None,
         debug=False,
-        quirks=None
+        quirks=None,
+        quirks_metadata=None
 ):
     """
     Set LED state with regard to brightness, frequency, and color.
 
     Args:
-       brightness: Controls the brightness level of the LED.
-       color: Sets legacy RGB-color for LED.
-       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
-       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
-       frequency: Sets the legacy LED frequency.
-       led: Selects the legacy LED to set a state for.
-       quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      brightness: Controls the brightness level of the LED.
+      color: Sets legacy RGB-color for LED.
+      control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
+      debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
+      frequency: Sets the legacy LED frequency.
+      led: Selects the legacy LED to set a state for.
+      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
+      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
     Exceptions:
-       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
-       or if `read_control_file` or `write_control_file` raise an exception.
+      Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
+      or if `read_control_file` or `write_control_file` raise an exception.
     """
 
     set_led_byte_list = [METHOD_ID, led, brightness, frequency, color]
 
-    write_control_file(set_led_byte_list, control_file=control_file, debug=debug, quirks=quirks)
+    write_control_file(set_led_byte_list, control_file=control_file, debug=debug, quirks=quirks,
+                       quirks_metadata=quirks_metadata)
 
     (
         brightness_error,
         frequency_error,
         color_error,
         reserved_byte     # pylint: disable=unused-variable
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks)
+    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
 
     if brightness_error > 0:
         raise NucWmiError(RETURN_ERROR.get(brightness_error, 'Error (Unknown NUC WMI error code)'))

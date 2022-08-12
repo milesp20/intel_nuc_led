@@ -9,8 +9,9 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_FILE
+from nuc_wmi import CONTROL_FILE, LOCK_FILE
 from nuc_wmi.led_app_notification import save_led_config
+from nuc_wmi.utils import acquire_file_lock
 
 import nuc_wmi
 
@@ -47,6 +48,12 @@ def save_led_config_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -58,21 +65,25 @@ def save_led_config_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        save_led_config(
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        print(
-            dumps(
-                {
-                    'led_app_notification': {
-                        'type': 'save_led_config'
-                    }
-                }
+            save_led_config(
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            print(
+                dumps(
+                    {
+                        'led_app_notification': {
+                            'type': 'save_led_config'
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

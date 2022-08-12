@@ -9,14 +9,18 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE
+from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, LOCK_FILE
+from nuc_wmi import NucWmiError
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
+from nuc_wmi.utils import acquire_file_lock, defined_indexes
 
 import nuc_wmi
 
+
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
 RGB_COLOR_3D = LED_COLOR['new']['RGB-color']['3d']
+
 
 def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches,too-many-locals,too-many-statements
     """
@@ -39,7 +43,7 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        0 on successfully retrieving the control item value or 1 on error.
     """
 
-    control_item_labels = list()
+    control_item_labels = []
 
     for indicator_option in CONTROL_ITEM:
         if indicator_option is None:
@@ -70,6 +74,12 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -96,94 +106,111 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        available_indicator_options = query_led_indicator_options(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        led_color_type_index = query_led_color_type(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            available_indicator_options = query_led_indicator_options(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
+            )
 
-        led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
+            led_color_type_index = query_led_color_type(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
+            )
 
-        led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
+            led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
 
-        if led_indicator_option_index not in available_indicator_options:
-            raise ValueError('Invalid indicator option for the selected LED')
+            led_indicator_option_index = LED_INDICATOR_OPTION.index(args.led_indicator_option)
 
-        control_items = CONTROL_ITEM[led_indicator_option_index][led_color_type_index]
+            if led_indicator_option_index not in available_indicator_options:
+                raise ValueError('Invalid indicator option for the selected LED')
 
-        if control_items is None:
-            raise ValueError('No control items are available for the selected LED and indicator option')
+            control_items = CONTROL_ITEM[led_indicator_option_index][led_color_type_index]
 
-        control_item_index = None
+            if control_items is None:
+                raise ValueError('No control items are available for the selected LED and indicator option')
 
-        for index, control_item in enumerate(control_items):
-            if control_item['Control Item'] == args.control_item:
-                control_item_index = index
+            control_item_index = None
 
-        if control_item_index is None:
-            raise ValueError('Invalid control item specified for the selected LED and indicator option')
+            for index, control_item in enumerate(control_items):
+                if control_item['Control Item'] == args.control_item:
+                    control_item_index = index
 
-        control_item_value = get_led_control_item(
-            led_type_index,
-            led_indicator_option_index,
-            control_item_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            if control_item_index is None:
+                raise ValueError('Invalid control item specified for the selected LED and indicator option')
 
-        # Convert the control item value index into its value
-        if control_items[control_item_index]['Options'] == LED_COLOR['new']:
-            if led_color_type == 'RGB-color':
-                color_dimensions = '1d'
+            control_item_value_index = get_led_control_item(
+                led_type_index,
+                led_indicator_option_index,
+                control_item_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
+            )
 
-                available_control_item_indexes = query_led_control_items(
-                    led_type_index,
-                    led_indicator_option_index,
-                    control_file=args.control_file,
-                    debug=args.debug,
-                    quirks=args.quirks
+            # Convert the control item value index into its value
+            if control_items[control_item_index]['Options'] == LED_COLOR['new']:
+                if led_color_type == 'RGB-color':
+                    color_dimensions = '1d'
+
+                    available_control_item_indexes = query_led_control_items(
+                        led_type_index,
+                        led_indicator_option_index,
+                        control_file=args.control_file,
+                        debug=args.debug,
+                        quirks=args.quirks,
+                        quirks_metadata=None
+                    )
+
+                    for control_item_index2 in available_control_item_indexes:
+                        if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
+                            color_dimensions = '3d'
+
+                            break
+
+                    if color_dimensions == '1d':
+                        led_colors = RGB_COLOR_1D[args.led]
+                    else:
+                        led_colors = RGB_COLOR_3D
+
+                    control_item_value_options = led_colors
+                else:
+                    control_item_value_options = LED_COLOR['new'][led_color_type]
+            else:
+                control_item_value_options = control_items[control_item_index]['Options']
+
+            control_item_value_range = defined_indexes(control_item_value_options)
+
+            if control_item_value_index not in control_item_value_range:
+                raise NucWmiError(
+                    ("Error (Intel NUC WMI get_led_control_item function returned invalid control item value of %i," +
+                    " expected one of %s)") % (control_item_value_index, str(control_item_value_range))
                 )
 
-                for control_item_index2 in available_control_item_indexes:
-                    if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
-                        color_dimensions = '3d'
+            control_item_value = control_item_value_options[control_item_value_index]
 
-                        break
-
-                if color_dimensions == '1d':
-                    led_colors = RGB_COLOR_1D[args.led]
-                else:
-                    led_colors = RGB_COLOR_3D
-
-                control_item_value = led_colors[control_item_value]
-            else:
-                control_item_value = LED_COLOR['new'][led_color_type][control_item_value]
-        else:
-            control_item_value = control_items[control_item_index]['Options'][control_item_value]
-
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'indicator_option': args.led_indicator_option,
-                        'control_item': args.control_item,
-                        'control_item_value': control_item_value
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'indicator_option': args.led_indicator_option,
+                            'control_item': args.control_item,
+                            'control_item_value': control_item_value
+                        }
                     }
-                }
+                )
             )
-        )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 
@@ -225,6 +252,12 @@ def get_led_indicator_option_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -241,27 +274,31 @@ def get_led_indicator_option_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        led_type_index = LED_TYPE['new'].index(args.led)
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        led_indicator_option_index = get_led_indicator_option(
-            led_type_index,
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+            led_type_index = LED_TYPE['new'].index(args.led)
 
-        led_indicator_option = LED_INDICATOR_OPTION[led_indicator_option_index]
-
-        print(
-            dumps(
-                {
-                    'led': {
-                        'type': args.led,
-                        'indicator_option': led_indicator_option
-                    }
-                }
+            led_indicator_option_index = get_led_indicator_option(
+                led_type_index,
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            led_indicator_option = LED_INDICATOR_OPTION[led_indicator_option_index]
+
+            print(
+                dumps(
+                    {
+                        'led': {
+                            'type': args.led,
+                            'indicator_option': led_indicator_option
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

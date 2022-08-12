@@ -9,7 +9,8 @@ import sys
 from argparse import ArgumentParser
 from json import dumps
 
-from nuc_wmi import CONTROL_FILE
+from nuc_wmi import CONTROL_FILE, LOCK_FILE
+from nuc_wmi.utils import acquire_file_lock
 from nuc_wmi.version import wmi_interface_spec_compliance_version
 
 import nuc_wmi
@@ -47,6 +48,12 @@ def wmi_interface_spec_compliance_version_cli(cli_args=None):
         help='Enable debug logging of read and write to the NUC LED control file to stderr.'
     )
     parser.add_argument(
+        '-l',
+        '--lock-file',
+        default=None,
+        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+    )
+    parser.add_argument(
         '-q',
         '--quirks',
         action='append',
@@ -58,24 +65,28 @@ def wmi_interface_spec_compliance_version_cli(cli_args=None):
     try:
         args = parser.parse_args(args=cli_args)
 
-        wmi_version = wmi_interface_spec_compliance_version(
-            control_file=args.control_file,
-            debug=args.debug,
-            quirks=args.quirks
-        )
+        with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
+            acquire_file_lock(lock_file)
 
-        wmi_semver = '.'.join([str(semver_component) for semver_component in wmi_version])
-
-        print(
-            dumps(
-                {
-                    'version': {
-                        'type': 'wmi_interface_spec_compliance',
-                        'semver': wmi_semver
-                    }
-                }
+            wmi_version = wmi_interface_spec_compliance_version(
+                control_file=args.control_file,
+                debug=args.debug,
+                quirks=args.quirks,
+                quirks_metadata=None
             )
-        )
+
+            wmi_semver = '.'.join([str(semver_component) for semver_component in wmi_version])
+
+            print(
+                dumps(
+                    {
+                        'version': {
+                            'type': 'wmi_interface_spec_compliance',
+                            'semver': wmi_semver
+                        }
+                    }
+                )
+            )
     except Exception as err: # pylint: disable=broad-except
         print(dumps({'error': str(err)}))
 

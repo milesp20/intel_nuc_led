@@ -67,14 +67,16 @@ class TestSetLedIndicatorOption(unittest.TestCase):
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_set_led_indicator_option, None)
@@ -114,14 +116,16 @@ class TestSetLedIndicatorOption(unittest.TestCase):
                 LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
@@ -159,14 +163,16 @@ class TestSetLedIndicatorOption(unittest.TestCase):
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
         self.assertEqual(returned_set_led_indicator_option, None)

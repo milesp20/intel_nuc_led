@@ -45,11 +45,10 @@ class TestControlFile(unittest.TestCase):
         """
         Initializes the unit tests.
         """
+        with NamedTemporaryFile(delete=False) as control_file:
+            self.control_file = control_file
 
-        self.control_file = NamedTemporaryFile(delete=False)
         self.maxDiff = None # pylint: disable=invalid-name
-
-        self.control_file.close()
 
 
     def tearDown(self):
@@ -80,7 +79,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -93,14 +92,15 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that `read_control_file` raise exception if less than 4 bytes are read
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.write("00 00 00\n\x00")
 
         with self.assertRaises(NucWmiError) as byte_list_len_err:
             read_control_file(
                 control_file=self.control_file.name,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         self.assertEqual(str(byte_list_len_err.exception),
@@ -109,7 +109,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -122,7 +122,7 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 3: Test that overriding control file with existing file works
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.write("0D 0E 0A 0D\n\x00")
 
         byte_list = (0x0D, 0x0E, 0x0A, 0x0D)
@@ -131,7 +131,8 @@ class TestControlFile(unittest.TestCase):
             read_control_file(
                 control_file=self.control_file.name,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             ),
             byte_list
         )
@@ -139,7 +140,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -152,15 +153,15 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 4: Test that overriding control file with non existing file raises exception
-        non_existent_file = NamedTemporaryFile()
-
-        non_existent_file.close()
+        with NamedTemporaryFile() as temp_file:
+            non_existent_file = temp_file
 
         with self.assertRaises((IOError, OSError)):
             read_control_file(
                 control_file=non_existent_file.name,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_print.assert_not_called()
@@ -175,14 +176,15 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 5: Test that exception is raised if NUC WMI returns a hex byte outside 0-255 range
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.write("FFF 0E 0A 0D\n\x00")
 
         with self.assertRaises(NucWmiError) as err:
             read_control_file(
                 control_file=self.control_file.name,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         self.assertEqual(str(err.exception), 'NUC WMI returned hex byte outside of 0-255 range')
@@ -199,7 +201,7 @@ class TestControlFile(unittest.TestCase):
         self.assertTrue(nuc_wmi.control_file.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 6: Test that debug logging prints read bytes
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.write("0D 0E 0A 0D\n\x00")
 
         byte_list = (0x0D, 0x0E, 0x0A, 0x0D)
@@ -208,13 +210,14 @@ class TestControlFile(unittest.TestCase):
             read_control_file(
                 control_file=self.control_file.name,
                 debug=True,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             ),
             byte_list
         )
 
         nuc_wmi_print.assert_called_with(
-            'r: ',
+            'nuc_wmi read: ',
             '0D 0E 0A 0D',
             file=sys.stderr
         )
@@ -234,13 +237,14 @@ class TestControlFile(unittest.TestCase):
             read_control_file(
                 control_file=None,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -261,10 +265,11 @@ class TestControlFile(unittest.TestCase):
             byte_list,
             control_file=self.control_file.name,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
-        with open(self.control_file.name, 'r') as fin:
+        with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()
 
         self.assertEqual(expected_byte_string, written_byte_string)
@@ -272,7 +277,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -292,10 +297,11 @@ class TestControlFile(unittest.TestCase):
             byte_list,
             control_file=self.control_file.name,
             debug=False,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
-        with open(self.control_file.name, 'r') as fin:
+        with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()
 
         self.assertEqual(expected_byte_string, written_byte_string)
@@ -303,7 +309,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -323,7 +329,8 @@ class TestControlFile(unittest.TestCase):
                 byte_list,
                 control_file=self.control_file.name,
                 debug=False,
-                quirks=None
+                quirks=None,
+                quirks_metadata=None
             )
 
         self.assertEqual(str(err.exception), 'Error (NUC LED byte values must be 0-255)')
@@ -331,7 +338,7 @@ class TestControlFile(unittest.TestCase):
         nuc_wmi_print.assert_not_called()
 
         # Reset
-        with open(self.control_file.name, 'w') as fout:
+        with open(self.control_file.name, 'w', encoding='utf8') as fout:
             fout.truncate()
 
 
@@ -352,16 +359,17 @@ class TestControlFile(unittest.TestCase):
             byte_list,
             control_file=self.control_file.name,
             debug=True,
-            quirks=None
+            quirks=None,
+            quirks_metadata=None
         )
 
-        with open(self.control_file.name, 'r') as fin:
+        with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()
 
         self.assertEqual(expected_byte_string, written_byte_string)
 
         nuc_wmi_print.assert_called_with(
-            'w: ',
+            'nuc_wmi write: ',
             expected_byte_string,
             file=sys.stderr
         )
