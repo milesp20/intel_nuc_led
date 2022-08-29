@@ -49,11 +49,6 @@ PYTHON_3_EXTRAS = {}
 if parse_version(PYTHON_VERSION) >= parse_version('3'):
     setuptools.use_2to3_on_doctests = True
 
-    PYTHON_3_EXTRAS['convert_2to3_doctests'] = []
-    PYTHON_3_EXTRAS['use_2to3'] = True
-    PYTHON_3_EXTRAS['use_2to3_exclude_fixers'] = []
-    PYTHON_3_EXTRAS['use_2to3_fixers'] = []
-
 def test_suite():
     test_loader = unittest.TestLoader()
     test_suite = test_loader.discover('python', pattern='*_test.py')

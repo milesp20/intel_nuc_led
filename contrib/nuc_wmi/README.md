@@ -14,7 +14,7 @@ Although we followed the specification documents, we have found that compatibili
 * BIOS configuration (for some settings, the BIOS configuration for LEDs can affect whether they are usable and
   in what default state they are in).
 * BIOS bugs (we have found some device BIOS have bugs where LEDs which should support RGB are only capable of
-  dual color mode through WMI, but are capable of RGB when manually configuring via BIOS).
+  dual color mode through WMI, but are capable of RGB when manually configuring them via the BIOS only).
 
 Aside from the above, command options can change based on the combination of what the BIOS allows and what
 indicator option mode LEDs are put in.
@@ -37,7 +37,10 @@ codes are lost.
 
 Starting with `nuc_wmi` version `2.3.0`, the CLI commands now use a lock file to prevent overlapping concurrent
 access to the NUC WMI control file, however if you are sending commands manually to the control file then it is
-up to you to make sure you dont send concurrent commands and potentially lose the return value.
+up to you to make sure you dont send concurrent commands and potentially lose the return value. If you are using
+the `nuc_wmi` CLI commands accross multiple users, you should take care to ensure that the user/group of the
+lock file is not owned by root or is assigned a group shared by all users as non root users may not be able to
+open it if its owner and group are both root.
 
 ## Installing from package
 

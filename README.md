@@ -45,7 +45,7 @@ Ubuntu:
 apt-get install build-essential linux-headers-$(uname -r)
 
 # DKMS dependencies
-apt-get install debhelper dkms
+apt-get install debhelper dkms fakeroot
 ```
 
 Redhat:
