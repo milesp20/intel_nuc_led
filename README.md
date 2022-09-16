@@ -87,10 +87,10 @@ Build and install using system packaging:
 # UBOS
 makepkg -i
 
-# Ubuntu (not verified)
+# Ubuntu
 make dkms-deb
 
-# RHEL (not verified)
+# RHEL
 make dkms-rpm
 
 # Install generated DEB/RPM from the folder specified in the output using system package manager
