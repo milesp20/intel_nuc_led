@@ -272,29 +272,40 @@ CLI options.
 ### NUC 7 Quirks
 
 * `NUC7_FREQUENCY_DEFAULT`: This `quirks mode` changes the processing of the return value for the `get_led`
-    WMI method for NUC 7 BIOS. This affects NUC 7 in a factory default state where the NUC LEDs state hasnt been changed.
-    In a factory default state, the NUC 7 can properly return `0` for `brightness` and `0` for `color` (aka `Disabled`),
-    however it also returns `0` for `frequency` which is an invalid enum value according to the documentation. Enabling
-    this quirks mode overrides any `0` value returned for `frequency` and converts it to `1` for `1Hz`. Enabling this
-    quirks mode on a BIOS not affected by this issue will not cause a change in the return value for `frequency`.
+  WMI method for NUC 7 BIOS. This affects NUC 7 in a factory default state where the NUC LEDs state hasnt been changed.
+  In a factory default state, the NUC 7 can properly return `0` for `brightness` and `0` for `color` (aka `Disabled`),
+  however it also returns `0` for `frequency` which is an invalid enum value according to the documentation. Enabling
+  this quirks mode overrides any `0` value returned for `frequency` and converts it to `1` for `1Hz`. Enabling this
+  quirks mode on a BIOS not affected by this issue will not cause a change in the return value for `frequency`.
 
 * `NUC7_OUT_OF_BOUND_READ`: This quirks mode supercedes `NUC7_FREQUENCY_DEFUALT`. Some NUC 7 factory refurb devices
-    are now showing up with what appears to be in memory defaults for brightness, frequency, and color initialized to
-    `0xFF` instead of `0x00` like we were finding before and this leads to the values for all 3 to end being outside of
-    the spec. Enabling this quirks mode now overrides brightness and color to `0` and frequency to `1` if any of their
-    values are outside of accepted spec range.
+  are now showing up with what appears to be in memory defaults for brightness, frequency, and color initialized to
+  `0xFF` instead of `0x00` like we were finding before and this leads to the values for all 3 to end being outside of
+  the spec. Enabling this quirks mode now overrides brightness and color to `0` and frequency to `1` if any of their
+  values are outside of accepted spec range.
 
 ### NUC 10 Quirks
 
 * `NUC10_RETURN_VALUE`: This `quirks mode` changes the processing of the return value for the `query_led_color_type`
-    and `get_led_indicator_option` WMI methods for NUC 10 BIOS released before December 2020 that did not support
-    the NUC 10 RGB header. In NUC 10 BIOS released before December 2020, the implementation for these two WMI methods do
-    not follow the spec, therefore they are only compatible `nuc_wmi` `1.0`. If you have the December 2020 or later BIOS,
-    then `nuc_wmi` `1.1` or later is required. `nuc_wmi` `2.1` was the first version to support this `quirks mode` so
-    any version `2.1` or greater supports all these BIOS.
+  and `get_led_indicator_option` WMI methods for NUC 10 BIOS released before December 2020 that did not support
+  the NUC 10 RGB header. In NUC 10 BIOS released before December 2020, the implementation for these two WMI methods do
+  not follow the spec and return an integer representation instead of a bitmap represention value, therefore they are
+  only compatible `nuc_wmi` `1.0`. If you have the December 2020 or later BIOS, then `nuc_wmi` `1.1` or later is
+  required. `nuc_wmi` `2.1` was the first version to support this `quirks mode` so any version `2.1` or greater
+  supports all these BIOS.
 
-    In order to determine whether or not you need to enable this `quirks mode`, you can run `nuc_wmi-query_leds` and
-    if `RGB Header` is not an option then you will likely have to enable this `quirk`. Note that although only
-    `query_led_color_type` and `get_led_indicator_option` WMI method's return value processing is affected, some of the
-    other `nuc_wmi` CLI functions may call these two functions when processing CLI arguments, therefore you should always
-    enable this `quirks mode` if your BIOS version is old enough to be affected by it.
+  In order to determine whether or not you need to enable this `quirks mode`, you can run `nuc_wmi-query_leds` and
+  if `RGB Header` is not an option then you will likely have to enable this `quirk`. Note that although only
+  `query_led_color_type` and `get_led_indicator_option` WMI method's return value processing is affected, some of the
+  other `nuc_wmi` CLI functions may call these two functions when processing CLI arguments, therefore you should always
+  enable this `quirks mode` if your BIOS version is old enough to be affected by it.
+
+### NUC 12 Quirks
+
+* `NUC12_RETURN_VALUE`: This `quirks mode` changes the process of the return value for the `query_led_color_type` WMI
+  method for the initial production NUC 12 BIOS. In the initial production NUC 12 BIOS, the implementation for this WMI method
+  does not follow the spec and returns an integer representation instead of a bitmap represention value for the color type.
+
+  In order to determine whether or not you need to enable this `quirks mode`, you can run `nuc_wmi-query_led_color_type`
+  for the `Power Button LED` and it should report itself as a `RGB-color` color type and not a `Dual-color Blue / White`
+  color type. If it reports itself as `Dual-color Blue / White` color type LED, then you need to enable this quirks mode.

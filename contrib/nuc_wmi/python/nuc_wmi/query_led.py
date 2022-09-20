@@ -55,7 +55,7 @@ def query_led_color_type(led_type, control_file=None, debug=False, quirks=None, 
         led_color_type_bitmap_1
     ]
 
-    if quirks is not None and 'NUC10_RETURN_VALUE' in quirks:
+    if quirks is not None and set(['NUC10_RETURN_VALUE', 'NUC12_RETURN_VALUE']).intersection(set(quirks)):
         led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)
 
         return int(led_color_type_bitmap, 2)

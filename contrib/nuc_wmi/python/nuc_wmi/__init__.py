@@ -576,7 +576,8 @@ CONTROL_ITEM = [
 QUIRKS_AVAILABLE = [
     'NUC7_FREQUENCY_DEFAULT',
     'NUC7_OUT_OF_BOUND_READ',
-    'NUC10_RETURN_VALUE'
+    'NUC10_RETURN_VALUE',
+    'NUC12_RETURN_VALUE'
 ]
 
 # Return value of FF FF FF FF is specific to the driver, not the actual WMI implementation.
