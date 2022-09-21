@@ -30,6 +30,10 @@ N/A
 
 N/A
 
+### NUC 12 (initial release BIOS)
+
+N/A
+
 ----
 
 ## nuc_wmi-set_led
@@ -64,6 +68,10 @@ N/A
 
 N/A
 
+### NUC 12 (initial release BIOS)
+
+N/A
+
 ---
 
 ## nuc_wmi-query_leds
@@ -84,6 +92,13 @@ $ nuc_wmi-query_leds --quirks NUC10_RETURN_VALUE
 ```
 $ nuc_wmi-query_leds
 {"leds": ["Power Button LED", "HDD LED", "RGB Header"]}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-query_leds --quirks NUC12_RETURN_VALUE
+{"leds": ["Power Button LED"]}
 ```
 
 ---
@@ -117,6 +132,13 @@ $ nuc_wmi-query_led_color_type 'RGB Header'
 {"led": {"color_type": "RGB-color", "type": "RGB Header"}}
 ```
 
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-query_led_color_type --quirks NUC12_RETURN_VALUE 'Power Button LED'
+{"led": {"color_type": "RGB-color", "type": "Power Button LED"}}
+```
+
 ---
 
 ## nuc_wmi-query_led_indicator_options
@@ -133,9 +155,11 @@ $ nuc_wmi-query_led_indicator_options --quirks NUC10_RETURN_VALUE 'Power Button 
 
 $ nuc_wmi-query_led_indicator_options --quirks NUC10_RETURN_VALUE 'HDD LED'
 {"led": {"type": "HDD LED", "indicator_options": ["HDD Activity Indicator", "Software Indicator"]}}
+```
 
-# NUC 10 (BIOS Dec 2020 or newer)
+### NUC 10 (BIOS Dec 2020 or newer)
 
+```
 $ nuc_wmi-query_led_indicator_options 'Power Button LED'
 {"led": {"type": "Power Button LED", "indicator_options": ["Power State Indicator", "HDD Activity Indicator", "Software Indicator"]}}
 
@@ -144,6 +168,13 @@ $ nuc_wmi-query_led_indicator_options 'HDD LED'
 
 $ nuc_wmi-query_led_indicator_options 'RGB Header'
 {"led": {"type": "RGB Header", "indicator_options": ["Power State Indicator", "HDD Activity Indicator", "Software Indicator"]}}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-query_led_indicator_options --quirks NUC12_RETURN_VALUE 'Power Button LED'
+{"led": {"type": "Power Button LED", "indicator_options": ["Power State Indicator", "HDD Activity Indicator", "Software Indicator"]}}
 ```
 
 ---
@@ -202,6 +233,19 @@ $ nuc_wmi-query_led_control_items 'RGB Header' 'HDD Activity Indicator'
 
 $ nuc_wmi-query_led_control_items 'RGB Header' 'Software Indicator'
 {"led": {"control_items": ["Brightness", "Blinking Behavior", "Blinking Frequency", "Color"], "type": "RGB Header", "indicator_option": "Software Indicator"}}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-query_led_control_items --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "Power State Indicator", "control_items": ["S0 Indicator Brightness", "S0 Indicator Blinking Behavior", "S0 Indicator Blinking Frequency", "S0 Indicator Color", "S0 Indicator Color 2", "S0 Indicator Color 3", "Modern Standby Indicator Brightness", "Modern Standby Indicator Blinking Behavior", "Modern Standby Indicator Blinking Frequency", "Modern Standby Indicator Color", "Modern Standby Indicator Color 2", "Modern Standby Indicator Color 3"]}}
+
+$ nuc_wmi-query_led_control_items --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_items": ["Brightness", "Color", "Color 2", "Color 3", "Behavior"]}}
+
+$ nuc_wmi-query_led_control_items --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "Software Indicator", "control_items": ["Brightness", "Blinking Behavior", "Blinking Frequency", "Color", "Color 2", "Color 3"]}}
 ```
 
 ---
@@ -850,6 +894,209 @@ $ nuc_wmi-get_led_control_item 'RGB Header' 'Software Indicator' 'Color'
 {"led": {"control_item": "Color", "type": "RGB Header", "indicator_option": "Software Indicator", "control_item_value": "Yellow"}}
 ```
 
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-set_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "Power State Indicator"}}
+
+$ nuc_wmi-get_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED'
+{"led": {"type": "Power Button LED", "indicator_option": "Power State Indicator"}}
+
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Brightness' 100
+{"led": {"control_item": "S0 Indicator Brightness", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior' Solid
+{"led": {"control_item": "S0 Indicator Blinking Behavior", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Solid"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency' '1.0Hz'
+{"led": {"control_item": "S0 Indicator Blinking Frequency", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "1.0Hz"}}
+
+# Blue
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' 0
+{"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2' 0
+{"led": {"control_item": "S0 Indicator Color 2", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3' 100
+{"led": {"control_item": "S0 Indicator Color 3", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Brightness'
+{"led": {"control_item": "S0 Indicator Brightness", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior'
+{"led": {"control_item": "S0 Indicator Blinking Behavior", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Solid"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency'
+{"led": {"control_item": "S0 Indicator Blinking Frequency", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "1.0Hz"}}
+
+# Blue
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color'
+{"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2'
+{"led": {"control_item": "S0 Indicator Color 2", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3'
+{"led": {"control_item": "S0 Indicator Color 3", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior' Strobing
+{"led": {"control_item": "S0 Indicator Blinking Behavior", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Strobing"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency' '0.1Hz'
+{"led": {"control_item": "S0 Indicator Blinking Frequency", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0.1Hz"}}
+
+# Amber
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' 255
+{"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "255"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2' 191
+{"led": {"control_item": "S0 Indicator Color 2", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "191"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3' 0
+{"led": {"control_item": "S0 Indicator Color 3", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior'
+{"led": {"control_item": "S0 Indicator Blinking Behavior", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "Strobing"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency'
+{"led": {"control_item": "S0 Indicator Blinking Frequency", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0.1Hz"}}
+
+# Amber
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color'
+{"led": {"control_item": "S0 Indicator Color", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "255"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2'
+{"led": {"control_item": "S0 Indicator Color 2", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "191"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3'
+{"led": {"control_item": "S0 Indicator Color 3", "type": "Power Button LED", "indicator_option": "Power State Indicator", "control_item_value": "0"}}
+
+
+$ nuc_wmi-set_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "HDD Activity Indicator"}}
+
+$ nuc_wmi-get_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED'
+{"led": {"type": "Power Button LED", "indicator_option": "HDD Activity Indicator"}}
+
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Brightness' 100
+{"led": {"control_item": "Brightness", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "100"}}
+
+# Blue
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color' 0
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 2' 0
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 3' 100
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Behavior' 'Normally OFF, ON when active'
+{"led": {"control_item": "Behavior", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "Normally OFF, ON when active"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Brightness'
+{"led": {"control_item": "Brightness", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "100"}}
+
+# Blue
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 2'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 3'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Behavior'
+{"led": {"control_item": "Behavior", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "Normally OFF, ON when active"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Behavior' 'Normally ON, OFF when active'
+{"led": {"control_item": "Behavior", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "Normally ON, OFF when active"}}
+
+# Amber
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color' 255
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "255"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 2' 192
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "191"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 3' 0
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Behavior'
+{"led": {"control_item": "Behavior", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "Normally ON, OFF when active"}}
+
+# Amber
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "255"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 2'
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "191"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'HDD Activity Indicator' 'Color 3'
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "HDD Activity Indicator", "control_item_value": "0"}}
+
+
+$ nuc_wmi-set_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator'
+{"led": {"type": "Power Button LED", "indicator_option": "Software Indicator"}}
+
+$ nuc_wmi-get_led_indicator_option --quirks NUC12_RETURN_VALUE 'Power Button LED'
+{"led": {"type": "Power Button LED", "indicator_option": "Software Indicator"}}
+
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Brightness' 100
+{"led": {"control_item": "Brightness", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Behavior' Solid
+{"led": {"control_item": "Blinking Behavior", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "Solid"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Frequency' '1.0Hz'
+{"led": {"control_item": "Blinking Frequency", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "1.0Hz"}}
+
+# Blue
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color' 0
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 2' 0
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 3' 100
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Brightness'
+{"led": {"control_item": "Brightness", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Behavior'
+{"led": {"control_item": "Blinking Behavior", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "Solid"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Frequency'
+{"led": {"control_item": "Blinking Frequency", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "1.0Hz"}}
+
+# Blue
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 2'
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 3'
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "100"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Behavior' Strobing
+{"led": {"control_item": "Blinking Behavior", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "Strobing"}}
+
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Frequency' '0.1Hz'
+{"led": {"control_item": "Blinking Frequency", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0.1Hz"}}
+
+# Amber
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color' 255
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "255"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 2' 191
+{"led": {"control_item": "Color 2", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "191"}}
+$ nuc_wmi-set_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 3' 0
+{"led": {"control_item": "Color 3", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Behavior'
+{"led": {"control_item": "Blinking Behavior", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "Strobing"}}
+
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Blinking Frequency'
+{"led": {"control_item": "Blinking Frequency", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0.1Hz"}}
+
+# Amber
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "255"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 2'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "191"}}
+$ nuc_wmi-get_led_control_item --quirks NUC12_RETURN_VALUE 'Power Button LED' 'Software Indicator' 'Color 3'
+{"led": {"control_item": "Color", "type": "Power Button LED", "indicator_option": "Software Indicator", "control_item_value": "0"}}
+```
+
+Note: NUC 12 power button LED is a 3D RGB LED that uses PWM and not a 1D LED that uses color labels.
+
 ---
 
 ## nuc_wmi-save_led_config
@@ -869,6 +1116,13 @@ $ nuc_wmi-save_led_config --quirks NUC10_RETURN_VALUE
 
 ```
 $ nuc_wmi-save_led_config
+{"led_app_notification": {"type": "save_led_config"}}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-save_led_config --quirks NUC12_RETURN_VALUE
 {"led_app_notification": {"type": "save_led_config"}}
 ```
 
@@ -892,7 +1146,7 @@ $ nuc_wmi-switch_led_type --quirks NUC10_RETURN_VALUE 'Multi color LED'
 {"error": "Error (Function not supported)"}
 ```
 
-# NUC 10 (BIOS Dec 2020 or newer)
+### NUC 10 (BIOS Dec 2020 or newer)
 
 ```
 $ nuc_wmi-switch_led_type 'Single color LED'
@@ -900,6 +1154,14 @@ $ nuc_wmi-switch_led_type 'Single color LED'
 
 $ nuc_wmi-switch_led_type 'Multi color LED'
 {"error": "Error (Function not supported)"}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-switch_led_type --quirks NUC12_RETURN_VALUE 'Single color LED'
+
+$ nuc_wmi-switch_led_type --quirks NUC12_RETURN_VALUE 'Multi color LED'
 ```
 
 This WMI function doesnt work on NUC 10. I dont know what its for.
@@ -924,4 +1186,11 @@ $ nuc_wmi-wmi_interface_spec_compliance_version --quirks NUC10_RETURN_VALUE
 ```
 $ nuc_wmi-wmi_interface_spec_compliance_version
 {"version": {"semver": "1.32", "type": "wmi_interface_spec_compliance"}}
+```
+
+### NUC 12 (initial release BIOS)
+
+```
+$ nuc_wmi-wmi_interface_spec_compliance_version --quirks NUC12_RETURN_VALUE
+{"version": {"semver": "1.40", "type": "wmi_interface_spec_compliance"}}
 ```
