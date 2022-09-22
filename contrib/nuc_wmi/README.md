@@ -302,9 +302,10 @@ CLI options.
 
 ### NUC 12 Quirks
 
-* `NUC12_RETURN_VALUE`: This `quirks mode` changes the process of the return value for the `query_led_color_type` WMI
-  method for the initial production NUC 12 BIOS. In the initial production NUC 12 BIOS, the implementation for this WMI method
-  does not follow the spec and returns an integer representation instead of a bitmap represention value for the color type.
+* `NUC12_RETURN_VALUE`: This `quirks mode` changes the processing of the return value for the `query_led_color_type` and
+  `query_led_indicator_option` WMI method for the initial production NUC 12 BIOS. In the initial production NUC 12 BIOS,
+  the implementation of these WMI methods does not follow the spec and returns an integer representation instead of a bitmap
+  represention value for their respective values.
 
   In order to determine whether or not you need to enable this `quirks mode`, you can run `nuc_wmi-query_led_color_type`
   for the `Power Button LED` and it should report itself as a `RGB-color` color type and not a `Dual-color Blue / White`

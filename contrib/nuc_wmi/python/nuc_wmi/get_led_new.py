@@ -100,7 +100,8 @@ def get_led_indicator_option(led_type, control_file=None, debug=False, quirks=No
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR[error_code])
 
-    if quirks is not None and 'NUC10_RETURN_VALUE' in quirks:
+    if quirks is not None and \
+       set(['NUC10_RETURN_VALUE', 'NUC12_RETURN_VALUE']).intersection(set(quirks)):
         return led_indicator_option
 
     led_indicator_option_bitmaps = [led_indicator_option]
