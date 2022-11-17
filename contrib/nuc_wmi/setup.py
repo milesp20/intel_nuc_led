@@ -93,7 +93,6 @@ setup( # pylint: disable=star-args
             'nuc_wmi-wmi_interface_spec_compliance_version = nuc_wmi.cli.version:wmi_interface_spec_compliance_version_cli'
         ]
     },
-    include_package_data=True,
     install_requires=[
         'setuptools'
     ],
