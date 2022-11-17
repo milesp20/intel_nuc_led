@@ -4,11 +4,26 @@
 
 from nuc_wmi import CONTROL_ITEM, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
-from nuc_wmi.utils import byte_list_to_bitmap
+from nuc_wmi.utils import byte_list_to_index, verify_nuc_wmi_function_spec
 
 LED_INDICATOR_OPTION_DISABLED = 0x06
 METHOD_ID = 0x03
-
+QUERY_LED_COLOR_TYPE_NUC_WMI_SPEC = {
+    'nuc_wmi_function_return_types': ['bitmap', 'index'],
+    'nuc_wmi_function_oob_return_value_recover_values': [False]
+}
+QUERY_LED_CONTROL_ITEMS_NUC_WMI_SPEC = {
+    'nuc_wmi_function_return_types': ['bitmap'],
+    'nuc_wmi_function_oob_return_value_recover_values': [False]
+}
+QUERY_LED_INDICATOR_OPTIONS_NUC_WMI_SPEC = {
+    'nuc_wmi_function_return_types': ['bitmap'],
+    'nuc_wmi_function_oob_return_value_recover_values': [False]
+}
+QUERY_LEDS_NUC_WMI_SPEC = {
+    'nuc_wmi_function_return_types': ['bitmap'],
+    'nuc_wmi_function_oob_return_value_recover_values': [False]
+}
 QUERY_TYPE = [
     'query_leds',
     'query_led_color_type',
@@ -16,7 +31,8 @@ QUERY_TYPE = [
     'query_led_control_items'
 ]
 
-def query_led_color_type(led_type, control_file=None, debug=False, quirks=None, quirks_metadata=None):
+
+def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=unused-argument
     """
     Query the LED color type for the LED type.
 
@@ -24,19 +40,24 @@ def query_led_color_type(led_type, control_file=None, debug=False, quirks=None, 
       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
       led_type: The LED type for which to query the LED color type.
-      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
-      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
+      metadata: Metadata that may be required to change functional behavior.
+      nuc_wmi_spec: The NUC WMI specification configuration.
     Exceptions:
       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
-      or if `read_control_file` or `write_control_file` raise an exception.
+      if `read_control_file` or `write_control_file` raise an exception, or if no or more than one color type
+      is returned when evaluated as a bitmap.
     Returns:
       `nuc_wmi.LED_COLOR_TYPE` index of current LED color type.
     """
 
+    (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
+        'query_led_color_type',
+        nuc_wmi_spec,
+        *QUERY_LED_COLOR_TYPE_NUC_WMI_SPEC
+    )
     query_led_color_byte_list = [METHOD_ID, QUERY_TYPE.index('query_led_color_type'), led_type]
 
-    write_control_file(query_led_color_byte_list, control_file=control_file, debug=debug, quirks=quirks,
-                       quirks_metadata=quirks_metadata)
+    write_control_file(query_led_color_byte_list, control_file=control_file, debug=debug)
 
     # Bitmap [0:7], [8:15], [16:23]
     (
@@ -44,7 +65,7 @@ def query_led_color_type(led_type, control_file=None, debug=False, quirks=None, 
         led_color_type_bitmap_1,
         led_color_type_bitmap_2,
         led_color_type_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
+    ) = read_control_file(control_file=control_file, debug=debug)
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
@@ -55,28 +76,27 @@ def query_led_color_type(led_type, control_file=None, debug=False, quirks=None, 
         led_color_type_bitmap_1
     ]
 
-    if quirks is not None and set(['NUC10_RETURN_VALUE', 'NUC12_RETURN_VALUE']).intersection(set(quirks)):
-        led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)
+    led_color_type_index = byte_list_to_index(led_color_type_bitmaps, function_return_type)
 
-        return int(led_color_type_bitmap, 2)
+    if function_return_type == 'index':
+        return led_color_type_index
 
-    led_color_type_bitmap = byte_list_to_bitmap(led_color_type_bitmaps)[::-1]
-
-    if len(list(filter(lambda led_color_type_bit: led_color_type_bit == '1', [*led_color_type_bitmap]))) > 1:
+    if len(led_color_type_index) != 1:
         raise NucWmiError(
-            'Error (Intel NUC WMI query_led_color_type function returned multiple led color types in bitmap)'
+            'Error (Intel NUC WMI query_led_color_type function returned either no led color type '
+            'or multiple led color types in bitmap)'
         )
 
-    return led_color_type_bitmap.index('1')
+    return led_color_type_index[0]
 
 
-def query_led_control_items(
+def query_led_control_items( # pylint: disable=too-many-locals
+        nuc_wmi_spec,
         led_type,
         led_indicator_option,
         control_file=None,
         debug=False,
-        quirks=None,
-        quirks_metadata=None
+        metadata=None # pylint: disable=unused-argument
 ):
     """
     Query the LED control items for the LED indicator option of the LED type.
@@ -86,8 +106,8 @@ def query_led_control_items(
       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
       led_indicator_option: The LED indicator option to use for the LED type when querying for the LED control items.
       led_type: The LED type for which to query the LED control items.
-      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
-      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
+      metadata: Metadata that may be required to change functional behavior.
+      nuc_wmi_spec: The NUC WMI specification configuration.
     Exceptions:
       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
       or if `read_control_file` or `write_control_file` raise an exception.
@@ -95,8 +115,13 @@ def query_led_control_items(
       List of available `nuc_wmi.CONTROL_ITEM` indexes for the specified LED type and LED indicator option.
     """
 
-    led_color_type = query_led_color_type(led_type, control_file=control_file, debug=debug, quirks=quirks,
-                                          quirks_metadata=quirks_metadata)
+    (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
+        'query_led_control_items',
+        nuc_wmi_spec,
+        *QUERY_LED_CONTROL_ITEMS_NUC_WMI_SPEC
+    )
+    led_color_type = query_led_color_type(nuc_wmi_spec, led_type, control_file=control_file, debug=debug,
+                                          metadata=metadata)
 
     query_led_control_item_byte_list = [
         METHOD_ID,
@@ -105,8 +130,7 @@ def query_led_control_items(
         led_indicator_option
     ]
 
-    write_control_file(query_led_control_item_byte_list, control_file=control_file, debug=debug, quirks=quirks,
-                       quirks_metadata=quirks_metadata)
+    write_control_file(query_led_control_item_byte_list, control_file=control_file, debug=debug)
 
     # Bitmap [0:7], [8:15], [16:23]
     (
@@ -114,7 +138,7 @@ def query_led_control_items(
         led_control_item_bitmap_1,
         led_control_item_bitmap_2,
         led_control_item_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
+    ) = read_control_file(control_file=control_file, debug=debug)
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
@@ -124,22 +148,25 @@ def query_led_control_items(
         led_control_item_bitmap_2,
         led_control_item_bitmap_1
     ]
-    led_control_item_bitmap = byte_list_to_bitmap(led_control_item_bitmaps)[::-1]
+    led_control_item_index = byte_list_to_index(led_control_item_bitmaps, function_return_type)
+
+    led_control_item_index.sort()
 
     if led_indicator_option == LED_INDICATOR_OPTION_DISABLED or \
        CONTROL_ITEM[led_indicator_option][led_color_type] is None:
         return []
 
-    if led_control_item_bitmap.rindex('1') >= len(CONTROL_ITEM[led_indicator_option][led_color_type]):
+    if led_control_item_index and \
+       led_control_item_index[-1] >= len(CONTROL_ITEM[led_indicator_option][led_color_type]):
         raise NucWmiError(
             'Error (Intel NUC WMI query_led_control_items function returned more led control items than ' +
             'supported for the led type and led indicator provided)'
         )
 
-    return [index for index, bit in enumerate(led_control_item_bitmap) if int(bit)]
+    return led_control_item_index
 
 
-def query_led_indicator_options(led_type, control_file=None, debug=False, quirks=None, quirks_metadata=None):
+def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=unused-argument
     """
     Query the LED indicator options available for the LED type.
 
@@ -147,8 +174,8 @@ def query_led_indicator_options(led_type, control_file=None, debug=False, quirks
       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
       led_type: The LED type for which to query the LED indicator options.
-      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
-      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
+      metadata: Metadata that may be required to change functional behavior.
+      nuc_wmi_spec: The NUC WMI specification configuration.
     Exceptions:
       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
       or if `read_control_file` or `write_control_file` raise an exception.
@@ -156,14 +183,18 @@ def query_led_indicator_options(led_type, control_file=None, debug=False, quirks
       List of available `nuc_wmi.LED_INDICATOR_OPTION` indexes.
     """
 
+    (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
+        'query_led_indicator_options',
+        nuc_wmi_spec,
+        *QUERY_LED_INDICATOR_OPTIONS_NUC_WMI_SPEC
+    )
     query_led_indicator_options_byte_list = [
         METHOD_ID,
         QUERY_TYPE.index('query_led_indicator_options'),
         led_type
     ]
 
-    write_control_file(query_led_indicator_options_byte_list, control_file=control_file, debug=debug, quirks=quirks,
-                       quirks_metadata=quirks_metadata)
+    write_control_file(query_led_indicator_options_byte_list, control_file=control_file, debug=debug)
 
     # Bitmap [0:7], [8:15], [16:23]
     (
@@ -171,7 +202,7 @@ def query_led_indicator_options(led_type, control_file=None, debug=False, quirks
         led_indicator_option_bitmap_1,
         led_indicator_option_bitmap_2,
         led_indicator_option_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
+    ) = read_control_file(control_file=control_file, debug=debug)
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
@@ -181,26 +212,29 @@ def query_led_indicator_options(led_type, control_file=None, debug=False, quirks
         led_indicator_option_bitmap_2,
         led_indicator_option_bitmap_1
     ]
-    led_indicator_option_bitmap = byte_list_to_bitmap(led_indicator_option_bitmaps)[::-1]
+    led_indicator_option_index = byte_list_to_index(led_indicator_option_bitmaps, function_return_type)
 
-    if led_indicator_option_bitmap.rindex('1') >= len(LED_INDICATOR_OPTION):
+    led_indicator_option_index.sort()
+
+    if led_indicator_option_index and \
+       led_indicator_option_index[-1] >= len(LED_INDICATOR_OPTION):
         raise NucWmiError(
             'Error (Intel NUC WMI query_led_indicator_options function returned more led indicator options than ' +
             'supported for the led type provided)'
         )
 
-    return [index for index, bit in enumerate(led_indicator_option_bitmap) if int(bit)]
+    return led_indicator_option_index
 
 
-def query_leds(control_file=None, debug=False, quirks=None, quirks_metadata=None):
+def query_leds(nuc_wmi_spec, control_file=None, debug=False, metadata=None): # pylint: disable=unused-argument
     """
     List all LED types supported.
 
     Args:
       control_file: Sets the control file to use if provided, otherwise `nuc_wmi.CONTROL_FILE` is used.
       debug: Whether or not to enable debug logging of read and write to the NUC LED control file to stderr.
-      quirks: Enable NUC WMI quirks to work around various implementation issues or bugs.
-      quirks_metadata: Metadata that may be required by various quirks in order for them to be applied.
+      metadata: Metadata that may be required to change functional behavior.
+      nuc_wmi_spec: The NUC WMI specification configuration.
     Exceptions:
       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
       or if `read_control_file` or `write_control_file` raise an exception.
@@ -208,10 +242,14 @@ def query_leds(control_file=None, debug=False, quirks=None, quirks_metadata=None
       List of available `nuc_wmi.LED_TYPE` indexes.
     """
 
+    (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
+        'query_leds',
+        nuc_wmi_spec,
+        *QUERY_LEDS_NUC_WMI_SPEC
+    )
     query_leds_byte_list = [METHOD_ID, QUERY_TYPE.index('query_leds')]
 
-    write_control_file(query_leds_byte_list, control_file=control_file, debug=debug, quirks=quirks,
-                       quirks_metadata=quirks_metadata)
+    write_control_file(query_leds_byte_list, control_file=control_file, debug=debug)
 
     # Bitmap [0:7], [8:15], [16:23]
     (
@@ -219,7 +257,7 @@ def query_leds(control_file=None, debug=False, quirks=None, quirks_metadata=None
         led_type_bitmap_1,
         led_type_bitmap_2,
         led_type_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug, quirks=quirks, quirks_metadata=quirks_metadata)
+    ) = read_control_file(control_file=control_file, debug=debug)
 
     if error_code > 0:
         raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
@@ -229,9 +267,12 @@ def query_leds(control_file=None, debug=False, quirks=None, quirks_metadata=None
         led_type_bitmap_2,
         led_type_bitmap_1
     ]
-    led_type_bitmap = byte_list_to_bitmap(led_type_bitmaps)[::-1]
+    led_type_bitmap_index = byte_list_to_index(led_type_bitmaps, function_return_type)
 
-    if led_type_bitmap.rindex('1') >= len(LED_TYPE['new']):
+    led_type_bitmap_index.sort()
+
+    if led_type_bitmap_index and \
+       led_type_bitmap_index[-1] >= len(LED_TYPE['new']):
         raise NucWmiError('Error (Intel NUC WMI query_leds function returned more led types than supported)')
 
-    return [index for index, bit in enumerate(led_type_bitmap) if int(bit)]
+    return led_type_bitmap_index

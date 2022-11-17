@@ -38,13 +38,17 @@ class TestSetLedControlItem(unittest.TestCase):
 
 
     @patch('nuc_wmi.set_led_control_item.read_control_file')
+    @patch('nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_control_item.write_control_file')
-    def test_set_led_control_item(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_control_item(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                  nuc_wmi_read_control_file):
         """
         Tests that `Set_led_control_item` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_control_item.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_control_item.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that set_led_control_item sends the expected byte string to the control file
@@ -71,7 +75,10 @@ class TestSetLedControlItem(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_set_led_control_item = set_led_control_item(
+            {},
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -83,29 +90,30 @@ class TestSetLedControlItem(unittest.TestCase):
             LED_BRIGHTNESS_MULTI_COLOR.index('30'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_set_led_control_item, None)
 
 
     @patch('nuc_wmi.set_led_control_item.read_control_file')
+    @patch('nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_control_item.write_control_file')
-    def test_set_led_control_item2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_control_item2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                   nuc_wmi_read_control_file):
         """
         Tests that `Set_led_control_item` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_control_item.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_control_item.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that set_led_control_item raises an exception when the control file returns an
@@ -132,9 +140,11 @@ class TestSetLedControlItem(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led_control_item(
+                {},
                 len(LED_TYPE['new']), # Incorrect led
                 LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
                 CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -146,29 +156,29 @@ class TestSetLedControlItem(unittest.TestCase):
                 LED_BRIGHTNESS_MULTI_COLOR.index('30'),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
-
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
 
     @patch('nuc_wmi.set_led_control_item.read_control_file')
+    @patch('nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_control_item.write_control_file')
-    def test_set_led_control_item3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_control_item3(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                   nuc_wmi_read_control_file):
         """
         Tests that `Set_led_control_item` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_control_item.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_control_item.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_control_item.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 3: Test that set_led_control_item sends the expected byte string to the control file
@@ -195,7 +205,10 @@ class TestSetLedControlItem(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_set_led_control_item = set_led_control_item(
+            {},
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
@@ -207,16 +220,13 @@ class TestSetLedControlItem(unittest.TestCase):
             LED_BLINK_FREQUENCY['new'].index('1.0Hz'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_set_led_control_item, None)

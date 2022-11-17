@@ -37,13 +37,15 @@ class TestGetLed(unittest.TestCase):
 
 
     @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.get_led.write_control_file')
-    def test_get_led(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_get_led(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec, nuc_wmi_read_control_file):
         """
         Tests that `get_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that get_led sends the expected byte string to the control file
@@ -62,33 +64,35 @@ class TestGetLed(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', False)
+
         returned_get_led = get_led(
+            {},
             LED_TYPE['legacy'].index('S0 Ring LED'),
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_get_led, tuple(read_byte_list[1:]))
 
 
     @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.get_led.write_control_file')
-    def test_get_led2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_get_led2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `get_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that get_led raises an exception when the control file returns an
@@ -102,185 +106,176 @@ class TestGetLed(unittest.TestCase):
         read_byte_list = [0xE2, 0x00, 0x00, 0x00] # Return undefined device
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', False)
 
         with self.assertRaises(NucWmiError) as err:
             get_led(
+                {},
                 len(LED_TYPE['legacy']),
                 control_file=None,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
+                debug=False
             ) # Set incorrect led
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Undefined device)')
 
 
     @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.get_led.write_control_file')
-    def test_get_led3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_get_led3(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `get_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
-        # Branch 3: Test that get_led returns a non null value when we enable the quirks
-        #           mode NUC7_FREQUENCY_DEFAULT.
+        # Branch 3: Test that get_led returns a non null value when we enable out of bound
+        #           value recovery in NUC WMI specification.
 
-        # quirks_metadata
         led_color_type = LED_COLOR_TYPE['legacy']['S0 Ring LED']
 
         brightness_range = defined_indexes(LED_BRIGHTNESS['legacy'])
         frequency_range = defined_indexes(LED_BLINK_FREQUENCY['legacy'])
         color_range = defined_indexes(LED_COLOR['legacy'][led_color_type])
 
-        quirks_metadata = {
-            'brightness_range': brightness_range,
-            'frequency_range': frequency_range,
-            'color_range': color_range
-        }
-
-        # Incorrect led
         expected_write_byte_list = [
             METHOD_ID,
             LED_TYPE['legacy'].index('S0 Ring LED')
         ]
+        metadata = {
+            'brightness_range': brightness_range,
+            'frequency_range': frequency_range,
+            'color_range': color_range
+        }
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', True)
 
         returned_get_led = get_led(
+            {},
             LED_TYPE['legacy'].index('S0 Ring LED'),
             control_file=None,
             debug=False,
-            quirks=['NUC7_FREQUENCY_DEFAULT'],
-            quirks_metadata=quirks_metadata
+            metadata=metadata
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=['NUC7_FREQUENCY_DEFAULT'],
-            quirks_metadata=quirks_metadata
+            debug=False
         )
 
         self.assertEqual(returned_get_led, tuple([0x00, 0x01, 0x00]))
 
 
     @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.get_led.write_control_file')
-    def test_get_led4(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_get_led4(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `get_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
-        # Branch 4: Test that get_led returns values inside specification bounds when we enable the quirks
-        #           mode NUC7_OUT_OF_BOUND_READ.
+        # Branch 4: Test that get_led returns values inside specification bounds when we enable out of bound
+        #           value recovery in NUC WMI specification.
 
-        # quirks_metadata
         led_color_type = LED_COLOR_TYPE['legacy']['S0 Ring LED']
 
         brightness_range = defined_indexes(LED_BRIGHTNESS['legacy'])
         frequency_range = defined_indexes(LED_BLINK_FREQUENCY['legacy'])
         color_range = defined_indexes(LED_COLOR['legacy'][led_color_type])
 
-        quirks_metadata = {
-            'brightness_range': brightness_range,
-            'frequency_range': frequency_range,
-            'color_range': color_range
-        }
-
-        # Incorrect led
         expected_write_byte_list = [
             METHOD_ID,
             LED_TYPE['legacy'].index('S0 Ring LED')
         ]
+        metadata = {
+            'brightness_range': brightness_range,
+            'frequency_range': frequency_range,
+            'color_range': color_range
+        }
         read_byte_list = [0x00, 0xFF, 0xFF, 0xFF]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', True)
 
         returned_get_led = get_led(
+            {},
             LED_TYPE['legacy'].index('S0 Ring LED'),
             control_file=None,
             debug=False,
-            quirks=['NUC7_OUT_OF_BOUND_READ'],
-            quirks_metadata=quirks_metadata
+            metadata=metadata
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=['NUC7_OUT_OF_BOUND_READ'],
-            quirks_metadata=quirks_metadata
+            debug=False
         )
 
         self.assertEqual(returned_get_led, tuple([0x00, 0x01, 0x00]))
 
 
     @patch('nuc_wmi.get_led.read_control_file')
+    @patch('nuc_wmi.get_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.get_led.write_control_file')
-    def test_get_led5(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_get_led5(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `get_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.get_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.get_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.get_led.write_control_file is nuc_wmi_write_control_file)
 
-        # Branch 5: Test that get_led returns values inside specification bounds (except frequency) when we enable the
-        #           quirks mode NUC7_OUT_OF_BOUND_READ.
-
-        # quirks_metadata
+        # Branch 5: Test that get_led returns values inside specification bounds (except frequency) when we enable out
+        #           of bound value recovery in NUC WMI specification.
         led_color_type = LED_COLOR_TYPE['legacy']['S0 Ring LED']
 
         brightness_range = defined_indexes(LED_BRIGHTNESS['legacy'])
         color_range = defined_indexes(LED_COLOR['legacy'][led_color_type])
 
-        quirks_metadata = {
-            'brightness_range': brightness_range,
-            'color_range': color_range
-        }
-
-        # Incorrect led
         expected_write_byte_list = [
             METHOD_ID,
             LED_TYPE['legacy'].index('S0 Ring LED')
         ]
+        metadata = {
+            'brightness_range': brightness_range,
+            'color_range': color_range
+        }
         read_byte_list = [0x00, 0xFF, 0x01, 0xFF]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
-
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', True)
 
         returned_get_led = get_led(
+            {},
             LED_TYPE['legacy'].index('S0 Ring LED'),
             control_file=None,
             debug=False,
-            quirks=['NUC7_OUT_OF_BOUND_READ'],
-            quirks_metadata=quirks_metadata
+            metadata=metadata
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=['NUC7_OUT_OF_BOUND_READ'],
-            quirks_metadata=quirks_metadata
+            debug=False
         )
 
         self.assertEqual(returned_get_led, tuple([0x00, 0x01, 0x00]))

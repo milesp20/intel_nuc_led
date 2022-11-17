@@ -96,15 +96,10 @@ class TestControlFile(unittest.TestCase):
             fout.write("00 00 00\n\x00")
 
         with self.assertRaises(NucWmiError) as byte_list_len_err:
-            read_control_file(
-                control_file=self.control_file.name,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            )
+            read_control_file(control_file=self.control_file.name, debug=False)
 
         self.assertEqual(str(byte_list_len_err.exception),
-                         'NUC WMI control file did not return an expected 4 bytes')
+                         'Intel NUC WMI control file did not return an expected 4 bytes')
 
         nuc_wmi_print.assert_not_called()
 
@@ -128,12 +123,7 @@ class TestControlFile(unittest.TestCase):
         byte_list = (0x0D, 0x0E, 0x0A, 0x0D)
 
         self.assertEqual(
-            read_control_file(
-                control_file=self.control_file.name,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            ),
+            read_control_file(control_file=self.control_file.name, debug=False),
             byte_list
         )
 
@@ -157,12 +147,7 @@ class TestControlFile(unittest.TestCase):
             non_existent_file = temp_file
 
         with self.assertRaises((IOError, OSError)):
-            read_control_file(
-                control_file=non_existent_file.name,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            )
+            read_control_file(control_file=non_existent_file.name, debug=False)
 
         nuc_wmi_print.assert_not_called()
 
@@ -180,14 +165,9 @@ class TestControlFile(unittest.TestCase):
             fout.write("FFF 0E 0A 0D\n\x00")
 
         with self.assertRaises(NucWmiError) as err:
-            read_control_file(
-                control_file=self.control_file.name,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            )
+            read_control_file(control_file=self.control_file.name, debug=False)
 
-        self.assertEqual(str(err.exception), 'NUC WMI returned hex byte outside of 0-255 range')
+        self.assertEqual(str(err.exception), 'Intel NUC WMI returned hex byte outside of 0-255 range')
 
         nuc_wmi_print.assert_not_called()
 
@@ -207,12 +187,7 @@ class TestControlFile(unittest.TestCase):
         byte_list = (0x0D, 0x0E, 0x0A, 0x0D)
 
         self.assertEqual(
-            read_control_file(
-                control_file=self.control_file.name,
-                debug=True,
-                quirks=None,
-                quirks_metadata=None
-            ),
+            read_control_file(control_file=self.control_file.name, debug=True),
             byte_list
         )
 
@@ -234,12 +209,7 @@ class TestControlFile(unittest.TestCase):
         # Branch 1: Tests that `write_control_file` raises the expected exception when `nuc_wmi.CONTROL_FILE` doesnt
         #           exist. Assumes we are testing on a system without the driver installed.
         with self.assertRaises((IOError, OSError)):
-            read_control_file(
-                control_file=None,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            )
+            read_control_file(control_file=None, debug=False)
 
         nuc_wmi_print.assert_not_called()
 
@@ -261,13 +231,7 @@ class TestControlFile(unittest.TestCase):
         byte_list = [0x0D, 0x0E, 0x0A, 0x0D]
         expected_byte_string = '0d 0e 0a 0d 00'
 
-        write_control_file(
-            byte_list,
-            control_file=self.control_file.name,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
-        )
+        write_control_file(byte_list, control_file=self.control_file.name, debug=False)
 
         with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()
@@ -293,13 +257,7 @@ class TestControlFile(unittest.TestCase):
         byte_list = [str(0x0D), str(0x0E), str(0x0A), str(0x0D)]
         expected_byte_string = '0d 0e 0a 0d 00'
 
-        write_control_file(
-            byte_list,
-            control_file=self.control_file.name,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
-        )
+        write_control_file(byte_list, control_file=self.control_file.name, debug=False)
 
         with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()
@@ -325,15 +283,9 @@ class TestControlFile(unittest.TestCase):
         byte_list = [0xFFF]
 
         with self.assertRaises(NucWmiError) as err:
-            write_control_file(
-                byte_list,
-                control_file=self.control_file.name,
-                debug=False,
-                quirks=None,
-                quirks_metadata=None
-            )
+            write_control_file(byte_list, control_file=self.control_file.name, debug=False)
 
-        self.assertEqual(str(err.exception), 'Error (NUC LED byte values must be 0-255)')
+        self.assertEqual(str(err.exception), 'Error (Intel NUC LED byte values must be 0-255)')
 
         nuc_wmi_print.assert_not_called()
 
@@ -355,13 +307,7 @@ class TestControlFile(unittest.TestCase):
         byte_list = [0x0D, 0x0E, 0x0A, 0x0D]
         expected_byte_string = '0d 0e 0a 0d 00'
 
-        write_control_file(
-            byte_list,
-            control_file=self.control_file.name,
-            debug=True,
-            quirks=None,
-            quirks_metadata=None
-        )
+        write_control_file(byte_list, control_file=self.control_file.name, debug=True)
 
         with open(self.control_file.name, 'r', encoding='utf8') as fin:
             written_byte_string = fin.read()

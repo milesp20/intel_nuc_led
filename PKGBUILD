@@ -13,7 +13,7 @@ _kernelpath=5.8.10-arch1-1
 depends=("linux=${_kernelver}")
 makedepends=(
     "linux-headers=${_kernelver}"
-    "python-setuptools"
+    "python3-setuptools"
 )
 source=(
     "Makefile"

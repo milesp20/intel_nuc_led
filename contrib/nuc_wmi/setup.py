@@ -67,7 +67,7 @@ setup( # pylint: disable=star-args
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Unix Shell',
         'Topic :: Software Development :: Libraries :: Python Modules',
@@ -103,6 +103,10 @@ setup( # pylint: disable=star-args
     maintainer='Julio Lajara',
     maintainer_email='julio@tvisioninsights.com',
     name='nuc_wmi',
+    package_data={
+         'nuc_wmi': ['etc/nuc_wmi/nuc_wmi_spec/*']
+        },
+
     package_dir={
         '': 'python'
     },
@@ -121,7 +125,7 @@ setup( # pylint: disable=star-args
     ],
     test_suite='setup.test_suite',
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version='2.3.2',
+    version='3.0.0',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )

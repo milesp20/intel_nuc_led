@@ -36,13 +36,15 @@ class TestSetLed(unittest.TestCase):
 
 
     @patch('nuc_wmi.set_led.read_control_file')
+    @patch('nuc_wmi.set_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led.write_control_file')
-    def test_set_led(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec, nuc_wmi_read_control_file):
         """
         Tests that `set_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that set_led sends the expected byte string to the control file
@@ -59,36 +61,39 @@ class TestSetLed(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_set_led = set_led(
+            {},
             LED_TYPE['legacy'].index('S0 Ring LED'),
             LED_BRIGHTNESS['legacy'].index('63'),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
             LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_set_led, None)
 
 
     @patch('nuc_wmi.set_led.read_control_file')
+    @patch('nuc_wmi.set_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led.write_control_file')
-    def test_set_led2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `set_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that set_led raises an exception when the control file returns an
@@ -105,39 +110,44 @@ class TestSetLed(unittest.TestCase):
         read_byte_list = [0xE1, 0x00, 0x00, 0x00] # Return function not supported
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led(
+                {},
                 len(LED_TYPE['legacy']), # Set incorrect led
                 LED_BRIGHTNESS['legacy'].index('63'),
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
                 LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')
 
 
     @patch('nuc_wmi.set_led.read_control_file')
+    @patch('nuc_wmi.set_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led.write_control_file')
-    def test_set_led3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led3(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `set_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 3: Test that set_led raises an exception when the incorrect brightness
+        #           is specified.
 
         # Incorrect brightness
         expected_write_byte_list = [
@@ -150,39 +160,44 @@ class TestSetLed(unittest.TestCase):
         read_byte_list = [0xE4, 0x00, 0x00, 0x00] # Return invalid parameter
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led(
+                {},
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 len(LED_BRIGHTNESS['legacy']), # Set incorrect brightness
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
                 LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
 
     @patch('nuc_wmi.set_led.read_control_file')
+    @patch('nuc_wmi.set_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led.write_control_file')
-    def test_set_led4(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led4(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `set_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 4: Test that set_led raises an exception when the incorrect frequency
+        #           is specified.
 
         # Incorrect frequency
         expected_write_byte_list = [
@@ -195,39 +210,44 @@ class TestSetLed(unittest.TestCase):
         read_byte_list = [0x00, 0xE4, 0x00, 0x00] # Return invalid parameter
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led(
+                {},
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 LED_BRIGHTNESS['legacy'].index('63'),
                 len(LED_BLINK_FREQUENCY['legacy']), # Set incorrect frequency
                 LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Yellow'),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
 
     @patch('nuc_wmi.set_led.read_control_file')
+    @patch('nuc_wmi.set_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led.write_control_file')
-    def test_set_led5(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led5(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                      nuc_wmi_read_control_file):
         """
         Tests that `set_led` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 5: Test that set_led raises an exception when the incorrect color
+        #           is specified.
 
         # Incorrect color
         expected_write_byte_list = [
@@ -240,25 +260,24 @@ class TestSetLed(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0xE4, 0x00] # Return invalid parameter
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led(
+                {},
                 LED_TYPE['legacy'].index('S0 Ring LED'),
                 LED_BRIGHTNESS['legacy'].index('63'),
                 LED_BLINK_FREQUENCY['legacy'].index('Always on'),
                 len(LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']]), # Set incorrect color
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
