@@ -34,7 +34,7 @@ def save_led_config(nuc_wmi_spec, control_file=None, debug=False, metadata=None)
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'save_led_config',
         nuc_wmi_spec,
-        *SAVE_LED_CONFIG_NUC_WMI_SPEC
+        **SAVE_LED_CONFIG_NUC_WMI_SPEC
     )
     notification_byte_list = [
         METHOD_ID,

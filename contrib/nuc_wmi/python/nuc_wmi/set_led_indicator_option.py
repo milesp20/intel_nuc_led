@@ -39,7 +39,7 @@ def set_led_indicator_option(
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'set_led_indicator_option',
         nuc_wmi_spec,
-        *SET_LED_INDICATOR_OPTION_NUC_WMI_SPEC
+        **SET_LED_INDICATOR_OPTION_NUC_WMI_SPEC
     )
     set_led_indicator_option_byte_list = [METHOD_ID, led_type, led_indicator_option]
 

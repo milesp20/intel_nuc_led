@@ -53,7 +53,7 @@ def get_led_control_item( # pylint: disable=too-many-arguments
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'get_led_control_item',
         nuc_wmi_spec,
-        *GET_LED_CONTROL_ITEM_NUC_WMI_SPEC
+        **GET_LED_CONTROL_ITEM_NUC_WMI_SPEC
     )
     get_led_control_item_byte_list = [
         METHOD_ID,
@@ -110,7 +110,7 @@ def get_led_indicator_option(nuc_wmi_spec, led_type, control_file=None, debug=Fa
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'get_led_indicator_option',
         nuc_wmi_spec,
-        *GET_LED_INDICATOR_OPTION_NUC_WMI_SPEC
+        **GET_LED_INDICATOR_OPTION_NUC_WMI_SPEC
     )
     get_led_indicator_option_byte_list = [
         METHOD_ID,

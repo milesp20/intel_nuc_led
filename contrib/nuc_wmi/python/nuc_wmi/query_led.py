@@ -53,7 +53,7 @@ def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False,
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'query_led_color_type',
         nuc_wmi_spec,
-        *QUERY_LED_COLOR_TYPE_NUC_WMI_SPEC
+        **QUERY_LED_COLOR_TYPE_NUC_WMI_SPEC
     )
     query_led_color_byte_list = [METHOD_ID, QUERY_TYPE.index('query_led_color_type'), led_type]
 
@@ -118,7 +118,7 @@ def query_led_control_items( # pylint: disable=too-many-locals
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'query_led_control_items',
         nuc_wmi_spec,
-        *QUERY_LED_CONTROL_ITEMS_NUC_WMI_SPEC
+        **QUERY_LED_CONTROL_ITEMS_NUC_WMI_SPEC
     )
     led_color_type = query_led_color_type(nuc_wmi_spec, led_type, control_file=control_file, debug=debug,
                                           metadata=metadata)
@@ -186,7 +186,7 @@ def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'query_led_indicator_options',
         nuc_wmi_spec,
-        *QUERY_LED_INDICATOR_OPTIONS_NUC_WMI_SPEC
+        **QUERY_LED_INDICATOR_OPTIONS_NUC_WMI_SPEC
     )
     query_led_indicator_options_byte_list = [
         METHOD_ID,
@@ -245,7 +245,7 @@ def query_leds(nuc_wmi_spec, control_file=None, debug=False, metadata=None): # p
     (function_return_type, function_oob_return_value_recover) = verify_nuc_wmi_function_spec( # pylint: disable=unused-variable
         'query_leds',
         nuc_wmi_spec,
-        *QUERY_LEDS_NUC_WMI_SPEC
+        **QUERY_LEDS_NUC_WMI_SPEC
     )
     query_leds_byte_list = [METHOD_ID, QUERY_TYPE.index('query_leds')]
 
