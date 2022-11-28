@@ -201,6 +201,10 @@ The supported return types and "out of bound" return value recovery support is a
 |`switch_led_type`                      |`null`                |`false`                   |
 |`wmi_interface_spec_compliance_version`|`index`               |`false`                   |
 
+The NUC WMI spec `index` type casts the returned byte(s) into an integer and is used when a single value is returned by the function
+while the `bitmap` is used for functions that can return 0 or more values at once by treating it as a binary bitmap where enabled
+bits correspond to indexes in a list of value types.
+
 The NUC WMI spec configuration file is a JSON formatted file with the following specification:
 
 ```
@@ -343,6 +347,9 @@ implementation make it out into the wild.
   This usually happens on factory fresh refurbished devices and only on the first attempt to read values from
   device memory. Once you have used `set_led` to explicit set good values, then subsequent `get_led` calls should
   work fine. We recommend enabling OOB recovery in the NUC WMI spec file.
+
+  When OOB recovery is enabled, brightness and color return `0` and frequency returns `1` if any of their
+  values are outside of accepted spec range.
 
 ### NUC 10
 

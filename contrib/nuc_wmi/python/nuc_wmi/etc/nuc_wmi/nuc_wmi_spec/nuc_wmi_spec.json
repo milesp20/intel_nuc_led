@@ -78,7 +78,7 @@
     },
     "NUC_12": {
       "function_return_type": {
-        "get_led_control_item": "bitmap",
+        "get_led_control_item": "index",
         "get_led_indicator_option": "index",
         "query_led_color_type": "index",
         "query_led_control_items": "bitmap",

@@ -2,9 +2,9 @@
 `nuc_wmi.query_led` provides an interface to the WMI query led set of functions.
 """
 
-from nuc_wmi import CONTROL_ITEM, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
+from nuc_wmi import CONTROL_ITEM, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
-from nuc_wmi.utils import byte_list_to_index, verify_nuc_wmi_function_spec
+from nuc_wmi.utils import byte_list_to_index, defined_indexes, verify_nuc_wmi_function_spec
 
 LED_INDICATOR_OPTION_DISABLED = 0x06
 METHOD_ID = 0x03
@@ -44,7 +44,8 @@ def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False,
       nuc_wmi_spec: The NUC WMI specification configuration.
     Exceptions:
       Raises `nuc_wmi.NucWmiError` exception if kernel module returns an error code,
-      if `read_control_file` or `write_control_file` raise an exception, or if no or more than one color type
+      if `read_control_file` or `write_control_file` raise an exception, if no or more than one color type, or if an out
+       of bound value is returned for the LED color type.
       is returned when evaluated as a bitmap.
     Returns:
       `nuc_wmi.LED_COLOR_TYPE` index of current LED color type.
@@ -78,16 +79,24 @@ def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False,
 
     led_color_type_index = byte_list_to_index(led_color_type_bitmaps, function_return_type)
 
-    if function_return_type == 'index':
-        return led_color_type_index
+    if function_return_type == 'bitmap':
+        if len(led_color_type_index) != 1:
+            raise NucWmiError(
+                'Error (Intel NUC WMI query_led_color_type function returned either no led color type '
+                'or multiple led color types in bitmap)'
+            )
 
-    if len(led_color_type_index) != 1:
+        led_color_type_index = led_color_type_index[0]
+
+    led_color_type_range = defined_indexes(LED_COLOR_TYPE['new'])
+
+    if led_color_type_index not in led_color_type_range:
         raise NucWmiError(
-            'Error (Intel NUC WMI query_led_color_type function returned either no led color type '
-            'or multiple led color types in bitmap)'
+            'Error (Intel NUC WMI query_led_color_type function returned invalid LED color type of %i, '
+            'expected one of %s)' % (led_color_type_index, str(led_color_type_range))
         )
 
-    return led_color_type_index[0]
+    return led_color_type_index
 
 
 def query_led_control_items( # pylint: disable=too-many-locals

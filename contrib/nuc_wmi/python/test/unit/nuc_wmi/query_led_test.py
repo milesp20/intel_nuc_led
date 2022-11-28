@@ -13,6 +13,7 @@ from mock import patch
 from nuc_wmi import LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
 from nuc_wmi.query_led import LED_INDICATOR_OPTION_DISABLED, METHOD_ID, QUERY_TYPE, query_led_color_type
 from nuc_wmi.query_led import query_led_control_items, query_led_indicator_options, query_leds
+from nuc_wmi.utils import defined_indexes
 
 import nuc_wmi
 
@@ -306,6 +307,64 @@ class TestQueryLed(unittest.TestCase):
         )
 
         self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
+
+
+    @patch('nuc_wmi.query_led.read_control_file')
+    @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
+    @patch('nuc_wmi.query_led.write_control_file')
+    def test_query_led_color_type6(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                   nuc_wmi_read_control_file):
+        """
+        Tests that `query_led_color_type` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.query_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.query_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
+        self.assertTrue(nuc_wmi.query_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 6: Test that query_led_color_type raises the expected exception when an invalid LED color type is
+        #           returned.
+
+        # Query HDD LED that returns a color type of Dual-color Blue / White
+        expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
+        expected_write_byte_list = [
+            METHOD_ID,
+            QUERY_TYPE.index('query_led_color_type'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        led_color_type_range = defined_indexes(LED_COLOR_TYPE['new'])
+        # Invalid LED color type
+        read_byte_list = [
+            0x00,
+            0x09,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('index', False)
+
+        with self.assertRaises(NucWmiError) as err:
+            query_led_color_type(
+                {},
+                LED_TYPE['new'].index('HDD LED'),
+                control_file=None,
+                debug=False,
+                metadata=None
+            )
+
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False
+        )
+
+        self.assertEqual(
+            str(err.exception),
+            'Error (Intel NUC WMI query_led_color_type function returned invalid LED color type of %i, '
+            'expected one of %s)' % (0x09, str(led_color_type_range))
+        )
 
 
     @patch('nuc_wmi.query_led.query_led_color_type')
