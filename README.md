@@ -25,6 +25,11 @@ Requirements:
 * Intel NUC 6 through 12
 * ACPI/WMI support in kernel
 
+## LED Header Breakout Boards
+
+Example NUC LED header breakout boards for internal LED headers are available in
+[contrib/led_header_boards](contrib/led_header_boards).
+
 ## Building the kernel module
 
 The `nuc_wmi` kernel module supports building and installing "from source" directly or using `dkms`.
