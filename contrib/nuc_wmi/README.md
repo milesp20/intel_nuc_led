@@ -122,7 +122,7 @@ package in the form of a `wheel`, `egg`, or distro specific package using `setup
 ### Debian/Ubuntu deb
 
 1. Use `apt` to install your choice of `python` version and `setuptools` and `stdeb` Python packages.
-2. Use `apt` to install `debhelper` and `fakeroot`.
+2. Use `apt` to install `debhelper`, `dh-python`,  and `fakeroot`.
 2. Build the `deb` (Note: the Python used for packaging is based on the one used to run the command, we recommend being
     being explicit and using `python3` when creating the deb package):
     ```

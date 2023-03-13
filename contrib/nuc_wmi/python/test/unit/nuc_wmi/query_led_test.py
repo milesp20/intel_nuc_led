@@ -327,7 +327,6 @@ class TestQueryLed(unittest.TestCase):
         #           returned.
 
         # Query HDD LED that returns a color type of Dual-color Blue / White
-        expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
         expected_write_byte_list = [
             METHOD_ID,
             QUERY_TYPE.index('query_led_color_type'),
