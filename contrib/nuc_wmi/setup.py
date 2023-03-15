@@ -69,6 +69,7 @@ setup( # pylint: disable=star-args
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Unix Shell',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Systems Administration',
@@ -115,11 +116,9 @@ setup( # pylint: disable=star-args
     ],
     test_loader='setuptools.command.test:ScanningLoader',
     tests_require=[
-        'coverage',
-        'mock',
-        'nose',
-        'nose-cov',
-        'pylint',
+        'coverage==7.2.1',
+        'mock==5.0.1',
+        'pylint==2.17.0',
         'setuptools'
     ],
     test_suite='setup.test_suite',

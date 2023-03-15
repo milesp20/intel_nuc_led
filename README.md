@@ -18,6 +18,16 @@ current userland.
 Pull requests appreciated as well reports if you could (or could not) get it
 running on other NUCs with software-controllable LEDs, and other distros.
 
+## Known Issues
+
+Currently, 5.x kernels in Ubuntu 20.04 and 22.04 appear to be broken when interacting with the `/proc` tree
+using Python to read the values from the `/proc/acpi/nuc_wmi` control file and it causes the `nuc_wmi` Python
+userland to segfault. The error so far appears to be in the kernel itself and we have not yet identified a
+fix. Read from the `/proc/acpi/nuc_wmi` control file using cat from a shell still seems to work OK.
+
+As a temporary workaround, you can install the 6.x OEM kernel in Ubuntu 22.04 which so far seems to fix the
+issue.
+
 ## Requirements
 
 Requirements:

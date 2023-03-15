@@ -7,8 +7,11 @@ clean:
 deb_py3:
 	DEB_BUILD_OPTIONS=nocheck python3 setup.py --command-packages=stdeb.command bdist_deb
 
-nosetests:
-	python setup.py nosetests --cover-branches --cover-html --cover-html-dir ./cover --cover-package nuc_wmi -d -s -v --with-coverage --py3where python/
+covtests:
+	pylint python/nuc_wmi python/test/
+	coverage run setup.py test
+	coverage report -m
+	coverage html
 
 test:
 	pylint python/nuc_wmi python/test/

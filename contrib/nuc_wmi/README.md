@@ -156,10 +156,12 @@ pylint python/nuc_wmi python/test/
 python setup.py test
 ```
 
-Run detailed code coverage report (HTML report available in `python/cover/`):
+Run detailed code coverage report (HTML report available in `htmlcov/`):
 
 ```
-python setup.py nosetests --cover-branches --cover-html --cover-html-dir ./cover --cover-package nuc_wmi -d -s -v --with-coverage --py3where python/
+coverage run setup.py test
+coverage report -m
+coverage html
 ```
 
 ## Example Usage
@@ -363,3 +365,11 @@ implementation make it out into the wild.
 
   An alternative way to check what your BIOS supports without needing to know the BIOS's release date is to run the
   `nuc_wmi-query_leds` CLI command and see if returns `RGB Header` as an option or not in the supported LED types.
+
+### NUC 12
+
+*  The NUC 12 BIOS releases prior to Mar 2023 are in various states of functionality. In its orignal release form, the
+   BIOS had invalid return types for methods compared to what was documented and subsequent releases had broken
+   `get_led_control_item` and `set_led_control_item` implementations that could not be worked around by simply modifying the
+   the WMI spec definition for return types. The broken implementations had different behavior for each of the indicator
+   option modes.
