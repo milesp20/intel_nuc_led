@@ -1,0 +1,12 @@
+build/
+dist/
+deb_dist/
+python/nuc_wmi.egg-info/
+*~
+*.pyc
+.coverage
+.eggs/
+python/cover/
+htmlcov/
+__pycache__/
+nuc_wmi-*.tar.gz
