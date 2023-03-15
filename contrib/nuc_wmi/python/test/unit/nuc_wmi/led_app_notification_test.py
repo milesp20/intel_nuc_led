@@ -36,13 +36,17 @@ class TestLedAppNotification(unittest.TestCase):
 
 
     @patch('nuc_wmi.led_app_notification.read_control_file')
+    @patch('nuc_wmi.led_app_notification.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.led_app_notification.write_control_file')
-    def test_save_led_config(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_save_led_config(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                             nuc_wmi_read_control_file):
         """
         Tests that `save_led_config` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.led_app_notification.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.led_app_notification.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.led_app_notification.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that save_led_config sends the expected byte string to the control file
@@ -51,32 +55,36 @@ class TestLedAppNotification(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_save_led_config = save_led_config(
+            {},
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_save_led_config, None)
 
 
     @patch('nuc_wmi.led_app_notification.read_control_file')
+    @patch('nuc_wmi.led_app_notification.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.led_app_notification.write_control_file')
-    def test_save_led_config2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_save_led_config2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                              nuc_wmi_read_control_file):
         """
         Tests that `save_led_config` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.led_app_notification.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.led_app_notification.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.led_app_notification.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that save_led_config raises an exception when the control file returns an
@@ -85,21 +93,20 @@ class TestLedAppNotification(unittest.TestCase):
         read_byte_list = [0xE1, 0x00, 0x00, 0x00] # Return function not supported
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             save_led_config(
+                {},
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Function not supported)')

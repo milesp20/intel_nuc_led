@@ -38,31 +38,50 @@ class TestCliSetLed(unittest.TestCase):
 
         self.maxDiff = None # pylint: disable=invalid-name
 
+        self.nuc_wmi_spec = {
+            'nuc_wmi_spec': {
+                'TEST_DEVICE': {
+                    'function_return_type': {
+                        'set_led': None
+                    },
+                    'function_oob_return_value_recover': {
+                        'set_led': False
+                    }
+                }
+            }
+        }
 
+
+    @patch('nuc_wmi.cli.set_led.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.set_led.print')
-    @patch('nuc_wmi.cli.set_led.sys.exit')
     @patch('nuc_wmi.cli.set_led.set_led')
+    @patch('nuc_wmi.cli.set_led.sys.exit')
     def test_set_led_cli(
             self,
-            nuc_wmi_set_led,
             nuc_wmi_sys_exit,
-            nuc_wmi_print
+            nuc_wmi_set_led,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
     ):
         """
         Tests that `set_led_cli` returns the expected exceptions, return values, or outputs.
         """
 
-        self.assertTrue(nuc_wmi.cli.set_led.set_led is \
-                        nuc_wmi_set_led)
-        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
         self.assertTrue(nuc_wmi.cli.set_led.print is nuc_wmi_print) # pylint: disable=no-member
+        self.assertTrue(nuc_wmi.cli.set_led.set_led is nuc_wmi_set_led)
+        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
 
         # Branch 1: Test that set_led_cli returns the proper JSON response and exit
         #           code for valid cli args
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
 
         # Set S0 Ring LED to brightness of 47%, frequency of Always on, and color of Cyan
         returned_set_led_cli = set_led_cli(
             [
+                nuc_wmi_spec_alias,
                 LED_TYPE['legacy'][2],
                 LED_BRIGHTNESS['legacy'][47],
                 LED_BLINK_FREQUENCY['legacy'][4],
@@ -71,16 +90,17 @@ class TestCliSetLed(unittest.TestCase):
         )
 
         nuc_wmi_set_led.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
             LED_TYPE['legacy'].index('S0 Ring LED'),
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
             LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Cyan'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
         nuc_wmi_print.assert_called()
+
         self.assertEqual(
             json.loads(nuc_wmi_print.call_args.args[0]),
             {
@@ -89,37 +109,44 @@ class TestCliSetLed(unittest.TestCase):
                     'brightness': str(LED_BRIGHTNESS['legacy'][47]),
                     'frequency': LED_BLINK_FREQUENCY['legacy'][4],
                     'color': LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']][1]
-                }
+                },
+                'nuc_wmi_spec_alias': nuc_wmi_spec_alias
             }
         )
 
         self.assertEqual(returned_set_led_cli, None)
 
 
+    @patch('nuc_wmi.cli.set_led.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.set_led.print')
-    @patch('nuc_wmi.cli.set_led.sys.exit')
     @patch('nuc_wmi.cli.set_led.set_led')
+    @patch('nuc_wmi.cli.set_led.sys.exit')
     def test_set_led_cli2(
             self,
-            nuc_wmi_set_led,
             nuc_wmi_sys_exit,
-            nuc_wmi_print
+            nuc_wmi_set_led,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
     ):
         """
         Tests that `set_led_cli` returns the expected exceptions, return values, or outputs.
         """
 
-        self.assertTrue(nuc_wmi.cli.set_led.set_led is \
-                        nuc_wmi_set_led)
-        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
         self.assertTrue(nuc_wmi.cli.set_led.print is nuc_wmi_print) # pylint: disable=no-member
+        self.assertTrue(nuc_wmi.cli.set_led.set_led is nuc_wmi_set_led)
+        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
 
         # Branch 2: Test that set_led_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
         nuc_wmi_set_led.side_effect = NucWmiError('Error (Function not supported)')
 
         returned_set_led_cli = set_led_cli(
             [
+                nuc_wmi_spec_alias,
                 LED_TYPE['legacy'][2],
                 LED_BRIGHTNESS['legacy'][47],
                 LED_BLINK_FREQUENCY['legacy'][4],
@@ -128,14 +155,14 @@ class TestCliSetLed(unittest.TestCase):
         )
 
         nuc_wmi_set_led.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
             LED_TYPE['legacy'].index('S0 Ring LED'),
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
             LED_COLOR['legacy'][LED_COLOR_TYPE['legacy']['S0 Ring LED']].index('Cyan'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)
@@ -143,27 +170,34 @@ class TestCliSetLed(unittest.TestCase):
         self.assertEqual(returned_set_led_cli, None)
 
 
+    @patch('nuc_wmi.cli.set_led.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.set_led.print')
-    @patch('nuc_wmi.cli.set_led.sys.exit')
     @patch('nuc_wmi.cli.set_led.set_led')
+    @patch('nuc_wmi.cli.set_led.sys.exit')
     def test_set_led_cli3(
             self,
-            nuc_wmi_set_led,
             nuc_wmi_sys_exit,
-            nuc_wmi_print
+            nuc_wmi_set_led,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
     ):
         """
         Tests that `set_led_cli` returns the expected exceptions, return values, or outputs.
         """
 
-        self.assertTrue(nuc_wmi.cli.set_led.set_led is \
-                        nuc_wmi_set_led)
-        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
+        self.assertTrue(nuc_wmi.cli.set_led.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
         self.assertTrue(nuc_wmi.cli.set_led.print is nuc_wmi_print) # pylint: disable=no-member
+        self.assertTrue(nuc_wmi.cli.set_led.set_led is nuc_wmi_set_led)
+        self.assertTrue(nuc_wmi.cli.set_led.sys.exit is nuc_wmi_sys_exit)
 
         # Branch 3: Tests that invalid LED color raises appropriate error.
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
+
         returned_set_led_cli = set_led_cli(
             [
+                nuc_wmi_spec_alias,
                 LED_TYPE['legacy'][1],
                 LED_BRIGHTNESS['legacy'][47],
                 LED_BLINK_FREQUENCY['legacy'][4],

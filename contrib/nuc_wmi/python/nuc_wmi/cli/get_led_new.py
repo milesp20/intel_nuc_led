@@ -13,9 +13,7 @@ from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_COLOR_TYPE, LED_I
 from nuc_wmi import NucWmiError
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
-from nuc_wmi.utils import acquire_file_lock, defined_indexes
-
-import nuc_wmi
+from nuc_wmi.utils import acquire_file_lock, defined_indexes, load_nuc_wmi_spec
 
 
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
@@ -33,6 +31,7 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        led_indicator_option: The indicator option for the specified LED type for which to retrieve the current control
                             item value.
        led: Selects the LED to get the control item for.
+       nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
@@ -43,67 +42,67 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        0 on successfully retrieving the control item value or 1 on error.
     """
 
-    control_item_labels = []
-
-    for indicator_option in CONTROL_ITEM:
-        if indicator_option is None:
-            continue
-
-        for control_items in indicator_option:
-            if control_items is None:
-                continue
-
-            for control_item in control_items:
-                control_item_labels.append(control_item['Control Item'])
-
-    parser = ArgumentParser(
-        description='Get the current control item value for the control item of the indicator option ' + \
-        'for the specified LED type.'
-    )
-
-    parser.add_argument(
-        '-c',
-        '--control-file',
-        default=None,
-        help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-d',
-        '--debug',
-        action='store_true',
-        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
-    )
-    parser.add_argument(
-        '-l',
-        '--lock-file',
-        default=None,
-        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-q',
-        '--quirks',
-        action='append',
-        choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=None,
-        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
-    )
-    parser.add_argument(
-        'led',
-        choices=LED_TYPE['new'],
-        help='The LED for which to get the control item value.'
-    )
-    parser.add_argument(
-        'led_indicator_option',
-        choices=LED_INDICATOR_OPTION,
-        help='The LED indicator option for the current LED.'
-    )
-    parser.add_argument(
-        'control_item',
-        choices=set(control_item_labels),
-        help='The control item for the current LED indicator option that is being retrieved.'
-    )
 
     try:
+        control_item_labels = []
+
+        for indicator_option in CONTROL_ITEM:
+            if indicator_option is None:
+                continue
+
+            for control_items in indicator_option:
+                if control_items is None:
+                    continue
+
+                for control_item in control_items:
+                    control_item_labels.append(control_item['Control Item'])
+
+        nuc_wmi_spec = load_nuc_wmi_spec()
+
+        parser = ArgumentParser(
+            description='Get the current control item value for the control item of the indicator option ' + \
+            'for the specified LED type.'
+        )
+
+        parser.add_argument(
+            '-c',
+            '--control-file',
+            default=None,
+            help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            '-d',
+            '--debug',
+            action='store_true',
+            help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+        )
+        parser.add_argument(
+            '-l',
+            '--lock-file',
+            default=None,
+            help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            'nuc_wmi_spec_alias',
+            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            help='The name of the NUC WMI specification to use from the specification configuration file.'
+        )
+        parser.add_argument(
+            'led',
+            choices=LED_TYPE['new'],
+            help='The LED for which to get the control item value.'
+        )
+        parser.add_argument(
+            'led_indicator_option',
+            choices=LED_INDICATOR_OPTION,
+            help='The LED indicator option for the current LED.'
+        )
+        parser.add_argument(
+            'control_item',
+            choices=set(control_item_labels),
+            help='The control item for the current LED indicator option that is being retrieved.'
+        )
+
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
@@ -112,19 +111,19 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             led_type_index = LED_TYPE['new'].index(args.led)
 
             available_indicator_options = query_led_indicator_options(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             led_color_type_index = query_led_color_type(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
@@ -149,13 +148,13 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 raise ValueError('Invalid control item specified for the selected LED and indicator option')
 
             control_item_value_index = get_led_control_item(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 led_indicator_option_index,
                 control_item_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             # Convert the control item value index into its value
@@ -164,12 +163,12 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                     color_dimensions = '1d'
 
                     available_control_item_indexes = query_led_control_items(
+                        nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                         led_type_index,
                         led_indicator_option_index,
                         control_file=args.control_file,
                         debug=args.debug,
-                        quirks=args.quirks,
-                        quirks_metadata=None
+                        metadata=None
                     )
 
                     for control_item_index2 in available_control_item_indexes:
@@ -193,8 +192,8 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
 
             if control_item_value_index not in control_item_value_range:
                 raise NucWmiError(
-                    ("Error (Intel NUC WMI get_led_control_item function returned invalid control item value of %i," +
-                    " expected one of %s)") % (control_item_value_index, str(control_item_value_range))
+                    "Error (Intel NUC WMI get_led_control_item function returned invalid control item value of %i,"
+                    " expected one of %s)" % (control_item_value_index, str(control_item_value_range))
                 )
 
             control_item_value = control_item_value_options[control_item_value_index]
@@ -207,7 +206,8 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                             'indicator_option': args.led_indicator_option,
                             'control_item': args.control_item,
                             'control_item_value': control_item_value
-                        }
+                        },
+                        'nuc_wmi_spec_alias': args.nuc_wmi_spec_alias
                     }
                 )
             )
@@ -225,6 +225,7 @@ def get_led_indicator_option_cli(cli_args=None):
        cli_args: If provided, overrides the CLI args to use for `argparse`.
     CLI Args:
        led: Selects the LED to get the indicator option for.
+       nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
@@ -235,43 +236,43 @@ def get_led_indicator_option_cli(cli_args=None):
        0 on successfully retrieving the selected LED's indicator option or 1 on error.
     """
 
-    parser = ArgumentParser(
-        description='Get the current indicator option for the LED type.'
-    )
-
-    parser.add_argument(
-        '-c',
-        '--control-file',
-        default=None,
-        help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-d',
-        '--debug',
-        action='store_true',
-        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
-    )
-    parser.add_argument(
-        '-l',
-        '--lock-file',
-        default=None,
-        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-q',
-        '--quirks',
-        action='append',
-        choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=None,
-        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
-    )
-    parser.add_argument(
-        'led',
-        choices=LED_TYPE['new'],
-        help='The LED for which to get the indicator option.'
-    )
 
     try:
+        nuc_wmi_spec = load_nuc_wmi_spec()
+
+        parser = ArgumentParser(
+            description='Get the current indicator option for the LED type.'
+        )
+
+        parser.add_argument(
+            '-c',
+            '--control-file',
+            default=None,
+            help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            '-d',
+            '--debug',
+            action='store_true',
+            help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+        )
+        parser.add_argument(
+            '-l',
+            '--lock-file',
+            default=None,
+            help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            'nuc_wmi_spec_alias',
+            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            help='The name of the NUC WMI specification to use from the specification configuration file.'
+        )
+        parser.add_argument(
+            'led',
+            choices=LED_TYPE['new'],
+            help='The LED for which to get the indicator option.'
+        )
+
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
@@ -280,11 +281,11 @@ def get_led_indicator_option_cli(cli_args=None):
             led_type_index = LED_TYPE['new'].index(args.led)
 
             led_indicator_option_index = get_led_indicator_option(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             led_indicator_option = LED_INDICATOR_OPTION[led_indicator_option_index]
@@ -295,7 +296,8 @@ def get_led_indicator_option_cli(cli_args=None):
                         'led': {
                             'type': args.led,
                             'indicator_option': led_indicator_option
-                        }
+                        },
+                        'nuc_wmi_spec_alias': args.nuc_wmi_spec_alias
                     }
                 )
             )

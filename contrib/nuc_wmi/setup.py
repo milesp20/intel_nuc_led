@@ -67,8 +67,9 @@ setup( # pylint: disable=star-args
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.10',
         'Programming Language :: Unix Shell',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Systems Administration',
@@ -93,7 +94,6 @@ setup( # pylint: disable=star-args
             'nuc_wmi-wmi_interface_spec_compliance_version = nuc_wmi.cli.version:wmi_interface_spec_compliance_version_cli'
         ]
     },
-    include_package_data=True,
     install_requires=[
         'setuptools'
     ],
@@ -103,6 +103,10 @@ setup( # pylint: disable=star-args
     maintainer='Julio Lajara',
     maintainer_email='julio@tvisioninsights.com',
     name='nuc_wmi',
+    package_data={
+         'nuc_wmi': ['etc/nuc_wmi/nuc_wmi_spec/*']
+        },
+
     package_dir={
         '': 'python'
     },
@@ -112,16 +116,14 @@ setup( # pylint: disable=star-args
     ],
     test_loader='setuptools.command.test:ScanningLoader',
     tests_require=[
-        'coverage',
-        'mock',
-        'nose',
-        'nose-cov',
-        'pylint',
+        'coverage==7.2.1',
+        'mock==5.0.1',
+        'pylint==2.17.0',
         'setuptools'
     ],
     test_suite='setup.test_suite',
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version='2.3.2',
+    version='3.0.0',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )

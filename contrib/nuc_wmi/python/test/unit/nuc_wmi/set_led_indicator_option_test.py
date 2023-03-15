@@ -36,13 +36,17 @@ class TestSetLedIndicatorOption(unittest.TestCase):
 
 
     @patch('nuc_wmi.set_led_indicator_option.read_control_file')
+    @patch('nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_indicator_option.write_control_file')
-    def test_set_led_indicator_option(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_indicator_option(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                      nuc_wmi_read_control_file):
         """
         Tests that `set_led_indicator_option` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_indicator_option.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_indicator_option.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that set_led_indicator_option sends the expected byte string to the control file
@@ -62,34 +66,38 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_set_led_indicator_option = set_led_indicator_option(
+            {},
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_set_led_indicator_option, None)
 
 
     @patch('nuc_wmi.set_led_indicator_option.read_control_file')
+    @patch('nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_indicator_option.write_control_file')
-    def test_set_led_indicator_option2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_indicator_option2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                       nuc_wmi_read_control_file):
         """
         Tests that `set_led_indicator_option` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_indicator_option.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_indicator_option.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that set_led_indicator_option raises an exception when the control file returns an
@@ -109,36 +117,39 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             set_led_indicator_option(
+                {},
                 len(LED_TYPE['new']), # Incorrect led
                 LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')
 
 
     @patch('nuc_wmi.set_led_indicator_option.read_control_file')
+    @patch('nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.set_led_indicator_option.write_control_file')
-    def test_set_led_indicator_option3(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_set_led_indicator_option3(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                       nuc_wmi_read_control_file):
         """
         Tests that `set_led_indicator_option` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.set_led_indicator_option.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.set_led_indicator_option.verify_nuc_wmi_function_spec is \
+                        nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.set_led_indicator_option.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 3: Test that set_led_indicator_option sends the expected byte string to the control file
@@ -158,21 +169,21 @@ class TestSetLedIndicatorOption(unittest.TestCase):
         ]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_set_led_indicator_option = set_led_indicator_option(
+            {},
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_set_led_indicator_option, None)

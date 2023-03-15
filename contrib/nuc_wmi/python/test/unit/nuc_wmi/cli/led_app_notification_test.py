@@ -37,32 +37,53 @@ class TestCliLedAppNotification(unittest.TestCase):
 
         self.maxDiff = None # pylint: disable=invalid-name
 
+        self.nuc_wmi_spec = {
+            'nuc_wmi_spec': {
+                'TEST_DEVICE': {
+                    'function_return_type': {
+                        'save_led_config': None
+                    },
+                    'function_oob_return_value_recover': {
+                        'save_led_config': False
+                    }
+                }
+            }
+        }
+
+
+    @patch('nuc_wmi.cli.led_app_notification.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.led_app_notification.print')
-    @patch('nuc_wmi.cli.led_app_notification.sys.exit')
     @patch('nuc_wmi.cli.led_app_notification.save_led_config')
+    @patch('nuc_wmi.cli.led_app_notification.sys.exit')
     def test_save_led_config_cli(
             self,
-            nuc_wmi_cli_save_led_config,
             nuc_wmi_sys_exit,
-            nuc_wmi_print
+            nuc_wmi_cli_save_led_config,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
     ):
         """
         Tests that `save_led_config_cli` returns the expected exceptions, return values, or outputs.
         """
 
+        self.assertTrue(nuc_wmi.cli.led_app_notification.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
+        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print) # pylint: disable=no-member
         self.assertTrue(nuc_wmi.cli.led_app_notification.save_led_config is nuc_wmi_cli_save_led_config)
         self.assertTrue(nuc_wmi.cli.led_app_notification.sys.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 1: Test that save_led_config_cli returns the proper JSON response and exit
         #           code for valid cli args
-        returned_save_led_config_cli = save_led_config_cli([])
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
+
+        returned_save_led_config_cli = save_led_config_cli([nuc_wmi_spec_alias])
 
         nuc_wmi_cli_save_led_config.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
         nuc_wmi_print.assert_called()
         self.assertEqual(
@@ -70,41 +91,48 @@ class TestCliLedAppNotification(unittest.TestCase):
             {
                 'led_app_notification': {
                     'type': 'save_led_config'
-                }
+                },
+                'nuc_wmi_spec_alias': nuc_wmi_spec_alias
             }
         )
 
         self.assertEqual(returned_save_led_config_cli, None)
 
 
+    @patch('nuc_wmi.cli.led_app_notification.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.led_app_notification.print')
-    @patch('nuc_wmi.cli.led_app_notification.sys.exit')
     @patch('nuc_wmi.cli.led_app_notification.save_led_config')
+    @patch('nuc_wmi.cli.led_app_notification.sys.exit')
     def test_save_led_config_cli2(
             self,
-            nuc_wmi_cli_save_led_config,
             nuc_wmi_sys_exit,
-            nuc_wmi_print
+            nuc_wmi_cli_save_led_config,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
     ):
         """
         Tests that `save_led_config_cli` returns the expected exceptions, return values, or outputs.
         """
 
+        self.assertTrue(nuc_wmi.cli.led_app_notification.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
+        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print) # pylint: disable=no-member
         self.assertTrue(nuc_wmi.cli.led_app_notification.save_led_config is nuc_wmi_cli_save_led_config)
         self.assertTrue(nuc_wmi.cli.led_app_notification.sys.exit is nuc_wmi_sys_exit)
-        self.assertTrue(nuc_wmi.cli.led_app_notification.print is nuc_wmi_print) # pylint: disable=no-member
 
         # Branch 2: Test that save_led_config_cli captures raised errors and returns
         #           the proper JSON error response and exit code.
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
         nuc_wmi_cli_save_led_config.side_effect = NucWmiError('Error (Function not supported)')
 
-        returned_save_led_config_cli = save_led_config_cli([])
+        returned_save_led_config_cli = save_led_config_cli([nuc_wmi_spec_alias])
 
         nuc_wmi_cli_save_led_config.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
         nuc_wmi_print.assert_called_with('{"error": "Error (Function not supported)"}')
         nuc_wmi_sys_exit.assert_called_with(1)

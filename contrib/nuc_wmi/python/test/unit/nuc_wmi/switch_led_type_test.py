@@ -36,13 +36,16 @@ class TestSwitchLedType(unittest.TestCase):
 
 
     @patch('nuc_wmi.switch_led_type.read_control_file')
+    @patch('nuc_wmi.switch_led_type.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.switch_led_type.write_control_file')
-    def test_switch_led_type(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_switch_led_type(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                             nuc_wmi_read_control_file):
         """
         Tests that `switch_led_type` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.switch_led_type.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.switch_led_type.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.switch_led_type.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 1: Test that switch_led_type sends the expected byte string to the control file
@@ -51,33 +54,36 @@ class TestSwitchLedType(unittest.TestCase):
         read_byte_list = [0x00, 0x00, 0x00, 0x00]
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
+
         returned_switch_led_type = switch_led_type(
+            {},
             LED_COLOR_GROUP.index('Single color LED'),
             control_file=None,
             debug=False,
-            quirks=None,
-            quirks_metadata=None
+            metadata=None
         )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(returned_switch_led_type, None)
 
 
     @patch('nuc_wmi.switch_led_type.read_control_file')
+    @patch('nuc_wmi.switch_led_type.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.switch_led_type.write_control_file')
-    def test_switch_led_type2(self, nuc_wmi_write_control_file, nuc_wmi_read_control_file):
+    def test_switch_led_type2(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                              nuc_wmi_read_control_file):
         """
         Tests that `switch_led_type` returns the expected exceptions, return values, or outputs.
         """
 
         self.assertTrue(nuc_wmi.switch_led_type.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.switch_led_type.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
         self.assertTrue(nuc_wmi.switch_led_type.write_control_file is nuc_wmi_write_control_file)
 
         # Branch 2: Test that switch_led_type raises an exception when the control file returns an
@@ -86,22 +92,21 @@ class TestSwitchLedType(unittest.TestCase):
         read_byte_list = [0xE4, 0x00, 0x00, 0x00] # Return invalid parameter
 
         nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = (None, False)
 
         with self.assertRaises(NucWmiError) as err:
             switch_led_type(
+                {},
                 len(LED_COLOR_GROUP),
                 control_file=None,
                 debug=False,
-                quirks=None,
-                quirks_metadata=None
+                metadata=None
             )
 
         nuc_wmi_write_control_file.assert_called_with(
             expected_write_byte_list,
             control_file=None,
-            debug=False,
-            quirks=None,
-            quirks_metadata=None
+            debug=False
         )
 
         self.assertEqual(str(err.exception), 'Error (Invalid Parameter)')

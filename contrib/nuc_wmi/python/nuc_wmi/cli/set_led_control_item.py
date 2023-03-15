@@ -13,12 +13,12 @@ from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_BLINK_FREQUENCY, 
 from nuc_wmi import LED_INDICATOR_OPTION, LED_TYPE, LOCK_FILE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
-from nuc_wmi.utils import acquire_file_lock
+from nuc_wmi.utils import acquire_file_lock, load_nuc_wmi_spec
 
-import nuc_wmi
 
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
 RGB_COLOR_3D = LED_COLOR['new']['RGB-color']['3d']
+
 
 def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches,too-many-locals,too-many-statements
     """
@@ -32,6 +32,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        led_indicator_option: The indicator option for the specified LED type for which to set the control
                             item value.
        led: Selects the LED to set the control item for.
+       nuc_wmi_spec_alias: Selects the NUC WMI specification to use from the NUC WMI specification configuration file.
     CLI Options:
        --control_file <control_file>: Sets the control file to use if provided,
                                       otherwise `nuc_wmi.CONTROL_FILE` is used.
@@ -42,85 +43,84 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
        0 on successfully setting the control item value or 1 on error.
     """
 
-    control_item_labels = []
-    control_item_values = []
+    try: # pylint: disable=too-many-nested-blocks
+        control_item_labels = []
+        control_item_values = []
 
-    for indicator_option in CONTROL_ITEM:
-        if indicator_option is None:
-            continue
-
-        for control_items in indicator_option:
-            if control_items is None:
+        for indicator_option in CONTROL_ITEM:
+            if indicator_option is None:
                 continue
 
-            for control_item in control_items:
-                control_item_labels.append(control_item['Control Item'])
+            for control_items in indicator_option:
+                if control_items is None:
+                    continue
 
-                if control_item['Options'] is not None and \
-                   control_item['Options'] != LED_COLOR['new'] and \
-                   control_item['Options'] != LED_BLINK_FREQUENCY['new']:
-                    control_item_values.extend(control_item['Options'])
+                for control_item in control_items:
+                    control_item_labels.append(control_item['Control Item'])
 
-    control_item_values.extend(filter(None, LED_BLINK_FREQUENCY['new']))
-    control_item_values.extend(LED_COLOR['new']['Dual-color Blue / Amber'])
-    control_item_values.extend(LED_COLOR['new']['Dual-color Blue / White'])
-    control_item_values.extend(filter(None, LED_COLOR['new']['RGB-color']['1d']['HDD LED']))
-    control_item_values.extend(filter(None, LED_COLOR['new']['RGB-color']['1d']['RGB Header']))
-    control_item_values.extend(LED_COLOR['new']['RGB-color']['3d'])
+                    if control_item['Options'] is not None and \
+                       control_item['Options'] != LED_COLOR['new'] and \
+                       control_item['Options'] != LED_BLINK_FREQUENCY['new']:
+                        control_item_values.extend(control_item['Options'])
 
-    parser = ArgumentParser(
-        description='Set the control item value for the control item of the indicator option ' + \
-        'for the specified LED type.'
-    )
+        control_item_values.extend(filter(None, LED_BLINK_FREQUENCY['new']))
+        control_item_values.extend(LED_COLOR['new']['Dual-color Blue / Amber'])
+        control_item_values.extend(LED_COLOR['new']['Dual-color Blue / White'])
+        control_item_values.extend(filter(None, LED_COLOR['new']['RGB-color']['1d']['HDD LED']))
+        control_item_values.extend(filter(None, LED_COLOR['new']['RGB-color']['1d']['RGB Header']))
+        control_item_values.extend(LED_COLOR['new']['RGB-color']['3d'])
 
-    parser.add_argument(
-        '-c',
-        '--control-file',
-        default=None,
-        help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-d',
-        '--debug',
-        action='store_true',
-        help='Enable debug logging of read and write to the NUC LED control file to stderr.'
-    )
-    parser.add_argument(
-        '-l',
-        '--lock-file',
-        default=None,
-        help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
-    )
-    parser.add_argument(
-        '-q',
-        '--quirks',
-        action='append',
-        choices=nuc_wmi.QUIRKS_AVAILABLE,
-        default=None,
-        help='Enable NUC WMI quirks to work around various implementation issues or bugs.'
-    )
-    parser.add_argument(
-        'led',
-        choices=LED_TYPE['new'],
-        help='The LED for which to set the control item value.'
-    )
-    parser.add_argument(
-        'led_indicator_option',
-        choices=LED_INDICATOR_OPTION,
-        help='The LED indicator option for the LED.'
-    )
-    parser.add_argument(
-        'control_item',
-        choices=set(control_item_labels),
-        help='The control item for the LED indicator option that is being set.'
-    )
-    parser.add_argument(
-        'control_item_value',
-        choices=set(control_item_values),
-        help='The control item value for the control item for the LED indicator option that is being set.'
-    )
+        nuc_wmi_spec = load_nuc_wmi_spec()
 
-    try: # pylint: disable=too-many-nested-blocks
+        parser = ArgumentParser(
+            description='Set the control item value for the control item of the indicator option ' + \
+            'for the specified LED type.'
+        )
+
+        parser.add_argument(
+            '-c',
+            '--control-file',
+            default=None,
+            help='The path to the NUC WMI control file. Defaults to ' + CONTROL_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            '-d',
+            '--debug',
+            action='store_true',
+            help='Enable debug logging of read and write to the NUC LED control file to stderr.'
+        )
+        parser.add_argument(
+            '-l',
+            '--lock-file',
+            default=None,
+            help='The path to the NUC WMI lock file. Defaults to ' + LOCK_FILE + ' if not specified.'
+        )
+        parser.add_argument(
+            'nuc_wmi_spec_alias',
+            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            help='The name of the NUC WMI specification to use from the specification configuration file.'
+        )
+        parser.add_argument(
+            'led',
+            choices=LED_TYPE['new'],
+            help='The LED for which to set the control item value.'
+        )
+        parser.add_argument(
+            'led_indicator_option',
+            choices=LED_INDICATOR_OPTION,
+            help='The LED indicator option for the LED.'
+        )
+        parser.add_argument(
+            'control_item',
+            choices=set(control_item_labels),
+            help='The control item for the LED indicator option that is being set.'
+        )
+        parser.add_argument(
+            'control_item_value',
+            choices=set(control_item_values),
+            help='The control item value for the control item for the LED indicator option that is being set.'
+        )
+
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
@@ -129,19 +129,19 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             led_type_index = LED_TYPE['new'].index(args.led)
 
             available_indicator_option_indexes = query_led_indicator_options(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             led_color_type_index = query_led_color_type(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             led_color_type = LED_COLOR_TYPE['new'][led_color_type_index]
@@ -172,12 +172,12 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                         color_dimensions = '1d'
 
                         available_control_item_indexes = query_led_control_items(
+                            nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                             led_type_index,
                             led_indicator_option_index,
                             control_file=args.control_file,
                             debug=args.debug,
-                            quirks=args.quirks,
-                            quirks_metadata=None
+                            metadata=None
                         )
 
                         for control_item_index2 in available_control_item_indexes:
@@ -204,14 +204,14 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 ) from err
 
             set_led_control_item(
+                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 led_indicator_option_index,
                 control_item_index,
                 control_item_value_index,
                 control_file=args.control_file,
                 debug=args.debug,
-                quirks=args.quirks,
-                quirks_metadata=None
+                metadata=None
             )
 
             print(
@@ -222,7 +222,8 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                             'indicator_option': args.led_indicator_option,
                             'control_item': args.control_item,
                             'control_item_value': args.control_item_value
-                        }
+                        },
+                        'nuc_wmi_spec_alias': args.nuc_wmi_spec_alias
                     }
                 )
             )
