@@ -84,6 +84,8 @@ make install
 
 ### Building and Installing Using DKMS
 
+You can override the `KVERSION` or `KDIR` environment variables to customize the build as needed.
+
 Build and install without system packaging:
 
 ```
