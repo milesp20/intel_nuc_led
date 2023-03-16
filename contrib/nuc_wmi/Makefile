@@ -1,5 +1,5 @@
 clean:
-	rm -rf .coverage .eggs/ build/ deb_dist/ dist/ python/cover python/nuc_wmi.egg-info nuc_wmi-*.tar.gz
+	rm -rf .coverage .eggs/ build/ deb_dist/ dist/ htmlcov/ python/cover python/nuc_wmi.egg-info nuc_wmi-*.tar.gz
 	find . -type f -name "*~" -exec rm {} +
 	find . -type f -name "*.pyc" -exec rm {} +
 	find . -type d -name "__pycache__" -exec rmdir {} +

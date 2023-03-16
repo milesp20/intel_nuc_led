@@ -20,13 +20,11 @@ running on other NUCs with software-controllable LEDs, and other distros.
 
 ## Known Issues
 
-Currently, 5.x kernels in Ubuntu 20.04 and 22.04 appear to be broken when interacting with the `/proc` tree
-using Python to read the values from the `/proc/acpi/nuc_wmi` control file and it causes the `nuc_wmi` Python
-userland to segfault. The error so far appears to be in the kernel itself and we have not yet identified a
-fix. Read from the `/proc/acpi/nuc_wmi` control file using cat from a shell still seems to work OK.
+Currently, 5.x kernels in Ubuntu 20.04 and 22.04 appear to be have problems (unknown if its a bug in the
+kernel module itself or the kernels) with using Python to read from the control file in a buffered I/O manner.
 
-As a temporary workaround, you can install the 6.x OEM kernel in Ubuntu 22.04 which so far seems to fix the
-issue.
+As of `nuc_wmi` CLI `3.0.1`, we work around this issue by reading/writing to the control file using unbuffered
+I/O.
 
 ## Requirements
 

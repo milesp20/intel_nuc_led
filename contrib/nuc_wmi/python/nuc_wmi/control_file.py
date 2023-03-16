@@ -22,8 +22,8 @@ def read_control_file(control_file=None, debug=False):
       Tuple of ints representing the hex numbers read in from the control file.
     """
 
-    with open(control_file or CONTROL_FILE, 'r', encoding='utf8') as fin:
-        raw_hex_byte_string = fin.read()
+    with open(control_file or CONTROL_FILE, 'rb', buffering=0) as fin:
+        raw_hex_byte_string = fin.read(11).decode('utf8')
 
     # Remove the new line and null char the driver leaves
     raw_hex_byte_string = raw_hex_byte_string.rstrip("\x00").rstrip("\n")
@@ -68,5 +68,5 @@ def write_control_file(int_byte_list, control_file=None, debug=False):
     if debug:
         print('nuc_wmi write: ', raw_hex_byte_string, file=sys.stderr)
 
-    with open(control_file or CONTROL_FILE, 'w', encoding='utf8') as fout:
-        fout.write(raw_hex_byte_string)
+    with open(control_file or CONTROL_FILE, 'wb', buffering=0) as fout:
+        fout.write(raw_hex_byte_string.encode('utf8'))
