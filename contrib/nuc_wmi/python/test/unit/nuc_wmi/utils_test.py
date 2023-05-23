@@ -6,9 +6,13 @@ Classes:
     TestUtils: A unit test class for the functions in `nuc_wmi.utils`.
 """
 
+import fcntl
 import json
 import tempfile
 import unittest
+
+from threading import Thread
+
 import pkg_resources
 
 from mock import patch
@@ -86,6 +90,53 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
                     'Error (Intel NUC WMI failed to acquire lock file %s: %s)' % \
                     (temp_lock_file2.name, '[Errno 11] Resource temporarily unavailable')
                 )
+
+
+    def test_acquire_file_lock3(self):
+        """
+        Test that `acquire_file_lock` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 3: Test that `acquire_file_lock` can successfully acquire a blocking file lock and returns None.
+
+        with tempfile.NamedTemporaryFile(delete=True) as temp_lock_file:
+            returned_acquire_file_lock = acquire_file_lock(temp_lock_file, blocking_file_lock=True)
+
+            self.assertEqual(returned_acquire_file_lock, None)
+
+
+    def test_acquire_file_lock4(self):
+        """
+        Test that `acquire_file_lock` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 4: Test that `acquire_file_lock` hangs when acquiring a blocking file lock on file thats already
+        #           locked.
+
+        with tempfile.NamedTemporaryFile(delete=True) as temp_lock_file:
+            blocking_thread = None
+            returned_acquire_file_lock = acquire_file_lock(temp_lock_file)
+
+            self.assertEqual(returned_acquire_file_lock, None)
+
+            with open(temp_lock_file.name, 'w', encoding='utf8') as temp_lock_file2:
+                blocking_thread = Thread(
+                    target=acquire_file_lock,
+                    args=[temp_lock_file2],
+                    kwargs={'blocking_file_lock': True}
+                )
+
+                blocking_thread.start()
+                blocking_thread.join(10.0)
+
+                self.assertEqual(blocking_thread.is_alive(), True)
+
+
+            fcntl.flock(temp_lock_file.fileno(), fcntl.LOCK_UN)
+
+            blocking_thread.join(2.0)
+
+            self.assertEqual(blocking_thread.is_alive(), False)
 
 
     def test_byte_list_to_bitmap(self):

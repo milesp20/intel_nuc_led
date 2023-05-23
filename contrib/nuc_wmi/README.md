@@ -368,8 +368,9 @@ implementation make it out into the wild.
 
 ### NUC 12
 
-*  The NUC 12 BIOS releases prior to Mar 2023 are in various states of functionality. In its orignal release form, the
+*  The NUC 12 BIOS releases prior to WS9087 are in various states of functionality. In its orignal release form, the
    BIOS had invalid return types for methods compared to what was documented and subsequent releases had broken
    `get_led_control_item` and `set_led_control_item` implementations that could not be worked around by simply modifying the
    the WMI spec definition for return types. The broken implementations had different behavior for each of the indicator
-   option modes.
+   option modes. All current NUC 12 BIOS releases have severe performance degradation and are 20-100x slower for some
+   WMI method calls. The performance issue is a BIOS side issue that we cannot resolve.

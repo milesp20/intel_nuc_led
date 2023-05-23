@@ -78,6 +78,12 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         )
 
         parser.add_argument(
+            '-b',
+            '--blocking-file-lock',
+            action='store_true',
+            help='Acquire a blocking lock on the NUC WMI lock file instead of the default non blocking lock.'
+        )
+        parser.add_argument(
             '-c',
             '--control-file',
             default=None,
@@ -124,7 +130,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
-            acquire_file_lock(lock_file)
+            acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
             led_type_index = LED_TYPE['new'].index(args.led)
 

@@ -22,6 +22,8 @@ DEFAULT_NUC_WMI_FUNCTION_OOB_RETURN_VALUE_RECOVER_VALUES = [
     False,
     True
 ]
+EXCLUSIVE_BLOCKING_FILE_LOCK = fcntl.LOCK_EX
+EXCLUSIVE_NON_BLOCKING_FILE_LOCK = fcntl.LOCK_EX | fcntl.LOCK_NB
 NUC_WMI_SPEC_FILE = [
     os.path.expanduser('~/.nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json'),
     '/etc/nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json',
@@ -29,7 +31,7 @@ NUC_WMI_SPEC_FILE = [
 ]
 
 
-def acquire_file_lock(filehandle):
+def acquire_file_lock(filehandle, blocking_file_lock=False):
     """
     Acquires a lock on the open file descriptor.
 
@@ -41,8 +43,13 @@ def acquire_file_lock(filehandle):
       None
     """
 
+    if blocking_file_lock:
+        lock_type = EXCLUSIVE_BLOCKING_FILE_LOCK
+    else:
+        lock_type = EXCLUSIVE_NON_BLOCKING_FILE_LOCK
+
     try:
-        fcntl.flock(filehandle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(filehandle.fileno(), lock_type)
     except (IOError, OSError) as err:
         raise NucWmiError(
             'Error (Intel NUC WMI failed to acquire lock file %s: %s)' % (filehandle.name, str(err))
