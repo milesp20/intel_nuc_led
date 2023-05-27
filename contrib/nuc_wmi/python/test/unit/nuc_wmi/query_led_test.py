@@ -366,6 +366,61 @@ class TestQueryLed(unittest.TestCase):
         )
 
 
+    @patch('nuc_wmi.query_led.read_control_file')
+    @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
+    @patch('nuc_wmi.query_led.write_control_file')
+    def test_query_led_color_type7(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                   nuc_wmi_read_control_file):
+        """
+        Tests that `query_led_color_type` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.query_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.query_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
+        self.assertTrue(nuc_wmi.query_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 7: Test that query_led_color_type returns the query_led_color_type hint.
+
+        # Query HDD LED that returns a color type of Dual-color Blue / White
+        expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
+        nuc_wmi_spec = {
+            'function_return_type': {
+                'query_led_color_type': 'index',
+            },
+            'function_oob_return_value_recover': {
+                'query_led_color_type': False,
+            },
+            'led_hints': {
+                'color_type': {
+                    'HDD LED': 'Dual-color Blue / White',
+                    'Power Button LED': 'Dual-color Blue / Amber'
+                }
+            }
+        }
+        read_byte_list = [
+            0x00,
+            0x02,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('bitmap', False)
+
+        returned_query_led_color_type = query_led_color_type(
+            nuc_wmi_spec,
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+
+        nuc_wmi_write_control_file.assert_not_called()
+
+        self.assertEqual(returned_query_led_color_type, expected_query_led_color_type)
+
+
     @patch('nuc_wmi.query_led.query_led_color_type')
     @patch('nuc_wmi.query_led.read_control_file')
     @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
@@ -797,6 +852,68 @@ class TestQueryLed(unittest.TestCase):
             'Error (Intel NUC WMI query_led_indicator_options function returned more led indicator options than ' +
             'supported for the led type provided)'
         )
+
+
+    @patch('nuc_wmi.query_led.read_control_file')
+    @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
+    @patch('nuc_wmi.query_led.write_control_file')
+    def test_query_led_indicator_options4(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                          nuc_wmi_read_control_file):
+        """
+        Tests that `query_led_indicator_options` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.query_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.query_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
+        self.assertTrue(nuc_wmi.query_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 4: Test that query_led_indicator_options returns query_led_indicator_options_hint.
+
+        # Query HDD LED indicator options
+        expected_query_led_indicator_options = [1, 4]
+        nuc_wmi_spec = {
+            'function_return_type': {
+                'query_led_indicator_options': 'bitmap'
+            },
+            'function_oob_return_value_recover': {
+                'query_led_indicator_options': False
+            },
+            'led_hints': {
+                'indicator_options': {
+                    'HDD LED': [
+                        'HDD Activity Indicator',
+                        'Software Indicator'
+                    ],
+                    'Power Button LED': [
+                        'HDD Activity Indicator',
+                        'Power State Indicator',
+                        'Software Indicator'
+                    ]
+                }
+            }
+        }
+        read_byte_list = [
+            0x00,
+            0x12,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('bitmap', False)
+
+        returned_query_led_indicator_options = query_led_indicator_options(
+            nuc_wmi_spec,
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+
+        nuc_wmi_write_control_file.assert_not_called()
+
+        self.assertEqual(returned_query_led_indicator_options, expected_query_led_indicator_options)
 
 
     @patch('nuc_wmi.query_led.read_control_file')

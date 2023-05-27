@@ -17,9 +17,10 @@ import pkg_resources
 
 from mock import patch
 
-from nuc_wmi import NucWmiError
+from nuc_wmi import LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
 from nuc_wmi.utils import acquire_file_lock, byte_list_to_bitmap, byte_list_to_index, defined_indexes, load_nuc_wmi_spec
-from nuc_wmi.utils import NUC_WMI_SPEC_FILE, verify_nuc_wmi_function_spec
+from nuc_wmi.utils import NUC_WMI_SPEC_FILE, query_led_color_type_hint, query_led_indicator_options_hint
+from nuc_wmi.utils import query_led_rgb_color_type_dimensions_hint, verify_nuc_wmi_function_spec
 
 import nuc_wmi
 
@@ -42,6 +43,12 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
                                  bitmap, and that a valid integer index is return for a byte list of index.
         test_defined_indexes: Tests that `defined_indexes` returns the indices of indexes with defined values.
         test_load_nuc_wmi_spec: Test that `load_nuc_wmi_spec` returns the NUC WMI specification configuration correctly.
+        test_query_led_color_type_hint: Tests that `query_led_color_type_hint` returns the expected exceptions, return
+                                        values, or outputs.
+        test_query_led_indicator_options_hint: Tests that `query_led_indicator_options_hint` returns the expected
+                                               exceptions, return values, or outputs.
+        test_query_led_rgb_color_type_dimensions_hint: Tests that `query_led_rgb_color_type_dimensions_hint` returns the
+                                                       expected exceptions, return values, or outputs.
         test_verify_nuc_wmi_function_spec: Tests that `verify_nuc_wmi_function_spec` raises the expected exception when
                                            the function_return_type or function_oob_return_recover values are undefined
                                            or unsupport by the NUC WMI method or the expected tuple for
@@ -358,6 +365,240 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
             'Error (Intel NUC WMI failed to load NUC WMI spec configuration file %s: %s)' % \
                 (pkg_resources.resource_filename('nuc_wmi', 'etc/nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json'),
                  'json.load error')
+        )
+
+
+    def test_query_led_color_type_hint(self):
+        """
+        Tests that `query_led_color_type_hint` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 1: Test that the LED color type hint is properly returned from the NUC WMI spec file.
+        led_type = 'Power Button LED'
+        nuc_wmi_spec = {
+            'led_hints': {
+                'color_type': {
+                    'HDD LED': 'RGB-color',
+                    'Power Button LED': 'Dual-color Blue / Amber',
+                    'RGB Header': 'RGB-color'
+                }
+            }
+        }
+
+        led_color_type_index = query_led_color_type_hint(
+            nuc_wmi_spec,
+            LED_TYPE['new'].index(led_type)
+        )
+
+        self.assertEqual(
+            led_color_type_index,
+            LED_COLOR_TYPE['new'].index(
+                nuc_wmi_spec['led_hints']['color_type'][led_type]
+            )
+        )
+
+
+    def test_query_led_color_type_hint2(self):
+        """
+        Tests that `query_led_color_type_hint` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 2: Test that the LED color type hint returns None for invalid LED type from the NUC WMI spec file.
+        nuc_wmi_spec = {
+            'led_hints': {
+                'color_type': {
+                    'HDD LED': 'RGB-color',
+                    'Power Button LED': 'Dual-color Blue / Amber',
+                    'RGB Header': 'RGB-color'
+                }
+            }
+        }
+
+        led_color_type_index = query_led_color_type_hint(nuc_wmi_spec, 10)
+
+        self.assertEqual(
+            led_color_type_index,
+            None
+        )
+
+
+    def test_query_led_indicator_options_hint(self):
+        """
+        Tests that `query_led_indicator_options_hint` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 1: Test that the LED indicator options hint is properly returned from the NUC WMI spec file.
+        expected_indicator_options_indexes = []
+        led_type = 'Power Button LED'
+        nuc_wmi_spec = {
+            'led_hints': {
+                'indicator_options': {
+                    'HDD LED': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Software Indicator'
+                    ],
+                    'Power Button LED': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Power State Indicator',
+                        'Software Indicator'
+                    ],
+                    'RGB Header': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Power State Indicator',
+                        'Software Indicator'
+                    ]
+                }
+            }
+        }
+
+        for index, indicator_option in enumerate(LED_INDICATOR_OPTION):
+            if indicator_option in nuc_wmi_spec['led_hints']['indicator_options'][led_type]:
+                expected_indicator_options_indexes.append(index)
+
+        expected_indicator_options_indexes.sort()
+
+        indicator_options_indexes = query_led_indicator_options_hint(
+            nuc_wmi_spec,
+            LED_TYPE['new'].index(led_type)
+        )
+
+        self.assertListEqual(
+            indicator_options_indexes,
+            expected_indicator_options_indexes
+        )
+
+
+    def test_query_led_indicator_options_hint2(self):
+        """
+        Tests that `query_led_indicator_options_hint` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 2: Test that the LED indicator options hint returns an empty list for an invalid LED type from the
+        #           NUC WMI spec file.
+        expected_indicator_options_indexes = []
+        nuc_wmi_spec = {
+            'led_hints': {
+                'indicator_options': {
+                    'HDD LED': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Software Indicator'
+                    ],
+                    'Power Button LED': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Power State Indicator',
+                        'Software Indicator'
+                    ],
+                    'RGB Header': [
+                        'Disable',
+                        'HDD Activity Indicator',
+                        'Power State Indicator',
+                        'Software Indicator'
+                    ]
+                }
+            }
+        }
+
+        indicator_options_indexes = query_led_indicator_options_hint(
+            nuc_wmi_spec,
+            10
+        )
+
+        self.assertListEqual(
+            indicator_options_indexes,
+            expected_indicator_options_indexes
+        )
+
+
+    def test_query_led_rgb_color_type_dimensions_hint(self):
+        """
+        Tests that `query_led_rgb_color_type_dimensions_hint` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        # Branch 1: Test that the LED rgb color type dimensions hint is properly returned from the NUC WMI spec file.
+        led_type = 'HDD LED'
+        nuc_wmi_spec = {
+            'led_hints': {
+                'rgb_color_type_dimensions': {
+                    'HDD LED': 1,
+                    'RGB Header': 1
+                }
+            }
+        }
+
+        led_rgb_color_type_dimensions = query_led_rgb_color_type_dimensions_hint(
+            nuc_wmi_spec,
+            led_type
+        )
+
+        self.assertEqual(
+            led_rgb_color_type_dimensions,
+            nuc_wmi_spec['led_hints']['rgb_color_type_dimensions'][led_type]
+        )
+
+
+    def test_query_led_rgb_color_type_dimensions_hint2(self):
+        """
+        Tests that `query_led_rgb_color_type_dimensions_hint` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        # Branch 2: Test that the LED rgb color type dimensions hint is properly returned when an invalid LED type is
+        #           provided.
+        led_type = 'Invalid LED'
+        nuc_wmi_spec = {
+            'led_hints': {
+                'rgb_color_type_dimensions': {
+                    'HDD LED': 1,
+                    'RGB Header': 1
+                }
+            }
+        }
+
+        led_rgb_color_type_dimensions = query_led_rgb_color_type_dimensions_hint(
+            nuc_wmi_spec,
+            led_type
+        )
+
+        self.assertEqual(
+            led_rgb_color_type_dimensions,
+            None
+        )
+
+
+    def test_query_led_rgb_color_type_dimensions_hint3(self):
+        """
+        Tests that `query_led_rgb_color_type_dimensions_hint` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        # Branch 3: Test that the LED rgb color type dimensions raises the proper exception when the NUC WMI
+        #           specification value is invalid.
+        led_type = 'HDD LED'
+        nuc_wmi_spec = {
+            'led_hints': {
+                'rgb_color_type_dimensions': {
+                    'HDD LED': 3.14,
+                    'RGB Header': 3.14
+                }
+            }
+        }
+
+        with self.assertRaises(NucWmiError) as err:
+            query_led_rgb_color_type_dimensions_hint(
+                nuc_wmi_spec,
+                led_type
+            )
+
+        self.assertEqual(
+            str(err.exception),
+            'Error (Intel NUC WMI spec has an invalid rgb_color_type_dimensions led_hint for LED %s, '
+            'expected one of: [1, 3]' % led_type
         )
 
 

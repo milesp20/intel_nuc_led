@@ -48,6 +48,64 @@
         "wmi_interface_spec_compliance_version": false
       }
     },
+    "NUC_10_HINTS": {
+      "function_return_type": {
+        "get_led_control_item": "index",
+        "get_led_indicator_option": "bitmap",
+        "query_led_color_type": "bitmap",
+        "query_led_control_items": "bitmap",
+        "query_led_indicator_options": "bitmap",
+        "query_leds": "bitmap",
+        "save_led_config": null,
+        "set_led_control_item": null,
+        "set_led_indicator_option": null,
+        "switch_led_type": null,
+        "wmi_interface_spec_compliance_version": "index"
+      },
+      "function_oob_return_value_recover": {
+        "get_led_control_item": false,
+        "get_led_indicator_option": false,
+        "query_led_color_type": false,
+        "query_led_control_items": false,
+        "query_led_indicator_options": false,
+        "query_leds": false,
+        "save_led_config": false,
+        "set_led_control_item": false,
+        "set_led_indicator_option": false,
+        "switch_led_type": false,
+        "wmi_interface_spec_compliance_version": false
+      },
+      "led_hints": {
+        "color_type": {
+          "HDD LED": "RGB-color",
+          "Power Button LED": "Dual-color Blue / Amber",
+          "RGB Header": "RGB-color"
+        },
+        "indicator_options": {
+          "HDD LED": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Software Indicator"
+          ],
+          "Power Button LED": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Power State Indicator",
+            "Software Indicator"
+          ],
+          "RGB Header": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Power State Indicator",
+            "Software Indicator"
+          ]
+        },
+        "rgb_color_type_dimensions": {
+          "HDD LED": 1,
+          "RGB Header": 1
+        }
+      }
+    },
     "NUC_10_OLD_BIOS": {
       "function_return_type": {
         "get_led_control_item": "index",
@@ -76,6 +134,53 @@
         "wmi_interface_spec_compliance_version": false
       }
     },
+    "NUC_10_OLD_BIOS_HINTS": {
+      "function_return_type": {
+        "get_led_control_item": "index",
+        "get_led_indicator_option": "index",
+        "query_led_color_type": "index",
+        "query_led_control_items": "bitmap",
+        "query_led_indicator_options": "bitmap",
+        "query_leds": "bitmap",
+        "save_led_config": null,
+        "set_led_control_item": null,
+        "set_led_indicator_option": null,
+        "switch_led_type": null,
+        "wmi_interface_spec_compliance_version": "index"
+      },
+      "function_oob_return_value_recover": {
+        "get_led_control_item": false,
+        "get_led_indicator_option": false,
+        "query_led_color_type": false,
+        "query_led_control_items": false,
+        "query_led_indicator_options": false,
+        "query_leds": false,
+        "save_led_config": false,
+        "set_led_control_item": false,
+        "set_led_indicator_option": false,
+        "switch_led_type": false,
+        "wmi_interface_spec_compliance_version": false
+      },
+      "led_hints": {
+        "color_type": {
+          "HDD LED": "Dual-color Blue / White",
+          "Power Button LED": "Dual-color Blue / Amber"
+        },
+        "indicator_options": {
+          "HDD LED": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Software Indicator"
+          ],
+          "Power Button LED": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Power State Indicator",
+            "Software Indicator"
+          ]
+        }
+      }
+    },
     "NUC_12": {
       "function_return_type": {
         "get_led_control_item": "index",
@@ -102,6 +207,50 @@
         "set_led_indicator_option": false,
         "switch_led_type": false,
         "wmi_interface_spec_compliance_version": false
+      }
+    },
+    "NUC_12_HINTS": {
+      "function_return_type": {
+        "get_led_control_item": "index",
+        "get_led_indicator_option": "index",
+        "query_led_color_type": "index",
+        "query_led_control_items": "bitmap",
+        "query_led_indicator_options": "bitmap",
+        "query_leds": "bitmap",
+        "save_led_config": null,
+        "set_led_control_item": null,
+        "set_led_indicator_option": null,
+        "switch_led_type": null,
+        "wmi_interface_spec_compliance_version": "index"
+      },
+      "function_oob_return_value_recover": {
+        "get_led_control_item": false,
+        "get_led_indicator_option": false,
+        "query_led_color_type": false,
+        "query_led_control_items": false,
+        "query_led_indicator_options": false,
+        "query_leds": false,
+        "save_led_config": false,
+        "set_led_control_item": false,
+        "set_led_indicator_option": false,
+        "switch_led_type": false,
+        "wmi_interface_spec_compliance_version": false
+      },
+      "led_hints": {
+        "color_type": {
+          "Power Button LED": "RGB-color"
+        },
+        "indicator_options": {
+          "Power Button LED": [
+            "Disable",
+            "HDD Activity Indicator",
+            "Power State Indicator",
+            "Software Indicator"
+          ]
+        },
+        "rgb_color_type_dimensions": {
+          "Power Button LED": 3
+        }
       }
     }
   }

@@ -460,6 +460,92 @@ class TestCliQueryLed(unittest.TestCase):
 
     @patch('nuc_wmi.cli.query_led.load_nuc_wmi_spec')
     @patch('nuc_wmi.cli.query_led.print')
+    @patch('nuc_wmi.cli.query_led.query_led_color_type')
+    @patch('nuc_wmi.cli.query_led.query_led_control_items')
+    @patch('nuc_wmi.cli.query_led.query_led_indicator_options')
+    @patch('nuc_wmi.cli.query_led.sys.exit')
+    def test_query_led_control_items_cli4( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_sys_exit,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
+    ):
+        """
+        Tests that `query_led_control_items_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.query_led.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
+        self.assertTrue(nuc_wmi.cli.query_led.print is nuc_wmi_print) # pylint: disable=no-member
+        self.assertTrue(nuc_wmi.cli.query_led.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.query_led.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.query_led.query_led_indicator_options is nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.query_led.sys.exit is nuc_wmi_sys_exit)
+
+        # Branch 4: Test that query_led_control_items_cli returns the proper JSON response and exit
+        #           code for valid cli args
+
+        # Get control items for HDD LED set to Disable
+        expected_control_items = []
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
+        nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
+        nuc_wmi_query_led_control_items.return_value = expected_control_items
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4, 6]
+
+        returned_query_led_control_items_cli = query_led_control_items_cli(
+            [
+                nuc_wmi_spec_alias,
+                LED_TYPE['new'][1],
+                LED_INDICATOR_OPTION[6]
+            ]
+        )
+
+        nuc_wmi_query_led_color_type.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+        nuc_wmi_query_led_indicator_options.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+        nuc_wmi_query_led_control_items.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            LED_TYPE['new'].index('HDD LED'),
+            LED_INDICATOR_OPTION.index('Disable'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+        nuc_wmi_print.assert_called()
+
+        self.assertEqual(
+            json.loads(nuc_wmi_print.call_args.args[0]),
+            {
+                'led': {
+                    'type': LED_TYPE['new'][1],
+                    'indicator_option': LED_INDICATOR_OPTION[6],
+                    'control_items': [CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR[control_item]['Control Item'] \
+                                      for control_item in expected_control_items]
+                },
+                'nuc_wmi_spec_alias': nuc_wmi_spec_alias
+            }
+        )
+
+        self.assertEqual(returned_query_led_control_items_cli, None)
+
+
+    @patch('nuc_wmi.cli.query_led.load_nuc_wmi_spec')
+    @patch('nuc_wmi.cli.query_led.print')
     @patch('nuc_wmi.cli.query_led.query_led_indicator_options')
     @patch('nuc_wmi.cli.query_led.sys.exit')
     def test_query_led_indicator_options_cli(

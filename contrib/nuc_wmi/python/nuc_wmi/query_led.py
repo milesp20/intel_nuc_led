@@ -4,7 +4,8 @@
 
 from nuc_wmi import CONTROL_ITEM, LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError, RETURN_ERROR
 from nuc_wmi.control_file import read_control_file, write_control_file
-from nuc_wmi.utils import byte_list_to_index, defined_indexes, verify_nuc_wmi_function_spec
+from nuc_wmi.utils import byte_list_to_index, defined_indexes, query_led_color_type_hint
+from nuc_wmi.utils import query_led_indicator_options_hint, verify_nuc_wmi_function_spec
 
 LED_INDICATOR_OPTION_DISABLED = 0x06
 METHOD_ID = 0x03
@@ -32,7 +33,7 @@ QUERY_TYPE = [
 ]
 
 
-def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=unused-argument
+def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=too-many-locals,unused-argument
     """
     Query the LED color type for the LED type.
 
@@ -56,37 +57,42 @@ def query_led_color_type(nuc_wmi_spec, led_type, control_file=None, debug=False,
         nuc_wmi_spec,
         **QUERY_LED_COLOR_TYPE_NUC_WMI_SPEC
     )
-    query_led_color_byte_list = [METHOD_ID, QUERY_TYPE.index('query_led_color_type'), led_type]
+    led_color_type_index_hint = query_led_color_type_hint(nuc_wmi_spec, led_type)
+    query_led_color_type_byte_list = [METHOD_ID, QUERY_TYPE.index('query_led_color_type'), led_type]
 
-    write_control_file(query_led_color_byte_list, control_file=control_file, debug=debug)
 
-    # Bitmap [0:7], [8:15], [16:23]
-    (
-        error_code,
-        led_color_type_bitmap_1,
-        led_color_type_bitmap_2,
-        led_color_type_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug)
+    if led_color_type_index_hint is None:
+        write_control_file(query_led_color_type_byte_list, control_file=control_file, debug=debug)
 
-    if error_code > 0:
-        raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
+        # Bitmap [0:7], [8:15], [16:23]
+        (
+            error_code,
+            led_color_type_bitmap_1,
+            led_color_type_bitmap_2,
+            led_color_type_bitmap_3
+        ) = read_control_file(control_file=control_file, debug=debug)
 
-    led_color_type_bitmaps = [
-        led_color_type_bitmap_3,
-        led_color_type_bitmap_2,
-        led_color_type_bitmap_1
-    ]
+        if error_code > 0:
+            raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
 
-    led_color_type_index = byte_list_to_index(led_color_type_bitmaps, function_return_type)
+        led_color_type_bitmaps = [
+            led_color_type_bitmap_3,
+            led_color_type_bitmap_2,
+            led_color_type_bitmap_1
+        ]
 
-    if function_return_type == 'bitmap':
-        if len(led_color_type_index) != 1:
-            raise NucWmiError(
-                'Error (Intel NUC WMI query_led_color_type function returned either no led color type '
-                'or multiple led color types in bitmap)'
-            )
+        led_color_type_index = byte_list_to_index(led_color_type_bitmaps, function_return_type)
 
-        led_color_type_index = led_color_type_index[0]
+        if function_return_type == 'bitmap':
+            if len(led_color_type_index) != 1:
+                raise NucWmiError(
+                    'Error (Intel NUC WMI query_led_color_type function returned either no led color type '
+                    'or multiple led color types in bitmap)'
+                )
+
+            led_color_type_index = led_color_type_index[0]
+    else:
+        led_color_type_index = led_color_type_index_hint
 
     led_color_type_range = defined_indexes(LED_COLOR_TYPE['new'])
 
@@ -197,33 +203,37 @@ def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug
         nuc_wmi_spec,
         **QUERY_LED_INDICATOR_OPTIONS_NUC_WMI_SPEC
     )
+    led_indicator_options_indexes_hint = query_led_indicator_options_hint(nuc_wmi_spec, led_type)
     query_led_indicator_options_byte_list = [
         METHOD_ID,
         QUERY_TYPE.index('query_led_indicator_options'),
         led_type
     ]
 
-    write_control_file(query_led_indicator_options_byte_list, control_file=control_file, debug=debug)
+    if not led_indicator_options_indexes_hint:
+        write_control_file(query_led_indicator_options_byte_list, control_file=control_file, debug=debug)
 
-    # Bitmap [0:7], [8:15], [16:23]
-    (
-        error_code,
-        led_indicator_option_bitmap_1,
-        led_indicator_option_bitmap_2,
-        led_indicator_option_bitmap_3
-    ) = read_control_file(control_file=control_file, debug=debug)
+        # Bitmap [0:7], [8:15], [16:23]
+        (
+            error_code,
+            led_indicator_option_bitmap_1,
+            led_indicator_option_bitmap_2,
+            led_indicator_option_bitmap_3
+        ) = read_control_file(control_file=control_file, debug=debug)
 
-    if error_code > 0:
-        raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
+        if error_code > 0:
+            raise NucWmiError(RETURN_ERROR.get(error_code, 'Error (Unknown NUC WMI error code)'))
 
-    led_indicator_option_bitmaps = [
-        led_indicator_option_bitmap_3,
-        led_indicator_option_bitmap_2,
-        led_indicator_option_bitmap_1
-    ]
-    led_indicator_option_index = byte_list_to_index(led_indicator_option_bitmaps, function_return_type)
+        led_indicator_option_bitmaps = [
+            led_indicator_option_bitmap_3,
+            led_indicator_option_bitmap_2,
+            led_indicator_option_bitmap_1
+        ]
+        led_indicator_option_index = byte_list_to_index(led_indicator_option_bitmaps, function_return_type)
 
-    led_indicator_option_index.sort()
+        led_indicator_option_index.sort()
+    else:
+        led_indicator_option_index = led_indicator_options_indexes_hint
 
     if led_indicator_option_index and \
        led_indicator_option_index[-1] >= len(LED_INDICATOR_OPTION):

@@ -208,10 +208,13 @@ def query_led_control_items_cli(cli_args=None):
                 metadata=None
             )
 
-            led_control_items = [
-                CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
-                for control_item_index in available_control_item_indexes
-            ]
+            if CONTROL_ITEM[led_indicator_option_index] is None:
+                led_control_items = []
+            else:
+                led_control_items = [
+                    CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
+                    for control_item_index in available_control_item_indexes
+                ]
 
             print(
                 dumps(

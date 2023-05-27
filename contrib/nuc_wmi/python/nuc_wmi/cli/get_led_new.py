@@ -14,6 +14,7 @@ from nuc_wmi import NucWmiError
 from nuc_wmi.get_led_new import get_led_control_item, get_led_indicator_option
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 from nuc_wmi.utils import acquire_file_lock, defined_indexes, load_nuc_wmi_spec
+from nuc_wmi.utils import query_led_rgb_color_type_dimensions_hint
 
 
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
@@ -139,6 +140,9 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             if led_indicator_option_index not in available_indicator_options:
                 raise ValueError('Invalid indicator option for the selected LED')
 
+            if CONTROL_ITEM[led_indicator_option_index] is None:
+                raise ValueError('No control items are available for the selected LED and indicator option')
+
             control_items = CONTROL_ITEM[led_indicator_option_index][led_color_type_index]
 
             if control_items is None:
@@ -166,29 +170,33 @@ def get_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             # Convert the control item value index into its value
             if control_items[control_item_index]['Options'] == LED_COLOR['new']:
                 if led_color_type == 'RGB-color':
-                    color_dimensions = '1d'
-
-                    available_control_item_indexes = query_led_control_items(
+                    led_rgb_color_type_dimensions = query_led_rgb_color_type_dimensions_hint(
                         nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
-                        led_type_index,
-                        led_indicator_option_index,
-                        control_file=args.control_file,
-                        debug=args.debug,
-                        metadata=None
+                        args.led
                     )
 
-                    for control_item_index2 in available_control_item_indexes:
-                        if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
-                            color_dimensions = '3d'
+                    if led_rgb_color_type_dimensions is None:
+                        led_rgb_color_type_dimensions = 1
 
-                            break
+                        available_control_item_indexes = query_led_control_items(
+                            nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                            led_type_index,
+                            led_indicator_option_index,
+                            control_file=args.control_file,
+                            debug=args.debug,
+                            metadata=None
+                        )
 
-                    if color_dimensions == '1d':
-                        led_colors = RGB_COLOR_1D[args.led]
+                        for control_item_index2 in available_control_item_indexes:
+                            if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
+                                led_rgb_color_type_dimensions = 3
+
+                                break
+
+                    if led_rgb_color_type_dimensions == 1:
+                        control_item_value_options = RGB_COLOR_1D[args.led]
                     else:
-                        led_colors = RGB_COLOR_3D
-
-                    control_item_value_options = led_colors
+                        control_item_value_options = RGB_COLOR_3D
                 else:
                     control_item_value_options = LED_COLOR['new'][led_color_type]
             else:

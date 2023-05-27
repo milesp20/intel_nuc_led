@@ -182,8 +182,8 @@ for the NUC WMI functions supported by the NUC as well as in some cases recover 
 functions sometimes return invalid values in certain scenarios.
 
 This implementation is driven by the fact that the return types of the functions may change from one NUC generation to the next and
-the "out of bound" return value are the only things we can customize to try to make the NUC WMI functions work as expected and if it
-still doesnt work with that then it is likely a BIOS bug.
+the "out of bound" return value are the only things we can customize to try to make the NUC WMI functions work as expected. If it
+still doesnt work with that, then it is likely a BIOS bug.
 
 The supported return types and "out of bound" return value recovery support is as follows:
 
@@ -212,12 +212,25 @@ The NUC WMI spec configuration file is a JSON formatted file with the following 
 ```
 {
   "nuc_wmi_spec": {
-    "<nuc_wmi_spec_alias": {
+    "<nuc_wmi_spec_alias>": {
       "function_return_type": {
-        "<nuc_wmi_function_name": "<nuc_wmi_function_return_type string|unquoted JSON null>"
+        "<nuc_wmi_function_name>": "<nuc_wmi_function_return_type string|unquoted JSON null>"
       },
       "function_oob_return_value_recover": {
-        "<nuc_wmi_function_name": <JSON boolean>
+        "<nuc_wmi_function_name>": <JSON boolean>
+      },
+      "led_hints": {
+        "color_type": {
+          "<led type (nuc_wmi.LED_TYPE)>": "<led color type name (nuc_wmi.LED_COLOR_TYPE)>
+        },
+        "indicator_options": {
+          "<led type (nuc_wmi.LED_TYPE)>": [
+            "<indicator option (nuc_wmi.LED_INDICATOR_OPTION)>"
+          ]
+        },
+        "rgb_color_type_dimensions": {
+          "<led type (nuc_wmi.LED_TYPE)>": <1 or 3>
+        }
       }
     }
   }
@@ -234,8 +247,17 @@ found is used:
 3. `<nuc_wmi pip package install path>/etc/nuc_wmi_spec/nuc_wmi_spec.json`
 
 Note that while we include a default NUC WMI spec JSON file in the Python package, we dont guarantee it will work
-with the board generation specified. Always double check the NUC WMI manual for your explicit NUC model and update
-the spec file as needed.
+with the board generation specified as it may depend on what BIOS version you have installed. Always double check
+the NUC WMI manual for your explicit NUC model and update the spec file as needed.
+
+The `led_hints` in the NUC WMI spec is an attempt to resolve the permformance issues present in NUC 10 and NUC 12 BIOS
+by adding hints for the `get_led_control_item`, `query_led_color_type`, `query_led_indicator_options`, and `set_led_control_item`
+methods so that each CLI command corresponds to only one or no WMI method calls. Without these hints, due to simplifying
+of the WMI method interfaces for the CLI and added error handling some of the CLI commands may end up being 3 or 4 NUC
+WMI calls otherwise. If you care about the performance of the WMI calls (for example, if you need to set the 3 dimension RGB
+color as quickly as possible so it does not flash between 3 different colors), then we recommend adding hints to the NUC WMI
+spec alias that you use for your NUC. The hints just hard code the responses you would expect to get from the WMI methods.
+If you do not specify the hints, then it falls back to making the WMI calls necessary to get the information it needs.
 
 ### NUC 7:
 
@@ -366,11 +388,17 @@ implementation make it out into the wild.
   An alternative way to check what your BIOS supports without needing to know the BIOS's release date is to run the
   `nuc_wmi-query_leds` CLI command and see if returns `RGB Header` as an option or not in the supported LED types.
 
+* The NUC 10 BIOS does not return `Disable` indicator option for any LED when you run `query_led_indicator_options` even
+  though `get_led_indicator_option` and `set_led_indicator_option` do support this indicator option.
+
 ### NUC 12
 
-*  The NUC 12 BIOS releases prior to WS9087 are in various states of functionality. In its orignal release form, the
-   BIOS had invalid return types for methods compared to what was documented and subsequent releases had broken
-   `get_led_control_item` and `set_led_control_item` implementations that could not be worked around by simply modifying the
-   the WMI spec definition for return types. The broken implementations had different behavior for each of the indicator
-   option modes. All current NUC 12 BIOS releases have severe performance degradation and are 20-100x slower for some
-   WMI method calls. The performance issue is a BIOS side issue that we cannot resolve.
+* The NUC 12 BIOS releases prior to WS9087 are in various states of functionality. In its orignal release form, the
+  BIOS had invalid return types for methods compared to what was documented and subsequent releases had broken
+  `get_led_control_item` and `set_led_control_item` implementations that could not be worked around by simply modifying the
+  the WMI spec definition for return types. The broken implementations had different behavior for each of the indicator
+  option modes. All current NUC 12 BIOS releases have severe performance degradation and are 20-100x slower for some
+  WMI method calls. The performance issue is a BIOS side issue that we cannot resolve.
+
+* The NUC 12 BIOS does not return `Disable` indicator option for any LED when you run `query_led_indicator_options` even
+  though `get_led_indicator_option` and `set_led_indicator_option` do support this indicator option.
