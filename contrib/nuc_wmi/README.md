@@ -231,6 +231,9 @@ The NUC WMI spec configuration file is a JSON formatted file with the following 
         "rgb_color_type_dimensions": {
           "<led type (nuc_wmi.LED_TYPE)>": <1 or 3>
         }
+      },
+      "missing_disable_indicator_option_recover": {
+        "<led type (nuc_wmi.LED_TYPE)>": <JSON boolean>
       }
     }
   }
@@ -252,12 +255,16 @@ the NUC WMI manual for your explicit NUC model and update the spec file as neede
 
 The `led_hints` in the NUC WMI spec is an attempt to resolve the permformance issues present in NUC 10 and NUC 12 BIOS
 by adding hints for the `get_led_control_item`, `query_led_color_type`, `query_led_indicator_options`, and `set_led_control_item`
-methods so that each CLI command corresponds to only one or no WMI method calls. Without these hints, due to simplifying
-of the WMI method interfaces for the CLI and added error handling some of the CLI commands may end up being 3 or 4 NUC
+methods so that each CLI command corresponds to at most one WMI method call. Without these hints, due to simplifying
+of the WMI method interfaces for the CLI and added error handling, some of the CLI commands may end up being 3 or 4 NUC
 WMI calls otherwise. If you care about the performance of the WMI calls (for example, if you need to set the 3 dimension RGB
-color as quickly as possible so it does not flash between 3 different colors), then we recommend adding hints to the NUC WMI
+color as quickly as possible to minimize flash between different colors), then we recommend adding hints to the NUC WMI
 spec alias that you use for your NUC. The hints just hard code the responses you would expect to get from the WMI methods.
 If you do not specify the hints, then it falls back to making the WMI calls necessary to get the information it needs.
+
+The `missing_disable_indicator_option_recover` NUC WMI spec configuration option can be used to forcibly make sure that
+`query_led_indicator_options` include the `Disable` indicator option for BIOS that have the bug that causes it to not be included
+even though it is supported by the LEDs.
 
 ### NUC 7:
 

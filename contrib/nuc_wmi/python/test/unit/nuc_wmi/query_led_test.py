@@ -919,6 +919,63 @@ class TestQueryLed(unittest.TestCase):
     @patch('nuc_wmi.query_led.read_control_file')
     @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
     @patch('nuc_wmi.query_led.write_control_file')
+    def test_query_led_indicator_options5(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
+                                          nuc_wmi_read_control_file):
+        """
+        Tests that `query_led_indicator_options` returns the expected exceptions, return values, or
+        outputs.
+        """
+
+        self.assertTrue(nuc_wmi.query_led.read_control_file is nuc_wmi_read_control_file)
+        self.assertTrue(nuc_wmi.query_led.verify_nuc_wmi_function_spec is nuc_wmi_verify_nuc_wmi_function_spec)
+        self.assertTrue(nuc_wmi.query_led.write_control_file is nuc_wmi_write_control_file)
+
+        # Branch 5: Test that query_led_indicator_options send the expected byte string to the control file
+        #           and that the returned control file response is properly processed and has the Disable indicator
+        #           option appended.
+
+        # Query HDD LED indicator options
+        expected_query_led_indicator_options = [1, 4, 6]
+        expected_write_byte_list = [
+            METHOD_ID,
+            QUERY_TYPE.index('query_led_indicator_options'),
+            LED_TYPE['new'].index('HDD LED')
+        ]
+        nuc_wmi_spec = {
+            'missing_disable_indicator_option_recover': {
+                'HDD LED': True
+            }
+        }
+        read_byte_list = [
+            0x00,
+            0x12,
+            0x00,
+            0x00
+        ]
+
+        nuc_wmi_read_control_file.return_value = read_byte_list
+        nuc_wmi_verify_nuc_wmi_function_spec.return_value = ('bitmap', False)
+
+        returned_query_led_indicator_options = query_led_indicator_options(
+            nuc_wmi_spec,
+            LED_TYPE['new'].index('HDD LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+
+        nuc_wmi_write_control_file.assert_called_with(
+            expected_write_byte_list,
+            control_file=None,
+            debug=False
+        )
+
+        self.assertEqual(returned_query_led_indicator_options, expected_query_led_indicator_options)
+
+
+    @patch('nuc_wmi.query_led.read_control_file')
+    @patch('nuc_wmi.query_led.verify_nuc_wmi_function_spec')
+    @patch('nuc_wmi.query_led.write_control_file')
     def test_query_leds(self, nuc_wmi_write_control_file, nuc_wmi_verify_nuc_wmi_function_spec,
                         nuc_wmi_read_control_file):
         """

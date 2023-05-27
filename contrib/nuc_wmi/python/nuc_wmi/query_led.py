@@ -181,7 +181,7 @@ def query_led_control_items( # pylint: disable=too-many-locals
     return led_control_item_index
 
 
-def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=unused-argument
+def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug=False, metadata=None): # pylint: disable=too-many-locals,unused-argument
     """
     Query the LED indicator options available for the LED type.
 
@@ -210,6 +210,17 @@ def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug
         led_type
     ]
 
+    if led_type < len(LED_TYPE['new']):
+        add_disable_indicator_option = nuc_wmi_spec.get(
+            'missing_disable_indicator_option_recover',
+            {}
+        ).get(
+            LED_TYPE['new'][led_type],
+            False
+        )
+    else:
+        add_disable_indicator_option = False
+
     if not led_indicator_options_indexes_hint:
         write_control_file(query_led_indicator_options_byte_list, control_file=control_file, debug=debug)
 
@@ -234,6 +245,11 @@ def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug
         led_indicator_option_index.sort()
     else:
         led_indicator_option_index = led_indicator_options_indexes_hint
+
+    if add_disable_indicator_option and LED_INDICATOR_OPTION.index('Disable') not in led_indicator_option_index:
+        led_indicator_option_index.append(LED_INDICATOR_OPTION.index('Disable'))
+
+        led_indicator_option_index.sort()
 
     if led_indicator_option_index and \
        led_indicator_option_index[-1] >= len(LED_INDICATOR_OPTION):

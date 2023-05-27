@@ -46,6 +46,11 @@
         "set_led_indicator_option": false,
         "switch_led_type": false,
         "wmi_interface_spec_compliance_version": false
+      },
+      "missing_disable_indicator_option_recover": {
+        "HDD LED": true,
+        "Power Button LED": true,
+        "RGB Header": true
       }
     },
     "NUC_10_HINTS": {
@@ -104,6 +109,11 @@
           "HDD LED": 1,
           "RGB Header": 1
         }
+      },
+      "missing_disable_indicator_option_recover": {
+        "HDD LED": true,
+        "Power Button LED": true,
+        "RGB Header": true
       }
     },
     "NUC_10_OLD_BIOS": {
@@ -132,6 +142,10 @@
         "set_led_indicator_option": false,
         "switch_led_type": false,
         "wmi_interface_spec_compliance_version": false
+      },
+      "missing_disable_indicator_option_recover": {
+        "HDD LED": true,
+        "Power Button LED": true
       }
     },
     "NUC_10_OLD_BIOS_HINTS": {
@@ -179,6 +193,10 @@
             "Software Indicator"
           ]
         }
+      },
+      "missing_disable_indicator_option_recover": {
+        "HDD LED": true,
+        "Power Button LED": true
       }
     },
     "NUC_12": {
@@ -207,6 +225,9 @@
         "set_led_indicator_option": false,
         "switch_led_type": false,
         "wmi_interface_spec_compliance_version": false
+      },
+      "missing_disable_indicator_option_recover": {
+        "Power Button LED": true
       }
     },
     "NUC_12_HINTS": {
@@ -251,6 +272,9 @@
         "rgb_color_type_dimensions": {
           "Power Button LED": 3
         }
+      },
+      "missing_disable_indicator_option_recover": {
+        "Power Button LED": true
       }
     }
   }
