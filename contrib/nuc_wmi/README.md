@@ -211,29 +211,31 @@ The NUC WMI spec configuration file is a JSON formatted file with the following 
 
 ```
 {
-  "nuc_wmi_spec": {
-    "<nuc_wmi_spec_alias>": {
+  "<nuc_wmi_spec_alias>": {
+    "led_hints": {
+      "color_type": {
+        "<led type (nuc_wmi.LED_TYPE)>": "<led color type name (nuc_wmi.LED_COLOR_TYPE)>
+      },
+      "indicator_options": {
+        "<led type (nuc_wmi.LED_TYPE)>": [
+          "<indicator option (nuc_wmi.LED_INDICATOR_OPTION)>"
+        ]
+      },
+      "rgb_color_type_dimensions": {
+        "<led type (nuc_wmi.LED_TYPE)>": <1 or 3>
+      }
+    },
+    "nuc_wmi_spec": {
       "function_return_type": {
         "<nuc_wmi_function_name>": "<nuc_wmi_function_return_type string|unquoted JSON null>"
       },
-      "function_oob_return_value_recover": {
-        "<nuc_wmi_function_name>": <JSON boolean>
-      },
-      "led_hints": {
-        "color_type": {
-          "<led type (nuc_wmi.LED_TYPE)>": "<led color type name (nuc_wmi.LED_COLOR_TYPE)>
+      "recover": {
+        "function_oob_return_value": {
+          "<nuc_wmi_function_name>": <JSON boolean>
         },
-        "indicator_options": {
-          "<led type (nuc_wmi.LED_TYPE)>": [
-            "<indicator option (nuc_wmi.LED_INDICATOR_OPTION)>"
-          ]
-        },
-        "rgb_color_type_dimensions": {
-          "<led type (nuc_wmi.LED_TYPE)>": <1 or 3>
+        "missing_disable_indicator_option": {
+          "<led type (nuc_wmi.LED_TYPE)>": <JSON boolean>
         }
-      },
-      "missing_disable_indicator_option_recover": {
-        "<led type (nuc_wmi.LED_TYPE)>": <JSON boolean>
       }
     }
   }
@@ -262,8 +264,8 @@ color as quickly as possible to minimize flash between different colors), then w
 spec alias that you use for your NUC. The hints just hard code the responses you would expect to get from the WMI methods.
 If you do not specify the hints, then it falls back to making the WMI calls necessary to get the information it needs.
 
-The `missing_disable_indicator_option_recover` NUC WMI spec configuration option can be used to forcibly make sure that
-`query_led_indicator_options` include the `Disable` indicator option for BIOS that have the bug that causes it to not be included
+The `missing_disable_indicator_option` NUC WMI spec configuration recover option can be used to forcibly make sure that
+`query_led_indicator_options` includes the `Disable` indicator option for BIOS that have the bug that causes it to not be included
 even though it is supported by the LEDs.
 
 ### NUC 7:

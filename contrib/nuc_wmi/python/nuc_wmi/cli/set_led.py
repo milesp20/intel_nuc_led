@@ -69,7 +69,7 @@ def set_led_cli(cli_args=None):
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -108,7 +108,7 @@ def set_led_cli(cli_args=None):
                 raise ValueError('Invalid color for the specified legacy LED') from err
 
             set_led(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 args.brightness,
                 frequency_index,

@@ -39,13 +39,15 @@ class TestCliSetLed(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'nuc_wmi_spec': {
                     'function_return_type': {
                         'set_led': None
                     },
-                    'function_oob_return_value_recover': {
-                        'set_led': False
+                    'recover': {
+                        'function_oob_return_value': {
+                            'set_led': False
+                        }
                     }
                 }
             }
@@ -90,7 +92,7 @@ class TestCliSetLed(unittest.TestCase):
         )
 
         nuc_wmi_set_led.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['legacy'].index('S0 Ring LED'),
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),
@@ -155,7 +157,7 @@ class TestCliSetLed(unittest.TestCase):
         )
 
         nuc_wmi_set_led.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['legacy'].index('S0 Ring LED'),
             str(LED_BRIGHTNESS['legacy'].index('47')),
             LED_BLINK_FREQUENCY['legacy'].index('Always on'),

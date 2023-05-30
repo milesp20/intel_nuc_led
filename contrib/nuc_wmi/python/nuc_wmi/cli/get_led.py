@@ -67,7 +67,7 @@ def get_led_cli(cli_args=None): # pylint: disable=too-many-locals
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -89,7 +89,7 @@ def get_led_cli(cli_args=None): # pylint: disable=too-many-locals
             frequency_range = defined_indexes(LED_BLINK_FREQUENCY['legacy'])
 
             (brightness, frequency_index, color_index) = get_led( # pylint: disable=unbalanced-tuple-unpacking
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,

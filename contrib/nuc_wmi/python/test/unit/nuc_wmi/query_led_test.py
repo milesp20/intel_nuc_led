@@ -385,16 +385,20 @@ class TestQueryLed(unittest.TestCase):
         # Query HDD LED that returns a color type of Dual-color Blue / White
         expected_query_led_color_type = LED_COLOR_TYPE['new'].index('Dual-color Blue / White')
         nuc_wmi_spec = {
-            'function_return_type': {
-                'query_led_color_type': 'index',
-            },
-            'function_oob_return_value_recover': {
-                'query_led_color_type': False,
-            },
             'led_hints': {
                 'color_type': {
                     'HDD LED': 'Dual-color Blue / White',
                     'Power Button LED': 'Dual-color Blue / Amber'
+                }
+            },
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'query_led_color_type': 'index',
+                },
+                'recover': {
+                    'function_oob_return_value': {
+                        'query_led_color_type': False,
+                    }
                 }
             }
         }
@@ -873,12 +877,6 @@ class TestQueryLed(unittest.TestCase):
         # Query HDD LED indicator options
         expected_query_led_indicator_options = [1, 4]
         nuc_wmi_spec = {
-            'function_return_type': {
-                'query_led_indicator_options': 'bitmap'
-            },
-            'function_oob_return_value_recover': {
-                'query_led_indicator_options': False
-            },
             'led_hints': {
                 'indicator_options': {
                     'HDD LED': [
@@ -890,6 +888,16 @@ class TestQueryLed(unittest.TestCase):
                         'Power State Indicator',
                         'Software Indicator'
                     ]
+                }
+            },
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'query_led_indicator_options': 'bitmap'
+                },
+                'recover': {
+                    'function_oob_return_value': {
+                        'query_led_indicator_options': False
+                    }
                 }
             }
         }
@@ -942,8 +950,12 @@ class TestQueryLed(unittest.TestCase):
             LED_TYPE['new'].index('HDD LED')
         ]
         nuc_wmi_spec = {
-            'missing_disable_indicator_option_recover': {
-                'HDD LED': True
+            'nuc_wmi_spec': {
+                'recover': {
+                    'missing_disable_indicator_option': {
+                        'HDD LED': True
+                    }
+                }
             }
         }
         read_byte_list = [

@@ -66,7 +66,7 @@ def query_led_color_type_cli(cli_args=None):
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -83,7 +83,7 @@ def query_led_color_type_cli(cli_args=None):
             led_type_index = LED_TYPE['new'].index(args.led)
 
             led_color_type_index = query_led_color_type(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -157,7 +157,7 @@ def query_led_control_items_cli(cli_args=None):
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -179,7 +179,7 @@ def query_led_control_items_cli(cli_args=None):
             led_type_index = LED_TYPE['new'].index(args.led)
 
             led_color_type_index = query_led_color_type(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -187,7 +187,7 @@ def query_led_control_items_cli(cli_args=None):
             )
 
             available_indicator_option_indexes = query_led_indicator_options(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -200,7 +200,7 @@ def query_led_control_items_cli(cli_args=None):
                 raise ValueError('Invalid indicator option for the selected LED')
 
             available_control_item_indexes = query_led_control_items(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 led_indicator_option_index,
                 control_file=args.control_file,
@@ -280,7 +280,7 @@ def query_led_indicator_options_cli(cli_args=None):
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -297,7 +297,7 @@ def query_led_indicator_options_cli(cli_args=None):
             led_type_index = LED_TYPE['new'].index(args.led)
 
             available_indicator_option_indexes = query_led_indicator_options(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -371,7 +371,7 @@ def query_leds_cli(cli_args=None):
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
 
@@ -381,7 +381,7 @@ def query_leds_cli(cli_args=None):
             acquire_file_lock(lock_file)
 
             available_led_type_indexes = query_leds(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 control_file=args.control_file,
                 debug=args.debug,
                 metadata=None

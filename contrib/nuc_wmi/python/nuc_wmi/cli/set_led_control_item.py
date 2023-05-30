@@ -103,7 +103,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         )
         parser.add_argument(
             'nuc_wmi_spec_alias',
-            choices=nuc_wmi_spec['nuc_wmi_spec'].keys(),
+            choices=nuc_wmi_spec.keys(),
             help='The name of the NUC WMI specification to use from the specification configuration file.'
         )
         parser.add_argument(
@@ -135,7 +135,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             led_type_index = LED_TYPE['new'].index(args.led)
 
             available_indicator_option_indexes = query_led_indicator_options(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -143,7 +143,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             )
 
             led_color_type_index = query_led_color_type(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 control_file=args.control_file,
                 debug=args.debug,
@@ -179,7 +179,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 if control_items[control_item_index]['Options'] == LED_COLOR['new']:
                     if led_color_type == 'RGB-color':
                         led_rgb_color_type_dimensions = query_led_rgb_color_type_dimensions_hint(
-                            nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                            nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                             args.led
                         )
 
@@ -187,7 +187,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                             led_rgb_color_type_dimensions = 1
 
                             available_control_item_indexes = query_led_control_items(
-                                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                                 led_type_index,
                                 led_indicator_option_index,
                                 control_file=args.control_file,
@@ -219,7 +219,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 ) from err
 
             set_led_control_item(
-                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                nuc_wmi_spec.get(args.nuc_wmi_spec_alias),
                 led_type_index,
                 led_indicator_option_index,
                 control_item_index,

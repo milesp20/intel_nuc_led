@@ -141,11 +141,18 @@ def load_nuc_wmi_spec():
                 (nuc_wmi_spec_file, str(err))
             ) from err
 
-        if not issubclass(nuc_wmi_spec.__class__, dict) or \
-           'nuc_wmi_spec' not in nuc_wmi_spec:
+        if not issubclass(nuc_wmi_spec.__class__, dict):
             raise NucWmiError(
-                'Error (Intel NUC WMI NUC WMI spec configuration file schema is invalid: %s)' % nuc_wmi_spec_file
+                'Error (Intel NUC WMI NUC WMI spec configuration file schema is invalid object: %s)' % nuc_wmi_spec_file
             )
+
+        for nuc_wmi_spec_alias_key, nuc_wmi_spec_alias_value in nuc_wmi_spec.items():
+            if not issubclass(nuc_wmi_spec_alias_value.__class__, dict) or \
+               'nuc_wmi_spec' not in nuc_wmi_spec_alias_value:
+                raise NucWmiError(
+                    'Error (Intel NUC WMI NUC WMI spec configuration file schema alias %s is invalid object)' % \
+                    nuc_wmi_spec_alias_key
+                )
 
         return nuc_wmi_spec
 
@@ -225,7 +232,13 @@ def query_led_rgb_color_type_dimensions_hint(nuc_wmi_spec, led_type):
       None or 1 or 3 for the RGB color dimensions.
     """
 
-    rgb_color_type_dimensions = nuc_wmi_spec.get('led_hints', {}).get('rgb_color_type_dimensions', {}).get(led_type)
+    rgb_color_type_dimensions = nuc_wmi_spec.get(
+        'led_hints',
+        {}
+    ).get(
+        'rgb_color_type_dimensions',
+        {}
+    ).get(led_type)
 
     if rgb_color_type_dimensions is not None and rgb_color_type_dimensions not in [1, 3]:
         raise NucWmiError(
@@ -262,19 +275,23 @@ def verify_nuc_wmi_function_spec(nuc_wmi_function_name, nuc_wmi_spec, nuc_wmi_fu
     if nuc_wmi_function_oob_return_value_recover_values is None:
         nuc_wmi_function_oob_return_value_recover_values = DEFAULT_NUC_WMI_FUNCTION_OOB_RETURN_VALUE_RECOVER_VALUES
 
-    if nuc_wmi_function_name not in nuc_wmi_spec.get('function_return_type', {}):
+    if nuc_wmi_function_name not in nuc_wmi_spec.get('nuc_wmi_spec', {}).get('function_return_type', {}):
         raise NucWmiError(
             'Error (NUC WMI specification does not include a function_return_type definition for NUC WMI function: '
             '%s' % nuc_wmi_function_name
         )
 
-    if nuc_wmi_function_name not in nuc_wmi_spec.get('function_oob_return_value_recover', {}):
+    if nuc_wmi_function_name not in nuc_wmi_spec['nuc_wmi_spec'].get(
+            'recover',
+            {}).get(
+                'function_oob_return_value',
+                {}):
         raise NucWmiError(
-            'Error (NUC WMI specification does not include a function_oob_return_value_recover definition for NUC WMI'
+            'Error (NUC WMI specification does not include a recover function_oob_return_value definition for NUC WMI'
             ' function: %s' % nuc_wmi_function_name
         )
 
-    function_return_type = nuc_wmi_spec.get('function_return_type', {}).get(nuc_wmi_function_name)
+    function_return_type = nuc_wmi_spec['nuc_wmi_spec'].get('function_return_type', {}).get(nuc_wmi_function_name)
 
     if function_return_type not in nuc_wmi_function_return_types:
         raise NucWmiError(
@@ -283,12 +300,14 @@ def verify_nuc_wmi_function_spec(nuc_wmi_function_name, nuc_wmi_spec, nuc_wmi_fu
         )
 
     function_oob_return_value_recover = bool(
-        nuc_wmi_spec.get('function_oob_return_value_recover', {}).get(nuc_wmi_function_name)
+        nuc_wmi_spec['nuc_wmi_spec'].get('recover', {}).get('function_oob_return_value', {}).get(
+            nuc_wmi_function_name
+        )
     )
 
     if function_oob_return_value_recover not in nuc_wmi_function_oob_return_value_recover_values:
         raise NucWmiError(
-            'Error (Intel NUC WMI spec has an invalid function_oob_return_value_recover for function %s, allowed OOB '
+            'Error (Intel NUC WMI spec has an invalid recover function_oob_return_value for function %s, allowed OOB '
             'recover values: %s)' % \
             (nuc_wmi_function_name, json.dumps(nuc_wmi_function_oob_return_value_recover_values))
         )

@@ -45,19 +45,21 @@ class TestCliGetLedNew(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'nuc_wmi_spec': {
                     'function_return_type': {
                         'get_led_control_item': 'index',
                         'query_led_color_type': 'index',
                         'query_led_control_items': 'index',
                         'query_led_indicator_options': 'index'
                     },
-                    'function_oob_return_value_recover': {
-                        'get_led_control_item': False,
-                        'query_led_color_type': False,
-                        'query_led_control_items': False,
-                        'query_led_indicator_options': False
+                    'recover': {
+                        'function_oob_return_value': {
+                            'get_led_control_item': False,
+                            'query_led_color_type': False,
+                            'query_led_control_items': False,
+                            'query_led_indicator_options': False
+                        }
                     }
                 }
             }
@@ -114,14 +116,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -129,7 +131,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
         nuc_wmi_query_led_control_items.assert_not_called()
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -208,14 +210,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -223,7 +225,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
         nuc_wmi_query_led_control_items.assert_not_called()
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -289,14 +291,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -358,14 +360,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
@@ -429,14 +431,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -502,14 +504,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -517,7 +519,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
         nuc_wmi_query_led_control_items.assert_not_called()
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -599,21 +601,21 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
@@ -621,7 +623,7 @@ class TestCliGetLedNew(unittest.TestCase):
             metadata=None
         )
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -703,21 +705,21 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
@@ -725,7 +727,7 @@ class TestCliGetLedNew(unittest.TestCase):
             metadata=None
         )
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -807,21 +809,21 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
@@ -829,7 +831,7 @@ class TestCliGetLedNew(unittest.TestCase):
             metadata=None
         )
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
@@ -911,21 +913,21 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_control_items.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
@@ -933,7 +935,7 @@ class TestCliGetLedNew(unittest.TestCase):
             metadata=None
         )
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
@@ -1016,14 +1018,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -1031,7 +1033,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
         nuc_wmi_query_led_control_items.assert_not_called()
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             CONTROL_ITEM_SOFTWARE_INDICATOR_MULTI_COLOR.index(
@@ -1114,14 +1116,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -1129,7 +1131,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
         nuc_wmi_query_led_control_items.assert_not_called()
         nuc_wmi_get_led_control_item.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR.index(
@@ -1204,14 +1206,14 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_query_led_color_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
             metadata=None
         )
         nuc_wmi_query_led_indicator_options.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('Power Button LED'),
             control_file=None,
             debug=False,
@@ -1265,7 +1267,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_get_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -1322,7 +1324,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_get_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,
@@ -1372,7 +1374,7 @@ class TestCliGetLedNew(unittest.TestCase):
         )
 
         nuc_wmi_get_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             control_file=None,
             debug=False,

@@ -39,13 +39,15 @@ class TestCliSwitchLedType(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'nuc_wmi_spec': {
                     'function_return_type': {
                         'switch_led_type': None
                     },
-                    'function_oob_return_value_recover': {
-                        'switch_led_type': False
+                    'recover': {
+                        'function_oob_return_value': {
+                            'switch_led_type': False
+                        }
                     }
                 }
             }
@@ -82,7 +84,7 @@ class TestCliSwitchLedType(unittest.TestCase):
         returned_switch_led_type_cli = switch_led_type_cli([nuc_wmi_spec_alias, LED_COLOR_GROUP[0]])
 
         nuc_wmi_switch_led_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_COLOR_GROUP.index('Single color LED'),
             control_file=None,
             debug=False,
@@ -133,7 +135,7 @@ class TestCliSwitchLedType(unittest.TestCase):
         returned_switch_led_type_cli = switch_led_type_cli([nuc_wmi_spec_alias, LED_COLOR_GROUP[0]])
 
         nuc_wmi_switch_led_type.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_COLOR_GROUP.index('Single color LED'),
             control_file=None,
             debug=False,

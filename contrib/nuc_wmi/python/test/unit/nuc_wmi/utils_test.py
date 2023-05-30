@@ -50,9 +50,9 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
         test_query_led_rgb_color_type_dimensions_hint: Tests that `query_led_rgb_color_type_dimensions_hint` returns the
                                                        expected exceptions, return values, or outputs.
         test_verify_nuc_wmi_function_spec: Tests that `verify_nuc_wmi_function_spec` raises the expected exception when
-                                           the function_return_type or function_oob_return_recover values are undefined
+                                           the function_return_type or recover function_oob_return values are undefined
                                            or unsupport by the NUC WMI method or the expected tuple for
-                                           function_return_type and function_oob_return_recover values is returned.
+                                           function_return_type and recover function_oob_return values is returned.
     """
 
     def setUp(self):
@@ -332,14 +332,14 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
         with tempfile.NamedTemporaryFile(delete=True) as temp_nuc_wmi_spec_file:
             with patch('nuc_wmi.utils.NUC_WMI_SPEC_FILE', [temp_nuc_wmi_spec_file.name]):
                 with open(temp_nuc_wmi_spec_file.name, 'w', encoding='utf8') as fout:
-                    fout.write("{}")
+                    fout.write("[]")
 
                 with self.assertRaises(NucWmiError) as err:
                     load_nuc_wmi_spec()
 
                 self.assertEqual(
                     str(err.exception),
-                    'Error (Intel NUC WMI NUC WMI spec configuration file schema is invalid: %s)' % \
+                    'Error (Intel NUC WMI NUC WMI spec configuration file schema is invalid object: %s)' % \
                     (temp_nuc_wmi_spec_file.name)
                 )
 
@@ -366,6 +366,27 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
                 (pkg_resources.resource_filename('nuc_wmi', 'etc/nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json'),
                  'json.load error')
         )
+
+
+    def test_load_nuc_wmi_spec5(self):
+        """
+        Tests that `load_nuc_wmi_sec` returns the expected exceptions, return values, or outputs.
+        """
+
+        # Branch 5: Test that an exception is raised if a NUC WMI spec alias has invalid schema
+        with tempfile.NamedTemporaryFile(delete=True) as temp_nuc_wmi_spec_file:
+            with patch('nuc_wmi.utils.NUC_WMI_SPEC_FILE', [temp_nuc_wmi_spec_file.name]):
+                with open(temp_nuc_wmi_spec_file.name, 'w', encoding='utf8') as fout:
+                    fout.write('{"TEST_DEVICE":{}}')
+
+                with self.assertRaises(NucWmiError) as err:
+                    load_nuc_wmi_spec()
+
+                self.assertEqual(
+                    str(err.exception),
+                    'Error (Intel NUC WMI NUC WMI spec configuration file schema alias %s is invalid object)' % \
+                    'TEST_DEVICE'
+                )
 
 
     def test_query_led_color_type_hint(self):
@@ -629,8 +650,10 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
 
         nuc_wmi_function_name = 'test_nuc_wmi_function'
         nuc_wmi_spec = {
-            'function_return_type': {
-                'test_nuc_wmi_function': 'bitmap'
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'test_nuc_wmi_function': 'bitmap'
+                }
             }
         }
 
@@ -641,7 +664,7 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
 
         self.assertEqual(
             str(err.exception),
-            'Error (NUC WMI specification does not include a function_oob_return_value_recover definition for NUC WMI'
+            'Error (NUC WMI specification does not include a recover function_oob_return_value definition for NUC WMI'
             ' function: %s' % nuc_wmi_function_name
         )
 
@@ -654,11 +677,15 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
         nuc_wmi_function_name = 'test_nuc_wmi_function'
         nuc_wmi_function_return_types = ['int']
         nuc_wmi_spec = {
-            'function_return_type': {
-                'test_nuc_wmi_function': 'bitmap'
-            },
-            'function_oob_return_value_recover': {
-                'test_nuc_wmi_function': False
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'test_nuc_wmi_function': 'bitmap'
+                },
+                'recover': {
+                    'function_oob_return_value': {
+                        'test_nuc_wmi_function': False
+                    }
+                }
             }
         }
 
@@ -686,11 +713,15 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
         nuc_wmi_function_name = 'test_nuc_wmi_function'
         nuc_wmi_function_oob_return_value_recover_values = [True]
         nuc_wmi_spec = {
-            'function_return_type': {
-                'test_nuc_wmi_function': 'bitmap'
-            },
-            'function_oob_return_value_recover': {
-                'test_nuc_wmi_function': False
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'test_nuc_wmi_function': 'bitmap'
+                },
+                'recover': {
+                    'function_oob_return_value': {
+                        'test_nuc_wmi_function': False
+                    }
+                }
             }
         }
 
@@ -705,7 +736,7 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
 
         self.assertEqual(
             str(err.exception),
-            'Error (Intel NUC WMI spec has an invalid function_oob_return_value_recover for function %s, allowed OOB '
+            'Error (Intel NUC WMI spec has an invalid recover function_oob_return_value for function %s, allowed OOB '
             'recover values: %s)' % \
             (nuc_wmi_function_name, json.dumps(nuc_wmi_function_oob_return_value_recover_values))
         )
@@ -718,11 +749,15 @@ class TestUtils(unittest.TestCase): # pylint: disable=too-many-public-methods
 
         nuc_wmi_function_name = 'test_nuc_wmi_function'
         nuc_wmi_spec = {
-            'function_return_type': {
-                'test_nuc_wmi_function': 'bitmap'
-            },
-            'function_oob_return_value_recover': {
-                'test_nuc_wmi_function': False
+            'nuc_wmi_spec': {
+                'function_return_type': {
+                    'test_nuc_wmi_function': 'bitmap'
+                },
+                'recover': {
+                    'function_oob_return_value': {
+                        'test_nuc_wmi_function': False
+                    }
+                }
             }
         }
         verification_return_value_expected = ('bitmap', False)
