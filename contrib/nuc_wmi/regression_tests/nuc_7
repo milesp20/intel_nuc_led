@@ -1,0 +1,30 @@
+#!/bin/bash
+
+NUC_WMI_CLI_VERSION="$(dpkg-query --show --showformat '${VERSION}\n' python3-nuc-wmi 2>/dev/null)"
+
+function regression_test()
+{
+  set -x
+
+  lsb_release -a
+  uname -a
+
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Power LED'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 0 '1Hz' 'Disable'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 100 '1Hz' 'Disable'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 0 '1Hz' 'Cyan'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 100 '1Hz' 'Cyan'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 100 '0.5Hz fade' 'White'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+  time nuc_wmi-set_led --debug 'NUC_7' 'S0 Ring LED' 100 '0.5Hz fade' 'Green'
+  time nuc_wmi-get_led --debug 'NUC_7' 'S0 Ring LED'
+
+  set +x
+}
+
+{ time regression_test; } > "nuc_7_cli_${NUC_WMI_CLI_VERSION}.log" 2>&1
