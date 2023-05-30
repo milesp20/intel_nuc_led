@@ -7,7 +7,7 @@ import json
 import os
 import pkg_resources
 
-from nuc_wmi import NucWmiError
+from nuc_wmi import LED_COLOR_TYPE, LED_INDICATOR_OPTION, LED_TYPE, NucWmiError
 
 BYTE_LIST_RETURN_TYPES = [
     'bitmap',
@@ -22,6 +22,8 @@ DEFAULT_NUC_WMI_FUNCTION_OOB_RETURN_VALUE_RECOVER_VALUES = [
     False,
     True
 ]
+EXCLUSIVE_BLOCKING_FILE_LOCK = fcntl.LOCK_EX
+EXCLUSIVE_NON_BLOCKING_FILE_LOCK = fcntl.LOCK_EX | fcntl.LOCK_NB
 NUC_WMI_SPEC_FILE = [
     os.path.expanduser('~/.nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json'),
     '/etc/nuc_wmi/nuc_wmi_spec/nuc_wmi_spec.json',
@@ -29,7 +31,7 @@ NUC_WMI_SPEC_FILE = [
 ]
 
 
-def acquire_file_lock(filehandle):
+def acquire_file_lock(filehandle, blocking_file_lock=False):
     """
     Acquires a lock on the open file descriptor.
 
@@ -41,8 +43,13 @@ def acquire_file_lock(filehandle):
       None
     """
 
+    if blocking_file_lock:
+        lock_type = EXCLUSIVE_BLOCKING_FILE_LOCK
+    else:
+        lock_type = EXCLUSIVE_NON_BLOCKING_FILE_LOCK
+
     try:
-        fcntl.flock(filehandle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        fcntl.flock(filehandle.fileno(), lock_type)
     except (IOError, OSError) as err:
         raise NucWmiError(
             'Error (Intel NUC WMI failed to acquire lock file %s: %s)' % (filehandle.name, str(err))
@@ -145,6 +152,89 @@ def load_nuc_wmi_spec():
     raise NucWmiError(
         'Error (Intel NUC WMI failed to find NUC WMI spec configuration file: %s)' % str(NUC_WMI_SPEC_FILE)
     )
+
+
+def query_led_color_type_hint(nuc_wmi_spec, led_type_index):
+    """
+    Checks the NUC WMI specification configration file for LED color type hint to avoid having to call
+    query_led_color_type WMI function.
+
+    Args:
+      led_type_index: The LED type index for which to query the LED color type hint.
+      nuc_wmi_spec: The NUC WMI specification configuration.
+    Returns:
+      None or the LED color type string as its `nuc_wmi.LED_COLOR_TYPE` index.
+    """
+
+    if led_type_index < len(LED_TYPE['new']):
+        led_color_type_hint = nuc_wmi_spec.get('led_hints', {}).get('color_type', {}).get(
+            LED_TYPE['new'][led_type_index]
+        )
+    else:
+        return None
+
+    try:
+        return LED_COLOR_TYPE['new'].index(led_color_type_hint)
+    except ValueError:
+        pass
+
+    return None
+
+
+def query_led_indicator_options_hint(nuc_wmi_spec, led_type_index):
+    """
+    Checks the NUC WMI specification configuration file for LED indicator options hint to avoid having to call
+    query_led_indicator_options WMI function.
+
+    Args:
+      led_type_index: The LED type index for which to query the LED indicator options hint.
+      nuc_wmi_spec: The NUC WMI specification configuration.
+    Returns:
+      Empty list or the list of indicator option strings as its `nuc_wmi.LED_INDICATOR_OPTION` index for the specified
+      LED type index.
+    """
+
+    indicator_options_indexes = []
+
+    if led_type_index < len(LED_TYPE['new']):
+        indicator_options_hint = nuc_wmi_spec.get('led_hints', {}).get('indicator_options', {}).get(
+            LED_TYPE['new'][led_type_index],
+            []
+        )
+    else:
+        return indicator_options_indexes
+
+    for index, indicator_option in enumerate(LED_INDICATOR_OPTION):
+        if indicator_option in indicator_options_hint:
+            indicator_options_indexes.append(index)
+
+    indicator_options_indexes.sort()
+
+    return indicator_options_indexes
+
+
+def query_led_rgb_color_type_dimensions_hint(nuc_wmi_spec, led_type):
+    """
+    Checks the NUC WMI specification configration file for LED RGB color type dimensions hint to avoid having to call
+    query_led_color_type WMI function.
+
+    Args:
+      led_type: The LED type for which to query the LED RGB color type dimensions hint.
+      nuc_wmi_spec: The NUC WMI specification configuration.
+    Returns:
+      None or 1 or 3 for the RGB color dimensions.
+    """
+
+    rgb_color_type_dimensions = nuc_wmi_spec.get('led_hints', {}).get('rgb_color_type_dimensions', {}).get(led_type)
+
+    if rgb_color_type_dimensions is not None and rgb_color_type_dimensions not in [1, 3]:
+        raise NucWmiError(
+            'Error (Intel NUC WMI spec has an invalid rgb_color_type_dimensions led_hint for LED %s, '
+            'expected one of: [1, 3]' % led_type
+        )
+
+    return rgb_color_type_dimensions
+
 
 
 def verify_nuc_wmi_function_spec(nuc_wmi_function_name, nuc_wmi_spec, nuc_wmi_function_return_types=None,

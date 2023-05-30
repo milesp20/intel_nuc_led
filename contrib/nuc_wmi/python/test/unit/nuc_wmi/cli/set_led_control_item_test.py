@@ -1151,3 +1151,77 @@ class TestCliSetLedControlItem(unittest.TestCase):
         )
 
         self.assertEqual(returned_set_led_control_item_cli, None)
+
+
+    @patch('nuc_wmi.cli.set_led_control_item.load_nuc_wmi_spec')
+    @patch('nuc_wmi.cli.set_led_control_item.print')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_color_type')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_control_items')
+    @patch('nuc_wmi.cli.set_led_control_item.query_led_indicator_options')
+    @patch('nuc_wmi.cli.set_led_control_item.set_led_control_item')
+    @patch('nuc_wmi.cli.set_led_control_item.sys.exit')
+    def test_set_led_control_item_cli13( # pylint: disable=too-many-arguments,too-many-statements
+            self,
+            nuc_wmi_sys_exit,
+            nuc_wmi_set_led_control_item,
+            nuc_wmi_query_led_indicator_options,
+            nuc_wmi_query_led_control_items,
+            nuc_wmi_query_led_color_type,
+            nuc_wmi_print,
+            nuc_wmi_cli_load_nuc_wmi_spec
+    ):
+        """
+        Tests that `set_led_control_item_cli` returns the expected exceptions, return values, or outputs.
+        """
+
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.load_nuc_wmi_spec is nuc_wmi_cli_load_nuc_wmi_spec)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.print is nuc_wmi_print) # pylint: disable=no-member
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_color_type is nuc_wmi_query_led_color_type)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_control_items is nuc_wmi_query_led_control_items)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.query_led_indicator_options is \
+                        nuc_wmi_query_led_indicator_options)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.set_led_control_item is nuc_wmi_set_led_control_item)
+        self.assertTrue(nuc_wmi.cli.set_led_control_item.sys.exit is nuc_wmi_sys_exit)
+
+        # Branch 13: Test that set_led_control_item_cli raises proper error when there are no control items for
+        #            for the current LED and indicator option chosen and returns he proper JSON error response and exit
+        #            code.
+        led_brightness = 37
+        nuc_wmi_spec_alias = 'TEST_DEVICE'
+
+        nuc_wmi_cli_load_nuc_wmi_spec.return_value = self.nuc_wmi_spec
+        nuc_wmi_query_led_color_type.return_value = LED_COLOR_TYPE['new'].index('Single-color LED')
+        nuc_wmi_query_led_indicator_options.return_value = [1, 4, 5, 6]
+
+        returned_set_led_control_item_cli = set_led_control_item_cli(
+            [
+                nuc_wmi_spec_alias,
+                LED_TYPE['new'][0],
+                LED_INDICATOR_OPTION[6],
+                CONTROL_ITEM_HDD_ACTIVITY_INDICATOR_MULTI_COLOR[0]['Control Item'],
+                str(led_brightness)
+            ]
+        )
+
+        nuc_wmi_query_led_color_type.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            LED_TYPE['new'].index('Power Button LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+        nuc_wmi_query_led_indicator_options.assert_called_with(
+            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            LED_TYPE['new'].index('Power Button LED'),
+            control_file=None,
+            debug=False,
+            metadata=None
+        )
+        nuc_wmi_query_led_control_items.assert_not_called()
+        nuc_wmi_set_led_control_item.assert_not_called()
+        nuc_wmi_print.assert_called_with(
+            '{"error": "No control items are available for the selected LED and indicator option"}'
+        )
+        nuc_wmi_sys_exit.assert_called_with(1)
+
+        self.assertEqual(returned_set_led_control_item_cli, None)

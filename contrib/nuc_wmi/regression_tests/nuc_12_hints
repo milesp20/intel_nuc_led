@@ -1,0 +1,94 @@
+#!/bin/bash
+
+NUC_WMI_CLI_VERSION="$(dpkg-query --show --showformat '${VERSION}\n' python3-nuc-wmi 2>/dev/null)"
+
+function regression_test()
+{
+  set -x
+
+  lsb_release -a
+  uname -a
+
+  time nuc_wmi-query_leds --debug 'NUC_12_HINTS'
+  time nuc_wmi-query_led_color_type --debug 'NUC_12_HINTS' 'Power Button LED'
+  time nuc_wmi-query_led_indicator_options --debug 'NUC_12_HINTS' 'Power Button LED'
+  time nuc_wmi-query_led_control_items --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator'
+  time nuc_wmi-query_led_control_items --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator'
+  time nuc_wmi-query_led_control_items --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator'
+  time nuc_wmi-set_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator'
+  time nuc_wmi-get_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Brightness' 100
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior' Solid
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency' '1.0Hz'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3' 100
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Brightness'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior' Strobing
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency' '0.1Hz'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color' 255
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2' 191
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3' 0
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Behavior'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Blinking Frequency'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Power State Indicator' 'S0 Indicator Color 3'
+  time nuc_wmi-set_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator'
+  time nuc_wmi-get_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Brightness' 100
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 2' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 3' 100
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Behavior' 'Normally OFF, ON when active'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Brightness'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 3'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Behavior'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Behavior' 'Normally ON, OFF when active'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color' 255
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 2' 192
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 3' 0
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Behavior'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'HDD Activity Indicator' 'Color 3'
+  time nuc_wmi-set_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator'
+  time nuc_wmi-get_led_indicator_option --debug 'NUC_12_HINTS' 'Power Button LED'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Brightness' 100
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Behavior' Solid
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Frequency' '1.0Hz'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 2' 0
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 3' 100
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Brightness'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Behavior'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Frequency'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 3'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Behavior' Strobing
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Frequency' '0.1Hz'
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color' 255
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 2' 191
+  time nuc_wmi-set_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 3' 0
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Behavior'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Blinking Frequency'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 2'
+  time nuc_wmi-get_led_control_item --debug 'NUC_12_HINTS' 'Power Button LED' 'Software Indicator' 'Color 3'
+  time nuc_wmi-save_led_config --debug 'NUC_12_HINTS'
+  time nuc_wmi-switch_led_type --debug 'NUC_12_HINTS' 'Single color LED'
+  time nuc_wmi-switch_led_type --debug 'NUC_12_HINTS' 'Multi color LED'
+  time nuc_wmi-wmi_interface_spec_compliance_version --debug 'NUC_12_HINTS'
+
+  set +x
+}
+
+{ time regression_test; } > "nuc_12_hints_cli_${NUC_WMI_CLI_VERSION}.log" 2>&1

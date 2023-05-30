@@ -41,6 +41,12 @@ def query_led_color_type_cli(cli_args=None):
         )
 
         parser.add_argument(
+            '-b',
+            '--blocking-file-lock',
+            action='store_true',
+            help='Acquire a blocking lock on the NUC WMI lock file instead of the default non blocking lock.'
+        )
+        parser.add_argument(
             '-c',
             '--control-file',
             default=None,
@@ -72,7 +78,7 @@ def query_led_color_type_cli(cli_args=None):
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
-            acquire_file_lock(lock_file)
+            acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
             led_type_index = LED_TYPE['new'].index(args.led)
 
@@ -202,10 +208,13 @@ def query_led_control_items_cli(cli_args=None):
                 metadata=None
             )
 
-            led_control_items = [
-                CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
-                for control_item_index in available_control_item_indexes
-            ]
+            if CONTROL_ITEM[led_indicator_option_index] is None:
+                led_control_items = []
+            else:
+                led_control_items = [
+                    CONTROL_ITEM[led_indicator_option_index][led_color_type_index][control_item_index]['Control Item'] \
+                    for control_item_index in available_control_item_indexes
+                ]
 
             print(
                 dumps(

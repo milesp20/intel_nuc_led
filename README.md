@@ -20,11 +20,13 @@ running on other NUCs with software-controllable LEDs, and other distros.
 
 ## Known Issues
 
-Currently, 5.x kernels in Ubuntu 20.04 and 22.04 appear to be have problems (unknown if its a bug in the
-kernel module itself or the kernels) with using Python to read from the control file in a buffered I/O manner.
+* Currently, 5.x kernels in Ubuntu 20.04 and 22.04 appear to be have problems (unknown if its a bug in the
+  kernel module itself or the kernels) with using Python to read from the control file in a buffered I/O manner.
 
-As of `nuc_wmi` CLI `3.0.1`, we work around this issue by reading/writing to the control file using unbuffered
-I/O.
+  As of `nuc_wmi` CLI `3.0.1`, we work around this issue by reading/writing to the control file using unbuffered
+  I/O.
+* Performance of the NUC WMI methods is severely degraded in NUC 12s and is about 20-100x slower for some WMI
+  methods than previously on the NUC 10. This is a BIOS issue that we cant work around due to a delayed response.
 
 ## Requirements
 

@@ -9,7 +9,7 @@ deb_py3:
 
 covtests:
 	pylint python/nuc_wmi python/test/
-	coverage run setup.py test
+	coverage run --omit setup.py setup.py test
 	coverage report -m
 	coverage html
 

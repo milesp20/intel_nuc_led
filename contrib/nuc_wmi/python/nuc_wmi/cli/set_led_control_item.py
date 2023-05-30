@@ -13,7 +13,7 @@ from nuc_wmi import CONTROL_ITEM, CONTROL_FILE, LED_COLOR, LED_BLINK_FREQUENCY, 
 from nuc_wmi import LED_INDICATOR_OPTION, LED_TYPE, LOCK_FILE
 from nuc_wmi.query_led import query_led_color_type, query_led_control_items, query_led_indicator_options
 from nuc_wmi.set_led_control_item import set_led_control_item
-from nuc_wmi.utils import acquire_file_lock, load_nuc_wmi_spec
+from nuc_wmi.utils import acquire_file_lock, load_nuc_wmi_spec, query_led_rgb_color_type_dimensions_hint
 
 
 RGB_COLOR_1D = LED_COLOR['new']['RGB-color']['1d']
@@ -78,6 +78,12 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         )
 
         parser.add_argument(
+            '-b',
+            '--blocking-file-lock',
+            action='store_true',
+            help='Acquire a blocking lock on the NUC WMI lock file instead of the default non blocking lock.'
+        )
+        parser.add_argument(
             '-c',
             '--control-file',
             default=None,
@@ -124,7 +130,7 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
         args = parser.parse_args(args=cli_args)
 
         with open(args.lock_file or LOCK_FILE, 'w', encoding='utf8') as lock_file:
-            acquire_file_lock(lock_file)
+            acquire_file_lock(lock_file, blocking_file_lock=args.blocking_file_lock)
 
             led_type_index = LED_TYPE['new'].index(args.led)
 
@@ -151,6 +157,9 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
             if led_indicator_option_index not in available_indicator_option_indexes:
                 raise ValueError('Invalid indicator option for the selected LED')
 
+            if CONTROL_ITEM[led_indicator_option_index] is None:
+                raise ValueError('No control items are available for the selected LED and indicator option')
+
             control_items = CONTROL_ITEM[led_indicator_option_index][led_color_type_index]
 
             if control_items is None:
@@ -169,24 +178,30 @@ def set_led_control_item_cli(cli_args=None): # pylint: disable=too-many-branches
                 # Convert the control item value into its index
                 if control_items[control_item_index]['Options'] == LED_COLOR['new']:
                     if led_color_type == 'RGB-color':
-                        color_dimensions = '1d'
-
-                        available_control_item_indexes = query_led_control_items(
+                        led_rgb_color_type_dimensions = query_led_rgb_color_type_dimensions_hint(
                             nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
-                            led_type_index,
-                            led_indicator_option_index,
-                            control_file=args.control_file,
-                            debug=args.debug,
-                            metadata=None
+                            args.led
                         )
 
-                        for control_item_index2 in available_control_item_indexes:
-                            if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
-                                color_dimensions = '3d'
+                        if led_rgb_color_type_dimensions is None:
+                            led_rgb_color_type_dimensions = 1
 
-                                break
+                            available_control_item_indexes = query_led_control_items(
+                                nuc_wmi_spec['nuc_wmi_spec'].get(args.nuc_wmi_spec_alias),
+                                led_type_index,
+                                led_indicator_option_index,
+                                control_file=args.control_file,
+                                debug=args.debug,
+                                metadata=None
+                            )
 
-                        if color_dimensions == '1d':
+                            for control_item_index2 in available_control_item_indexes:
+                                if control_items[control_item_index2]['Options'] == RGB_COLOR_3D:
+                                    led_rgb_color_type_dimensions = 3
+
+                                    break
+
+                        if led_rgb_color_type_dimensions == 1:
                             led_colors = RGB_COLOR_1D[args.led]
                         else:
                             led_colors = RGB_COLOR_3D

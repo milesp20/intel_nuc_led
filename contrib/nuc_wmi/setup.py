@@ -123,7 +123,7 @@ setup( # pylint: disable=star-args
     ],
     test_suite='setup.test_suite',
     url='https://github.com/tvision-insights/intel_nuc_led',
-    version='3.0.1',
+    version='3.1.0',
     zip_safe=True,
     **PYTHON_3_EXTRAS
 )
