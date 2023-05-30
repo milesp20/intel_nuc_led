@@ -1,26 +1,34 @@
 {
-  "nuc_wmi_spec": {
-    "NUC_7": {
+  "NUC_7": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led": "index",
         "set_led": null
       },
-      "function_oob_return_value_recover": {
-        "get_led": false,
-        "set_led": false
+      "recover": {
+        "function_oob_return_value": {
+          "get_led": false,
+          "set_led": false
+        }
       }
-    },
-    "NUC_7_OOB_RECOVER": {
+    }
+  },
+  "NUC_7_OOB_RECOVER": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led": "index",
         "set_led": null
       },
-      "function_oob_return_value_recover": {
-        "get_led": true,
-        "set_led": false
+      "recover": {
+        "function_oob_return_value": {
+          "get_led": true,
+          "set_led": false
+        }
       }
-    },
-    "NUC_10": {
+    }
+  },
+  "NUC_10": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led_control_item": "index",
         "get_led_indicator_option": "bitmap",
@@ -34,26 +42,60 @@
         "switch_led_type": null,
         "wmi_interface_spec_compliance_version": "index"
       },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
+        },
+        "missing_disable_indicator_option": {
+          "HDD LED": true,
+          "Power Button LED": true,
+          "RGB Header": true
+        }
+      }
+    }
+  },
+  "NUC_10_HINTS": {
+    "led_hints": {
+      "color_type": {
+        "HDD LED": "RGB-color",
+        "Power Button LED": "Dual-color Blue / Amber",
+        "RGB Header": "RGB-color"
       },
-      "missing_disable_indicator_option_recover": {
-        "HDD LED": true,
-        "Power Button LED": true,
-        "RGB Header": true
+      "indicator_options": {
+        "HDD LED": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Software Indicator"
+        ],
+        "Power Button LED": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Power State Indicator",
+          "Software Indicator"
+        ],
+        "RGB Header": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Power State Indicator",
+          "Software Indicator"
+        ]
+      },
+      "rgb_color_type_dimensions": {
+        "HDD LED": 1,
+        "RGB Header": 1
       }
     },
-    "NUC_10_HINTS": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led_control_item": "index",
         "get_led_indicator_option": "bitmap",
@@ -67,56 +109,30 @@
         "switch_led_type": null,
         "wmi_interface_spec_compliance_version": "index"
       },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
-      },
-      "led_hints": {
-        "color_type": {
-          "HDD LED": "RGB-color",
-          "Power Button LED": "Dual-color Blue / Amber",
-          "RGB Header": "RGB-color"
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
         },
-        "indicator_options": {
-          "HDD LED": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Software Indicator"
-          ],
-          "Power Button LED": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Power State Indicator",
-            "Software Indicator"
-          ],
-          "RGB Header": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Power State Indicator",
-            "Software Indicator"
-          ]
-        },
-        "rgb_color_type_dimensions": {
-          "HDD LED": 1,
-          "RGB Header": 1
+        "missing_disable_indicator_option": {
+          "HDD LED": true,
+          "Power Button LED": true,
+          "RGB Header": true
         }
-      },
-      "missing_disable_indicator_option_recover": {
-        "HDD LED": true,
-        "Power Button LED": true,
-        "RGB Header": true
       }
-    },
-    "NUC_10_OLD_BIOS": {
+    }
+  },
+  "NUC_10_OLD_BIOS": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led_control_item": "index",
         "get_led_indicator_option": "index",
@@ -130,76 +146,48 @@
         "switch_led_type": null,
         "wmi_interface_spec_compliance_version": "index"
       },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
-      },
-      "missing_disable_indicator_option_recover": {
-        "HDD LED": true,
-        "Power Button LED": true
-      }
-    },
-    "NUC_10_OLD_BIOS_HINTS": {
-      "function_return_type": {
-        "get_led_control_item": "index",
-        "get_led_indicator_option": "index",
-        "query_led_color_type": "index",
-        "query_led_control_items": "bitmap",
-        "query_led_indicator_options": "bitmap",
-        "query_leds": "bitmap",
-        "save_led_config": null,
-        "set_led_control_item": null,
-        "set_led_indicator_option": null,
-        "switch_led_type": null,
-        "wmi_interface_spec_compliance_version": "index"
-      },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
-      },
-      "led_hints": {
-        "color_type": {
-          "HDD LED": "Dual-color Blue / White",
-          "Power Button LED": "Dual-color Blue / Amber"
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
         },
-        "indicator_options": {
-          "HDD LED": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Software Indicator"
-          ],
-          "Power Button LED": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Power State Indicator",
-            "Software Indicator"
-          ]
+        "missing_disable_indicator_option": {
+          "HDD LED": true,
+          "Power Button LED": true
         }
+      }
+    }
+  },
+  "NUC_10_OLD_BIOS_HINTS": {
+    "led_hints": {
+      "color_type": {
+        "HDD LED": "Dual-color Blue / White",
+        "Power Button LED": "Dual-color Blue / Amber"
       },
-      "missing_disable_indicator_option_recover": {
-        "HDD LED": true,
-        "Power Button LED": true
+      "indicator_options": {
+        "HDD LED": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Software Indicator"
+        ],
+        "Power Button LED": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Power State Indicator",
+          "Software Indicator"
+        ]
       }
     },
-    "NUC_12": {
+    "nuc_wmi_spec": {
       "function_return_type": {
         "get_led_control_item": "index",
         "get_led_indicator_option": "index",
@@ -213,68 +201,110 @@
         "switch_led_type": null,
         "wmi_interface_spec_compliance_version": "index"
       },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
-      },
-      "missing_disable_indicator_option_recover": {
-        "Power Button LED": true
-      }
-    },
-    "NUC_12_HINTS": {
-      "function_return_type": {
-        "get_led_control_item": "index",
-        "get_led_indicator_option": "index",
-        "query_led_color_type": "index",
-        "query_led_control_items": "bitmap",
-        "query_led_indicator_options": "bitmap",
-        "query_leds": "bitmap",
-        "save_led_config": null,
-        "set_led_control_item": null,
-        "set_led_indicator_option": null,
-        "switch_led_type": null,
-        "wmi_interface_spec_compliance_version": "index"
-      },
-      "function_oob_return_value_recover": {
-        "get_led_control_item": false,
-        "get_led_indicator_option": false,
-        "query_led_color_type": false,
-        "query_led_control_items": false,
-        "query_led_indicator_options": false,
-        "query_leds": false,
-        "save_led_config": false,
-        "set_led_control_item": false,
-        "set_led_indicator_option": false,
-        "switch_led_type": false,
-        "wmi_interface_spec_compliance_version": false
-      },
-      "led_hints": {
-        "color_type": {
-          "Power Button LED": "RGB-color"
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
         },
-        "indicator_options": {
-          "Power Button LED": [
-            "Disable",
-            "HDD Activity Indicator",
-            "Power State Indicator",
-            "Software Indicator"
-          ]
-        },
-        "rgb_color_type_dimensions": {
-          "Power Button LED": 3
+        "missing_disable_indicator_option": {
+          "HDD LED": true,
+          "Power Button LED": true
         }
+      }
+    }
+  },
+  "NUC_12": {
+    "nuc_wmi_spec": {
+      "function_return_type": {
+        "get_led_control_item": "index",
+        "get_led_indicator_option": "index",
+        "query_led_color_type": "index",
+        "query_led_control_items": "bitmap",
+        "query_led_indicator_options": "bitmap",
+        "query_leds": "bitmap",
+        "save_led_config": null,
+        "set_led_control_item": null,
+        "set_led_indicator_option": null,
+        "switch_led_type": null,
+        "wmi_interface_spec_compliance_version": "index"
       },
-      "missing_disable_indicator_option_recover": {
-        "Power Button LED": true
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
+        },
+        "missing_disable_indicator_option": {
+          "Power Button LED": true
+        }
+      }
+    }
+  },
+  "NUC_12_HINTS": {
+    "led_hints": {
+      "color_type": {
+        "Power Button LED": "RGB-color"
+      },
+      "indicator_options": {
+        "Power Button LED": [
+          "Disable",
+          "HDD Activity Indicator",
+          "Power State Indicator",
+          "Software Indicator"
+        ]
+      },
+      "rgb_color_type_dimensions": {
+        "Power Button LED": 3
+      }
+    },
+    "nuc_wmi_spec": {
+      "function_return_type": {
+        "get_led_control_item": "index",
+        "get_led_indicator_option": "index",
+        "query_led_color_type": "index",
+        "query_led_control_items": "bitmap",
+        "query_led_indicator_options": "bitmap",
+        "query_leds": "bitmap",
+        "save_led_config": null,
+        "set_led_control_item": null,
+        "set_led_indicator_option": null,
+        "switch_led_type": null,
+        "wmi_interface_spec_compliance_version": "index"
+      },
+      "recover": {
+        "function_oob_return_value": {
+          "get_led_control_item": false,
+          "get_led_indicator_option": false,
+          "query_led_color_type": false,
+          "query_led_control_items": false,
+          "query_led_indicator_options": false,
+          "query_leds": false,
+          "save_led_config": false,
+          "set_led_control_item": false,
+          "set_led_indicator_option": false,
+          "switch_led_type": false,
+          "wmi_interface_spec_compliance_version": false
+        },
+        "missing_disable_indicator_option": {
+          "Power Button LED": true
+        }
       }
     }
   }

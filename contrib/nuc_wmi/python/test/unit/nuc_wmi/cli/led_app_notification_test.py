@@ -38,13 +38,15 @@ class TestCliLedAppNotification(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'NUC_WMI_SPEC': {
                     'function_return_type': {
                         'save_led_config': None
                     },
-                    'function_oob_return_value_recover': {
-                        'save_led_config': False
+                    'recover': {
+                        'function_oob_return_value': {
+                            'save_led_config': False
+                        }
                     }
                 }
             }
@@ -80,7 +82,7 @@ class TestCliLedAppNotification(unittest.TestCase):
         returned_save_led_config_cli = save_led_config_cli([nuc_wmi_spec_alias])
 
         nuc_wmi_cli_save_led_config.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
             metadata=None
@@ -129,7 +131,7 @@ class TestCliLedAppNotification(unittest.TestCase):
         returned_save_led_config_cli = save_led_config_cli([nuc_wmi_spec_alias])
 
         nuc_wmi_cli_save_led_config.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
             metadata=None

@@ -212,7 +212,13 @@ def query_led_indicator_options(nuc_wmi_spec, led_type, control_file=None, debug
 
     if led_type < len(LED_TYPE['new']):
         add_disable_indicator_option = nuc_wmi_spec.get(
-            'missing_disable_indicator_option_recover',
+            'nuc_wmi_spec',
+            {}
+        ).get(
+            'recover',
+            {}
+        ).get(
+            'missing_disable_indicator_option',
             {}
         ).get(
             LED_TYPE['new'][led_type],

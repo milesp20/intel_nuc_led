@@ -38,13 +38,15 @@ class TestCliVersion(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'nuc_wmi_spec': {
                     'function_return_type': {
                         'wmi_interface_spec_compliance_version': 'int'
                     },
-                    'function_oob_return_value_recover': {
-                        'wmi_interface_spec_compliance_version': False
+                    'recover':{
+                        'function_oob_return_value': {
+                            'wmi_interface_spec_compliance_version': False
+                        }
                     }
                 }
             }
@@ -86,7 +88,7 @@ class TestCliVersion(unittest.TestCase):
         )
 
         nuc_wmi_cli_wmi_interface_spec_compliance_version.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
             metadata=None
@@ -141,7 +143,7 @@ class TestCliVersion(unittest.TestCase):
         )
 
         nuc_wmi_cli_wmi_interface_spec_compliance_version.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             control_file=None,
             debug=False,
             metadata=None

@@ -38,13 +38,15 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         self.maxDiff = None # pylint: disable=invalid-name
 
         self.nuc_wmi_spec = {
-            'nuc_wmi_spec': {
-                'TEST_DEVICE': {
+            'TEST_DEVICE': {
+                'nuc_wmi_spec': {
                     'function_return_type': {
                         'set_led_indicator_option': None
                     },
-                    'function_oob_return_value_recover': {
-                        'set_led_indicator_option': False
+                    'recover': {
+                        'function_oob_return_value': {
+                            'set_led_indicator_option': False
+                        }
                     }
                 }
             }
@@ -89,7 +91,7 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         )
 
         nuc_wmi_set_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
@@ -149,7 +151,7 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         )
 
         nuc_wmi_set_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('HDD Activity Indicator'),
             control_file=None,
@@ -200,7 +202,7 @@ class TestCliSetLedIndicatorOption(unittest.TestCase):
         )
 
         nuc_wmi_set_led_indicator_option.assert_called_with(
-            self.nuc_wmi_spec.get('nuc_wmi_spec', {}).get(nuc_wmi_spec_alias),
+            self.nuc_wmi_spec.get(nuc_wmi_spec_alias),
             LED_TYPE['new'].index('HDD LED'),
             LED_INDICATOR_OPTION.index('Software Indicator'),
             control_file=None,
